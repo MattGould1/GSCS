@@ -1,0 +1,21 @@
+{
+  "name": "ewb_server",
+  "version": "1.0.0",
+  "description": "ewb socketio server",
+  "main": "server.js",
+  "dependencies": {
+    "cookie-parser": "^1.4.0",
+    "jsonwebtoken": "^5.4.1",
+    "mongoose": "^4.2.9",
+    "morgan": "^1.6.1",
+    "socket.io": "^1.3.7",
+    "socketio-jwt": "^4.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "author": "Matt Gould",
+  "license": "ISC"
+}
