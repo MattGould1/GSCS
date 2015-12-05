@@ -1,0 +1,29 @@
+extends layout/layout
+
+block content
+	div.row
+		div.col-xs-12
+			//register
+			form(role='form')#register.form-horizontal
+				div.form-group
+					label(for='username') username
+					input(type='text' name='username')#username.form-control
+				div.form-group
+					label(for='password') Password
+					input(type='password' name='password')#password.form-control
+				div.form-group
+					label(for='firstName') First Name
+					input(type='text' name='firstName')#firstname.form-control
+				div.form-group
+					label(for='lastName') Last Name
+					input(type='text' name='lastName')#lastname.form-control
+				div.form-group
+					label(for='email') Email
+					input(type='email' name='email')#email.form-control
+				div.form-group
+					label(for='location') Location
+					input(type='text' name='location')#location.form-control
+				div.form-group
+					label(for='department') Department
+					input(type='text' name='department')#department.form-control
+					button(type='submit').btn.btn-default submit
