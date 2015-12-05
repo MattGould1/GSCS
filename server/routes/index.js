@@ -38,7 +38,7 @@ router.post('/login', function (req, res, next) {
 
 //register
 router.post('/register', function (req, res, next) {
-	loginController.register(User, req, jwt, next, function (success) {
+	loginController.register(User, req, jwt, function (success) {
 		res.json(success);
 	});
 });

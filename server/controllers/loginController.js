@@ -1,12 +1,11 @@
-exports.register = function (User, req, jwt, next, callback) {
+exports.register = function (User, req, jwt, callback) {
 
 	//check to see if user exists
 	User.findOne( { username: req.body.username }, function (err, findUser) {
 		//check if err
 		if (err) { 
 			console.log('error finding user: ' + err);
-			callback(false); 
-			next();
+			callback(false);
 		}
 		
 		//if user is null, create user
@@ -34,14 +33,12 @@ exports.register = function (User, req, jwt, next, callback) {
 					console.log('user saved');
 					//success
 					callback(true);
-					next();
 				}
 			});
 		} else {
 			console.log('user already exists');
 			//user already exists, let client know
 			callback(false);
-			next();
 		}
 	});
 
