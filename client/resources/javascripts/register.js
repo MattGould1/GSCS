@@ -1,4 +1,3 @@
-//register
 $('.row').on('submit', '#register', function(e) {
 	e.preventDefault();
 

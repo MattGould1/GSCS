@@ -4,7 +4,7 @@ var express = require('express'),
     bodyParser = require('body-parser'), //parses information from POST
     jwt = require('jsonwebtoken'),
     methodOverride = require('method-override'), //used to manipulate POST
-    loginController = require('./../controllers/loginController'),
+    login = require('./../modules/login'),
     //models
     User = mongoose.model('User'),
     //socketio jwt
@@ -15,30 +15,20 @@ var db = require('./../models/db');
 
 //login
 router.post('/login', function (req, res, next) {
-	//find user by username in db
-	User.findOne( { username: req.body.username }, function (err, user) {
-		//check if err 
-		if (err) { res.json( { success: false } ); }
-
-		//check found user password against password provided
-		if ( user.password === req.body.password ) {
-			//log user in, send token back to client
-			var data = {};
-			data.token = jwt.sign( user, db.secret, { expiresInMinutes: 60*5 } );
-			data.user = user;
-
-			//send back
-			res.json(data);
-		} else {
-			//not the right password, or no user found w/o err?
-			res.json( { success: false } );
-		}
+	login.login(User, req, jwt, db, function (user) {
+		//@param user holds logged in user information and token
+		res.json(user);
 	});
 });
 
 //register
 router.post('/register', function (req, res, next) {
-	loginController.register(User, req, jwt, function (success) {
+	/*
+	* @param User mongoose model
+	* @param req express request holds POST data
+	* @function success Boolean
+	*/
+	login.register(User, req, next, function (success) {
 		res.json(success);
 	});
 });

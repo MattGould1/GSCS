@@ -16,7 +16,13 @@ gulp.task('watch', function() {
 });
 
 gulp.task('build-js', function() {
-  return gulp.src('resources/javascripts/**/*.js')
-      .pipe(concat('bundle.js'))
+  return gulp.src([
+      'resources/javascripts/bootstrap.js',
+      'resources/javascripts/bootstrap/*.js',
+      'resources/javascripts/libs/*.js',
+      'resources/javascripts/connect.js',
+      'resources/javascripts/!(bootstrap, connect)*.js'
+    ])
+    .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));
 });

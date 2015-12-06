@@ -51,6 +51,8 @@ sio.use(socketioJwt.authorize({
 
 //connect to default namespace
 sio.on('connection', function (socket) {
+        console.log('connected');
+        sio.emit('time', Date());
         // //disconnect socket if no username, wtf?
         // if(socket.decoded_token.username == undefined) {
         //     socket.disconnect(true);
@@ -80,6 +82,7 @@ sio.on('connection', function (socket) {
 //function for testing
 setInterval(function () {
   sio.emit('time', Date());
+  console.log('yup');
 }, 5000);
 
 //start listening
