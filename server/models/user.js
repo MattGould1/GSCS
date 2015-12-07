@@ -11,8 +11,9 @@ var userSchema = new mongoose.Schema({
 	status: { type: String, default: 'I am here' },
 	admin: Boolean,
 	created: { type: Date, default: Date.now() },
-	location: [],
-	department: []
+	location: String,
+	department: String,
+	_messages:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }]
 
 });
 

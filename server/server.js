@@ -6,14 +6,19 @@ var path = require('path'),
     jwt = require('jsonwebtoken'),
     bodyParser = require('body-parser'),
     http = require('http'),
+    users = {},
     socketioJwt = require('socketio-jwt');
 
 //models
 var db = require('./models/db');
 var User = require('./models/user');
-
+var Chat = require('./models/chat');
 //routes
 var index = require('./routes/index');
+var admin = require('./routes/admin');
+
+//init model
+var ChatRoom = mongoose.model('ChatRoom');
 
 //express
 var app = express();
@@ -35,6 +40,8 @@ app.use(cookieParser());
 
 //use routes
 app.use('/', index);
+app.use('/', admin);
+
 
 //connect to db
 mongoose.connect(db.database);
@@ -51,38 +58,50 @@ sio.use(socketioJwt.authorize({
 
 //connect to default namespace
 sio.on('connection', function (socket) {
+
+
+
+
         console.log('connected');
-        sio.emit('time', Date());
-        // //disconnect socket if no username, wtf?
-        // if(socket.decoded_token.username == undefined) {
-        //     socket.disconnect(true);
-        // }
-        // //store the username in socket for this client
-        // socket.username = socket.decoded_token.username;
-        // //save username in global list
-        // users[socket.username] = socket;
+        //disconnect socket if no username, wtf?
+        if(socket.decoded_token.username == undefined) {
+            socket.disconnect(true);
+        }
+        //store the username in socket for this client
+        socket.username = socket.decoded_token.username;
+        //save username in global list
+        users[socket.username] = socket;
+
+
+        ChatRoom.find({}, function (err, rooms) {
+            rooms.forEach(function (room) {
+                socket.join(room.name);
+                socket.emit('rooms', room.name);
+            });
+        });
+
+
 
         // //broadcast usernames
         // chat.usernames(sio, socket, users);
 
         // //chat
         // chat.message(sio, socket, messages);
-
-        // //disconnect
-        // socket.on('disconnect', function(data) {
-        //     //make sure socket has username
-        //     if(!socket.username) return;
-        //     //delete user from global list
-        //     delete users[socket.username];
-        //     //broadcast new usernames
-        //     chat.usernames(sio, socket, users);
-        // });
+      //  sio.emit(socket);
+        //disconnect
+        socket.on('disconnect', function(data) {
+            //make sure socket has username
+            if(!socket.username) return;
+            //delete user from global list
+            delete users[socket.username];
+            //broadcast new usernames
+           // chat.usernames(sio, socket, users);
+        });
     });
 
 //function for testing
 setInterval(function () {
   sio.emit('time', Date());
-  console.log('yup');
 }, 5000);
 
 //start listening

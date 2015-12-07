@@ -7,8 +7,9 @@ var express = require('express'),
     login = require('./../modules/login'),
     //models
     User = mongoose.model('User'),
-    //socketio jwt
-    socketioJwt = require('socketio-jwt');
+    ChatRoom = mongoose.model('ChatRoom');
+    // //socketio jwt
+    // socketioJwt = require('socketio-jwt');
 
 //db
 var db = require('./../models/db');
@@ -33,4 +34,13 @@ router.post('/register', function (req, res, next) {
 	});
 });
 
+//chatrooms
+router.post('/chatrooms', function (req, res, next) {
+	jwt.verify(req.body.token, db.secret, function (err, decoded) {
+		ChatRoom.find({}, function (err, rooms) {
+			console.log(rooms);
+			res.json(rooms);
+		});
+	});
+});
 module.exports = router;
