@@ -2,6 +2,7 @@ extends layout/layout
 block title
 	title EWB!
 block content
-	div.container
+	div#notloggedin.container
 		include _partials/login/login
 		include _partials/register/register
+	div#loggedin

@@ -20,9 +20,7 @@ $('.row').on('submit', '#login', function (e) {
 			console.log(data);
 			if (data.token) {
 				$.cookie('token', data.token, { expires: 7, path: '/' });
-				socket = io.connect('http://localhost:8080?token=' + data.token ,{
-					'forceNew': true
-				});
+				connect();
 			} else {
 				console.log('No token given, do not login!');
 			}

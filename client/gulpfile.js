@@ -17,9 +17,10 @@ gulp.task('watch', function() {
 
 gulp.task('build-js', function() {
   return gulp.src([
+      'resources/javascripts/libs/jquery.1.11.3.js',
+      'resources/javascripts/libs/!(jquery.1.11.3)*.js',
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/bootstrap/*.js',
-      'resources/javascripts/libs/*.js',
       'resources/javascripts/connect.js',
       'resources/javascripts/!(bootstrap, connect)*.js'
     ])
