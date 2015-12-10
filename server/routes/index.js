@@ -39,7 +39,7 @@ router.post('/chatrooms', function (req, res, next) {
 	jwt.verify(req.body.token, db.secret, function (err, decoded) {
 		ChatRoom.find({}, function (err, rooms) {
 			console.log(rooms);
-			res.json(rooms);
+			res.json({ chat: rooms });
 		});
 	});
 });

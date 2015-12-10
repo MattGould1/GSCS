@@ -2,7 +2,14 @@ extends layout/layout
 block title
 	title EWB!
 block content
-	div#notloggedin.container
-		include _partials/login/login
-		include _partials/register/register
-	div#loggedin
+	//not logged in content
+	div#isNotAuth.container
+		include _partials/isnotauth/login
+		include _partials/isnotauth/register
+	div#isAuth.container-fluid
+		div.row
+			div.col-xs-12.col-md-3
+				h2 sidebar
+					p chat stuff and other admin/user things
+			div.col-xs-12.col-md-9
+				include _partials/isauth/chat
