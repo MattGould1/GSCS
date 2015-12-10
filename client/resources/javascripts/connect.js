@@ -1,4 +1,4 @@
-var token, socket, rooms = [];
+var token, socket, rooms = [], user;
 
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
@@ -26,6 +26,8 @@ notAuth = jQuery('#isNotAuth');
 			var chatRoom = jQuery('#chat').clone();
 			//add unique class
 			chatRoom.addClass(room.name);
+			//add class to form use this when sending data to server to identify
+			chatRoom.find('form').addClass(room.name);
 			//change title
 			chatRoom.find('h2').html(room.name);
 			//append it
@@ -43,7 +45,7 @@ notAuth = jQuery('#isNotAuth');
 			});
 
 			$.ajax({
-				url: 'http://localhost:8080/chatrooms',
+				url: 'http://localhost:8080/login',
 				type: 'POST',
 				dataType: 'json',
 				contentType: 'application/json',
@@ -61,6 +63,28 @@ notAuth = jQuery('#isNotAuth');
 	}
 })(jQuery);
 
+
+(function ($) {
+
+	jQuery('#chat').find('form').on('submit', function (e) {
+
+		e.preventDefault();
+
+		//$this refers to the current form being submitted, take the class and send in the emit for server to identify which room
+		$this = $(this);
+
+		//message contains message, user and room
+		message = {
+			'room': $this.attr('class'),
+			'user': user.name,
+			'message': $this.find('.message').val();
+		};
+
+		socket.emit('message', message);
+
+	});
+
+})(jQuery);
 
 
 

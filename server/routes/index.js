@@ -16,10 +16,18 @@ var db = require('./../models/db');
 
 //login
 router.post('/login', function (req, res, next) {
+	var user, chatrooms;
 	login.login(User, req, jwt, db, function (user) {
 		//@param user holds logged in user information and token
-		res.json(user);
+		user = user;
 	});
+	jwt.verify(req.body.token, db.secret, function (err, decoded) {
+		ChatRoom.find({}, function (err, rooms) {
+			chatrooms = rooms;
+		});
+	});
+
+	res.json( { user: user, chat: rooms } );
 });
 
 //register
@@ -36,11 +44,6 @@ router.post('/register', function (req, res, next) {
 
 //chatrooms
 router.post('/chatrooms', function (req, res, next) {
-	jwt.verify(req.body.token, db.secret, function (err, decoded) {
-		ChatRoom.find({}, function (err, rooms) {
-			console.log(rooms);
-			res.json({ chat: rooms });
-		});
-	});
+
 });
 module.exports = router;
