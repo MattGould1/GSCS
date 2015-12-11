@@ -16,10 +16,10 @@ $('.row').on('submit', '#login', function (e) {
 			username: username,
 			password: password
 		}),
-		success: function (data, status, xhr) {
-			console.log(data);
-			if (data.token) {
-				$.cookie('token', data.token, { expires: 7, path: '/' });
+		success: function (user, status, xhr) {
+			console.log(user);
+			if (user.token) {
+				$.cookie('token', user.token, { expires: 7, path: '/' });
 				connect();
 			} else {
 				console.log('No token given, do not login!');

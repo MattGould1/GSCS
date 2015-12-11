@@ -16,18 +16,19 @@ var db = require('./../models/db');
 
 //login
 router.post('/login', function (req, res, next) {
-	var user, chatrooms;
+	var user, chatrooms, data;
 	login.login(User, req, jwt, db, function (user) {
 		//@param user holds logged in user information and token
 		user = user;
-	});
-	jwt.verify(req.body.token, db.secret, function (err, decoded) {
-		ChatRoom.find({}, function (err, rooms) {
-			chatrooms = rooms;
-		});
+		//check to see if user is true
+		if (user) {
+			ChatRoom.find({}, function ( err, rooms ) { 
+				user.chatrooms = rooms;
+				res.json( user );
+			});
+		}
 	});
 
-	res.json( { user: user, chat: rooms } );
 });
 
 //register

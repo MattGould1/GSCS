@@ -44,21 +44,21 @@ notAuth = jQuery('#isNotAuth');
 				'forceNew': true
 			});
 
-			$.ajax({
-				url: 'http://localhost:8080/login',
-				type: 'POST',
-				dataType: 'json',
-				contentType: 'application/json',
-				data: JSON.stringify({
-				token: token
-			}),
-			success: function (data, status, xhr) {
-				init(data);
-			},
-			error: function (xhr, status, error) {
-				console.log(error)
-			}
-		});
+			// $.ajax({
+			// 	url: 'http://localhost:8080/login',
+			// 	type: 'POST',
+			// 	dataType: 'json',
+			// 	contentType: 'application/json',
+			// 	data: JSON.stringify({
+			// 	token: token
+			// }),
+			// success: function (data, status, xhr) {
+			// 	init(data);
+			// },
+			// error: function (xhr, status, error) {
+			// 	console.log(error)
+			// }
+			// });
 		}
 	}
 })(jQuery);
@@ -77,7 +77,7 @@ notAuth = jQuery('#isNotAuth');
 		message = {
 			'room': $this.attr('class'),
 			'user': user.name,
-			'message': $this.find('.message').val();
+			'message': $this.find('.message').val()
 		};
 
 		socket.emit('message', message);

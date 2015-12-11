@@ -27,3 +27,15 @@ gulp.task('build-js', function() {
     .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));
 });
+
+gulp.task('build-admin-js', function () {
+  return gulp.src([
+      'resources/javascripts/libs/jquery.1.11.3.js',
+      'resources/javascripts/libs/!(jquery.1.11.3)*.js',
+      'resources/javascripts/bootstrap.js',
+      'resources/javascripts/bootstrap/*.js',
+      'resources/javascripts/admin/*.js'
+    ])
+    .pipe(concat('admin.js'))
+    .pipe(gulp.dest('public/admin/js'));
+});

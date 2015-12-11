@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+//chat room
 var roomSchema = new mongoose.Schema({
 
 	name: { type: String, index: true, unique: true, required: true },
@@ -9,6 +10,7 @@ var roomSchema = new mongoose.Schema({
 	_messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }]
 
 });
+
 //chat message
 var chatSchema = new mongoose.Schema({
 
