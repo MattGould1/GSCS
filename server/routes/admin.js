@@ -45,6 +45,6 @@ router.post('/user/{name}', function (req, res, next) {
 });
 
 router.post('/user/{name}/delete', function (req, res, next) {
-
+	
 });
 module.exports = router;

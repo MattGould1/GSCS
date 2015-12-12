@@ -35,7 +35,9 @@ gulp.task('build-admin-js', function () {
       'resources/javascripts/libs/!(jquery.1.11.3)*.js',
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/bootstrap/*.js',
-      'resources/javascripts/admin/*.js'
+      'resources/javascripts/admin/globals.js',
+      'resources/javascripts/admin/connect.js',
+      'resources/javascripts/admin/!(globals, connect)*.js'
     ])
     .pipe(concat('admin.js'))
     .pipe(gulp.dest('public/admin/js'));
