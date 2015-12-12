@@ -1,3 +1,16 @@
-extends layout/layout
+extends layout
 
 block content
+	div.container-fluid
+		div.row
+			div#sidebar.col-xs-3
+				div.links
+					div.list-group
+						a.list-group-item.active(href="#")
+							h4.list-group-item-heading Chat
+						a.list-group-item(href="#")
+							h4.list-group-item-heading Users
+							p.create Create a user!
+			div#admin.col-xs-8
+				include chat
+				include users

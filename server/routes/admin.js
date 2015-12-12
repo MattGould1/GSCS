@@ -6,7 +6,6 @@ var express = require('express'),
     methodOverride = require('method-override'), //used to manipulate POST
     User = mongoose.model('User'),
     ChatRoom = mongoose.model('ChatRoom'),
-    ChatMessage = mongoose.model('ChatMessage'),
     //socketio jwt
     socketioJwt = require('socketio-jwt');
 
@@ -14,31 +13,38 @@ var express = require('express'),
 var db = require('./../models/db');
 
 //login
-router.get('/chatroom', function (req, res, next) {
-	//if (req.body.create === true) {
+router.post('/', function (req, res, next) {
+	//build chatroom query, get chat room + messages 
+	ChatRoom.find({})
+			.populate('_messages')
+			.exec(function (err, rooms) {
 
-		 ChatRoom.findOne ( { name: 'room' }, function (err, room) {
-			User.findOne( { username: 'matt' }, function (err, user) {
-			
+		if(err) { console.log('error finding rooms: ' + err); }
+		//rooms holds chat rooms + chat messages for each chatroom
 
+		//get users now
+		User.find({})
+			.populate('_messages')
+			.exec(function (err, users) {
 
-		 		var message = new ChatMessage( { _room: room._id, _user: user._id, message: 'hello people' });
-		 		message.save(function(err) {});
-		 		room._messages.push(message);
-console.log(room);
-				room.save();
-		// 		console.log(user);
+			if(err) { console.log('error finding users: ' + err); }
 
-		 	});
+			//users hold users + chat messages for each user
+
+			res.json({ chat: rooms, users: users });
 		});
-
-		 // ChatMessage.findOne( { message: 'hello people' }, function ( err, message ) {
-		 // 	console.log(message);
-		 // });
-	// } else {
-		res.json('0');
-	// }
+	});
 });
 
+router.post('/user', function (req, res, next) {
 
+});
+
+router.post('/user/{name}', function (req, res, next) {
+
+});
+
+router.post('/user/{name}/delete', function (req, res, next) {
+
+});
 module.exports = router;

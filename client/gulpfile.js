@@ -13,6 +13,7 @@ gulp.task('build-css', function() {
 gulp.task('watch', function() {
   gulp.watch('resources/stylesheets/**/*.scss', ['build-css']);
   gulp.watch('resources/javascripts/**/*.js', ['build-js']);
+  gulp.watch('resources/javascripts/**/*.js', ['build-admin-js']);
 });
 
 gulp.task('build-js', function() {

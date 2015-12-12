@@ -26,7 +26,7 @@ var app = express();
 //enable cors
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE', 'OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
@@ -40,7 +40,23 @@ app.use(cookieParser());
 
 //use routes
 app.use('/', index);
-app.use('/', admin);
+//admin check for jwt, end response if no
+app.use('/admin', function (req, res, next) {
+    if(!req.body.token) {
+        res.json(false);
+    } else {
+        jwt.verify(req.body.token, db.secret, function (err, decoded) {
+            if (err) { 
+                console.log('Invalid token: ' + err);
+                res.json(false);
+            } else {
+                req.decoded_token = decoded;
+                next();
+            }
+        });
+    }
+});
+app.use('/admin', admin);
 
 
 //connect to db
