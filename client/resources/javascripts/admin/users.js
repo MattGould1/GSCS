@@ -28,6 +28,14 @@ function createUsersList(users) {
 	});
 }
 
+function resetUserState(show) {
+	usersContainer.children('div').each( function() {
+		$(this).hide();
+	});
+
+	show.show();
+}
+
 //populate edit form with user details#
 usersContainer.on('click', '.edit', function (e) {
 	$this = $(this);
@@ -73,11 +81,7 @@ usersContainer.on('click', '.edit', function (e) {
 });
 
 usersContainer.on('click', '.user-goback', function() {
-	usersContainer.children('div').each( function() {
-		$(this).hide();
-	});
-
-	usersList.show();
+	resetUserState(usersList);
 });
 
 usersContainer.on('click', '.user-save', function() {
@@ -174,11 +178,7 @@ $(document).on('click', '#deleteuser', function () {
 });
 
 usersContainer.on('click', '.createuser', function() {
-	usersContainer.children('div').each( function() {
-		$(this).hide();
-	});
-
-	createuser.show();
+	resetUserState(createuser);
 });
 
 usersContainer.on('click', '.user-create', function() {
@@ -217,8 +217,11 @@ usersContainer.on('click', '.user-create', function() {
 				create_form[0].reset();
 				users.push(data);
 				createUsersList(users);
+				$('.createuser-fail').hide();
+				$('.createuser-success').show();
+				resetUserState(usersList);
 			} else {
-
+				$('.createuser-fail').show();
 			}
 		},
 		error: function (xhr, status, error) {

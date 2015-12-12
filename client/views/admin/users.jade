@@ -1,5 +1,10 @@
 div#users
 	div#users-list.row
+		div.col-xs-12.createuser-success
+			div.alert.alert-success.alert-dismissable(role="alert")
+				button.close(type="button" data-dismiss="alert")
+					span &times;
+				strong User successfully created!
 		div.col-xs-12
 			table.table.table-striped
 				tr
@@ -55,6 +60,11 @@ div#users
 					div.col-xs-6
 						a.btn.btn-success.user-save Save
 	div#createuser.row
+		div.col-xs-12.createuser-fail
+			div.alert.alert-warning.alert-dismissable(role="alert")
+				button.close(type="button" data-dismiss="alert")
+					span &times;
+				strong User could not be created, please check that the user is unique and all fields are filled out correctly!
 		div-col-xs-12
 			form.form-horizontal
 				div.form-group
