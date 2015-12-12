@@ -1,4 +1,4 @@
-var token, user;
+var token, users;
 
 (function ($) {
 	//connect
@@ -6,7 +6,7 @@ var token, user;
 	if($.cookie('token')) {
 		token = $.cookie('token');
 	}
-	console.log(token);
+
 	$.ajax({
 		url: 'http://127.0.0.1:8080/admin',
 		type: 'POST',
@@ -16,7 +16,7 @@ var token, user;
 			token: token
 		}),
 		success: function (data, status, xhr) {
-			console.log(data);
+			users = data.users;
 			createUsersList(data);
 		},
 		error: function (xhr, status, error) {
@@ -40,4 +40,19 @@ var token, user;
 			usersList.append(html);
 		});
 	}
+
+	//populate edit form with user details
+	$(document).on('click', '.edit', function (e) {
+		$this = $(this);
+		//get username
+		var name = $this.parents().closest('tr').attr('class');
+
+		//compare name with user list
+		users.forEach( function (entry) {
+			if (entry.username == name) {
+				console.log(entry);
+			}
+		});
+	});
+	
 })(jQuery);
