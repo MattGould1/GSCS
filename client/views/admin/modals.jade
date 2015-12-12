@@ -1,0 +1,12 @@
+div.modal.fade#modal-deleteuser(tabindex="1" role="dialog")
+	div.modal-dialog
+		div.modal-content
+			div.modal-header
+				button.close(type="button" data-dismiss="modal")
+					span &times;
+				h4.modal-title Delete user?
+			div.modal-body
+				p.bg-info This is irreversible are you sure you wish to delete the user?
+			div.modal-footer
+				button.btn.btn-default(data-dismiss="modal") Close
+				button.btn.btn-warning#deleteuser(data-dismiss="modal") Delete User

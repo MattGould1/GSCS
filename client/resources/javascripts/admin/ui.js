@@ -11,10 +11,14 @@
 
 			$this.hide();
 
-			console.log($this.attr('id'));
 			//console.log(activeLink);
 			if ($this.attr('id') == activeLink) {
 				$this.show();
+
+				$this.children('div').each( function() {
+					$(this).hide();
+				});
+				$this.children().first('div').show();
 			}
 
 		});
@@ -38,4 +42,9 @@
 	}
 
 	hideNshow();
+
+	$(document).ready(function(){
+	    $('[data-toggle="tooltip"]').tooltip();   
+	});
+
 })(jQuery);

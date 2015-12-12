@@ -4,7 +4,6 @@ var express = require('express'),
     bodyParser = require('body-parser'), //parses information from POST
     jwt = require('jsonwebtoken'),
     methodOverride = require('method-override'), //used to manipulate POST
-    login = require('./../modules/login'),
     //models
     User = mongoose.model('User'),
     ChatRoom = mongoose.model('ChatRoom');

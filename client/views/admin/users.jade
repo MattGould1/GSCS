@@ -9,13 +9,15 @@ div#users
 					th Location
 					th Department
 					th Actions
+		div.col-xs-12
+			a.btn.btn-primary.createuser Create a new user
 	div#edituser.row
 		div.col-xs-12
 			form.form-horizontal
 				div.form-group
 					label.col-xs-2.control-label(for="username") Username
 					div.col-xs-10
-						input.form-control#edit-username(type="text" name="username")
+						input.form-control#edit-username(type="text" data-toggle="tooltip" data-placement="bottom" title="Usernames are unique and cannot be editted for security!" readonly)
 				div.form-group
 					label.col-xs-2.control-label(for="password") Password
 					div.col-xs-10
@@ -44,8 +46,56 @@ div#users
 					label.col-xs-2.control-label(for="status") status
 					div.col-xs-10
 						input.form-control#edit-status(type="text" name="status")
+				div.form-group.edit-save.hide
+					div.col-xs-4.text-center
+						p.bg-info Saving...
 				div.form-group
 					div.col-xs-6
-						a.btn.btn-warning.user-goback(type="submit") Go Back
+						a.btn.btn-warning.user-goback Go Back
 					div.col-xs-6
-						a.btn.btn-success.user-save(type="submit") Save
+						a.btn.btn-success.user-save Save
+	div#createuser.row
+		div-col-xs-12
+			form.form-horizontal
+				div.form-group
+					label.col-xs-2.control-label(for="username") Username
+					div.col-xs-10
+						input.form-control#create-username(type="text" name="username")
+				div.form-group
+					label.col-xs-2.control-label(for="password") Password
+					div.col-xs-10
+						input.form-control#create-password(type="text" name="password")
+				div.form-group
+					label.col-xs-2.control-label(for="firstName") First Name
+					div.col-xs-10
+						input.form-control#create-firstname(type="text" name="firstName")
+				div.form-group
+					label.col-xs-2.control-label(for="lastName") Last Name
+					div.col-xs-10
+						input.form-control#create-lastname(type="text" name="lastName")
+				div.form-group
+					label.col-xs-2.control-label(for="email") Email
+					div.col-xs-10
+						input.form-control#create-email(type="email" name="email")
+				div.form-group
+					label.col-xs-2.control-label(for="location") Location
+					div.col-xs-10
+						input.form-control#create-location(type="text" name="location")
+				div.form-group
+					label.col-xs-2.control-label(for="department") Department
+					div.col-xs-10
+						input.form-control#create-department(type="text" name="department")
+				div.form-group
+					label.col-xs-2.control-label(for="status") status
+					div.col-xs-10
+						input.form-control#create-status(type="text" name="status")
+				div.form-group
+					div.checkbox
+						label
+							input#create-admin(type="checkbox" name="admin") 
+							Make this user an admin?
+				div.form-group
+					div.col-xs-6
+						a.btn.btn-warning.user-goback Go Back
+					div.col-xs-6
+						a.btn.btn-success.user-create Save new user

@@ -21,7 +21,7 @@ exports.register = function (User, req, next, callback) {
 				admin: req.body.admin
 			});
 			//save new user
-			user.save( function (err) {
+			user.save( function (err, savedUser) {
 				//check if err
 				if (err) { 
 					console.log('error saving user: ' + err);
@@ -29,7 +29,7 @@ exports.register = function (User, req, next, callback) {
 				} else {
 					console.log('user saved');
 					//success
-					callback(true);
+					callback(savedUser);
 				}
 			});
 		} else {
