@@ -8,8 +8,6 @@ var create_form = createuser.find('form');
 //user functions and ui
 function createUsersList(users) {
 	//clear the list before appending new
-
-	usersList.find('.table td').html('');
 	usersList.find('table td').closest('tr').html('');
 
 	users.forEach( function (entry) {
@@ -94,7 +92,7 @@ usersContainer.on('click', '.user-save', function() {
 	editDepartment = edit_form.find('#edit-department').val();
 	editStatus = edit_form.find('#edit-status').val()
 	$.ajax({
-		url: 'http://127.0.0.1:8080/admin/user',
+		url: 'http://127.0.0.1:8080/admin/user/update',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',
@@ -137,9 +135,7 @@ usersContainer.on('click', '.user-save', function() {
 		}
 	});
 });
-	// usersContainer.on('show.bs.modal', '.delete', function(	) {
 
-	// });
 //delete a user
 usersContainer.on('click', '.delete', function () {
 	$this = $(this);

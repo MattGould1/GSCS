@@ -1,4 +1,4 @@
-exports.register = function (User, req, next, callback) {
+exports.register = function (User, req, callback) {
 	//check to see if user exists
 	User.findOne( { username: req.body.username }, function (err, findUser) {
 		//check if err
@@ -25,7 +25,7 @@ exports.register = function (User, req, next, callback) {
 				//check if err
 				if (err) { 
 					console.log('error saving user: ' + err);
-					callback(false); next(); 
+					callback(false);
 				} else {
 					console.log('user saved');
 					//success
@@ -65,3 +65,28 @@ exports.login = function (User, req, jwt, db, callback) {
 		}
 	});
 };
+
+exports.createChatroom = function(ChatRoom, req, callback) {
+	ChatRoom.findOne( {name: req.body.name }, function (err, findChatroom) {
+		if (err) {
+			console.log('Error finding chatroom: ' + err);
+			callback(false);
+		}
+
+		if (findChatroom === null) {
+			console.log('chatroom does not exist, create chatroom');
+			var chatroom = new ChatRoom({
+				name: req.body.name,
+				location: req.body.location,
+				department: req.body.department
+			});
+			chatroom.save( function (err, savedChatroom) {
+				if (err) { console.log('Error saving new chatroom: ' + err); callback(false); }
+				callback(savedChatroom);
+			});
+		} else {
+			console.log('Chatroom already exists');
+			callback(false);
+		}
+	});
+}

@@ -13,8 +13,11 @@
 				token: token
 			}),
 			success: function (data, status, xhr) {
+				console.log(data);
 				users = data.users;
+				chatrooms = data.chat;
 				createUsersList(users);
+				createChatroomsList(chatrooms);
 			},
 			error: function (xhr, status, error) {
 				console.log(error)

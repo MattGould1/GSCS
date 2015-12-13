@@ -1,0 +1,18 @@
+#admin {
+	#users {
+		.createuser-success {
+			display: none;
+		}
+		.createuser-fail {
+			display: none;
+		}
+	}
+	#chat {
+		.createchat-success {
+			display: none;
+		}
+		.createchat-fail {
+			display: none;
+		}
+	}
+}

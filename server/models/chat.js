@@ -7,6 +7,7 @@ var roomSchema = new mongoose.Schema({
 	location: [],
 	department: [],
 	rolesAllowed: [],
+	usersAllowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	_messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }]
 
 });

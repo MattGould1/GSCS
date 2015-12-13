@@ -75,9 +75,6 @@ sio.use(socketioJwt.authorize({
 //connect to default namespace
 sio.on('connection', function (socket) {
 
-
-
-
         console.log('connected');
         //disconnect socket if no username, wtf?
         if(socket.decoded_token.username == undefined) {

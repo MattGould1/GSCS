@@ -14,7 +14,7 @@ var express = require('express'),
 var db = require('./../models/db');
 
 //login
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
 	//build chatroom query, get chat room + messages 
 	ChatRoom.find({})
 			.populate('_messages')
@@ -37,7 +37,7 @@ router.post('/', function (req, res, next) {
 	});
 });
 
-router.post('/user/update', function (req, res, next) {
+router.post('/user/update', function (req, res) {
 	User.findOne({username: req.body.username} , function (err, user) {
 		if (err) { console.log('Error finding user: ' + err); }
 		console.log('updating user model...');
@@ -57,7 +57,7 @@ router.post('/user/update', function (req, res, next) {
 	});
 });
 
-router.post('/user/delete', function (req, res, next) {
+router.post('/user/delete', function (req, res) {
 	User.findOne({ username: req.body.username }).remove(function (err, deleted) {
 		if(err) { console.log('Error deleting user: ' + err); }
 		console.log('Deleted user');
@@ -65,10 +65,40 @@ router.post('/user/delete', function (req, res, next) {
 	});
 });
 
-router.post('/user/create', function (req, res, next) {
-	login.register(User, req, next, function (success) {
+router.post('/user/create', function (req, res) {
+	login.register(User, req, function (success) {
 		res.json(success);
 	});
 });
 
+router.post('/chat/update', function (req, res) {
+	ChatRoom.findOne({ name: req.body.name }, function (err, chatroom) {
+		if (err) { console.log('Error finding chatroom: ' + err); }
+		console.log(req.body);
+		console.log('updating chatroom');
+		chatroom.name = req.body.name;
+		chatroom.location = req.body.location;
+		chatroom.department = req.body.department;
+
+		chatroom.save( function (err, saved) {
+			if (err) { console.log('Error saving chatroom: ' + err); }
+			console.log('chatroom saved');
+			res.json(true);
+		});
+	});
+});
+
+router.post('/chat/delete', function (req, res) {
+	ChatRoom.findOne({ name: req.body.name}).remove(function (err, deleted) {
+		if (err) { console.log('Error deleting chatroom: ' + err) }
+		console.log('Chatroom deleted');
+		res.json(true);
+	});
+});
+
+router.post('/chat/create', function (req, res) {
+	login.createChatroom(ChatRoom, req, function (success) {
+		res.json(success);
+	});
+});
 module.exports = router;
