@@ -6,15 +6,23 @@ block content
 			div#sidebar.col-xs-3
 				div.list-group.links
 					a.list-group-item.active(data="dashboard")
-						h4.list-group-item-heading(href="#") Dashboard
+						h4.list-group-item-heading Dashboard
 						p Overview of system
+					a.list-group-item(data="excel")
+						h4.list-group-item-heading excel
+						p Create, edit and delete excel sheets
 					a.list-group-item(data="chat")
 						h4.list-group-item-heading Chat
 						p Create new chat rooms, edit and delete messages
 					a.list-group-item(data="users")
 						h4.list-group-item-heading Users
 						p Add a Create new users, edit user details and delete users
+					a.list-group-item(data="settings")
+						h4.list-group-item-heading settings
+						p System settings
 			div#admin.col-xs-8
 				include dashboard
+				include excel
 				include chat
 				include users
+				include settings

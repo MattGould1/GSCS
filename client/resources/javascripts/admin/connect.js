@@ -16,8 +16,9 @@
 				console.log(data);
 				users = data.users;
 				chatrooms = data.chat;
-				createUsersList(users);
-				createChatroomsList(chatrooms);
+
+				window.userLoad();
+				window.chatLoad();
 			},
 			error: function (xhr, status, error) {
 				console.log(error)
