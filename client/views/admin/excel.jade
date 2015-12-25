@@ -1,5 +1,5 @@
 div#excel
-	div#excelList.row
+	div#excellist.row
 		div.col-xs-12
 			table.table.table-striped
 				tr
@@ -8,4 +8,52 @@ div#excel
 					th Locations
 					th Actions
 		div.col-xs-12
-			a.btn.btn-primary.createexcel Create a new chatroom
+			a.btn.btn-primary.create-excel Create a new excelsheet
+	div#editexcel.row
+		div.col-xs-12
+			form.form-horizontal
+				div.form-group
+					label.col-xs-2.control-label(for="excel-name") name
+					div.col-xs-10
+						input.form-control#edit-excel-name(type="text" name="excel-name")
+				div.form-group
+					label.col-xs-2.control-label(for="excel-location") Locations
+					div.col-xs-10
+						input.form-control#edit-excel-locations(type="text" name="excel-location")
+				div.form-group
+					label.col-xs-2.control-label(for="excel-departments") Departments
+					div.col-xs-10
+						input.form-control#edit-excel-departments(type="text" name="excel-departments")
+				div.form-group.edit-save-excel.hide
+					div.col-xs-4.text-center
+						p.bg-info Saving...
+				div.form-group
+					div.col-xs-6
+						a.btn.btn-warning.excel-goback Go Back
+					div.col-xs-6
+						a.btn.btn-success.excelsave Save
+	div#createexcel.row
+		div.col-xs-12.createexcel-fail
+			div.alert.alert-warning.alert-dismissable(role="alert")
+				button.close(type="button" data-dismiss="alert")
+					span &times;
+				strong Excelsheet could not be created, please check that the excelsheet is unique and all fields are filled out correctly!
+		div-col-xs-12
+			form.form-horizontal
+				div.form-group
+					label.col-xs-2.control-label(for="excel-name") name
+					div.col-xs-10
+						input.form-control#create-excel-name(type="text" name="excel-name")
+				div.form-group
+					label.col-xs-2.control-label(for="excel-location") Locations
+					div.col-xs-10
+						input.form-control#create-excel-locations(type="text" name="excel-location")
+				div.form-group
+					label.col-xs-2.control-label(for="excel-departments") Departments
+					div.col-xs-10
+						input.form-control#create-excel-departments(type="text" name="excel-departments")
+				div.form-group
+					div.col-xs-6
+						a.btn.btn-warning.excel-goback Go Back
+					div.col-xs-6
+						a.btn.btn-success.createexcel Save New Excel

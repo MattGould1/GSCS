@@ -1,7 +1,6 @@
 //ui functions
 (function ($) {
 
-
 	//onload
 	function showState() {
 		var activeLink = $('.links').find('.active').attr('data');
@@ -75,23 +74,3 @@ function createList(list, data, tableStructure) {
 		table.append(tableStructure(single));
 	});
 }
-
-
-
-	// function createChatroomsList(chatrooms) {
-	// 	//clear the list before appending new
-	// 	chatroomsList.find('table td').closest('tr').html('');
-
-	// 	chatrooms.forEach( function (entry) {
-	// 		var chatroomsTable = chatroomsList.find('.table');
-
-	// 		html = '<tr class="' + entry.name + '">';
-	// 		html +=		'<td>' + entry.name + '</td>';
-	// 		html +=		'<td>' + entry.department + '</td>';
-	// 		html += 	'<td>' + entry.location + '</td>';
-	// 		html += 	'<td><a class="btn btn-primary col-xs-6 edit">Edit</a><button type="button" data-toggle="modal" data-target="#modal-deletechat" class="btn btn-danger col-xs-6 delete">Delete</button></td>';
-	// 		html += '</tr>';
-
-	// 		chatroomsTable.append(html);
-	// 	});
-	// }

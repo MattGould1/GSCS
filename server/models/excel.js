@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 //chat room
 var excelSchema = new mongoose.Schema({
 
@@ -9,10 +10,8 @@ var excelSchema = new mongoose.Schema({
 	data: [],
 	settings: [],
 	revisions: [],
-	active: [{ type: mongoose.Schema.Types.Objectid, ref: 'User' }],
-	lastEditted: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+	active: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+	lastEditted: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 
 });
-
-
 var Excel = mongoose.model('Excel', excelSchema);

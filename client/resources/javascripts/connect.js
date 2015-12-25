@@ -1,117 +1,144 @@
-var token, socket, rooms = [], user;
+//define global vars and functions
+var token, socket, chatrooms = [], user, excelsheets = [];
 
+//anything inside Auth will be shown when logged in, otherwise notAuth will be shown
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
 
-(function ($) {
+//check for token, authenticate if token exists
+jQuery(document).ready(function() {
+
 	//check for token
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
-		//check connect, we wait until response 2 load up app
-		connect(token);
-
+		init(token);
+	} else {
+		//set UI
+		notAuth.show();
+		Auth.hide();
 	}
 
-	function init(data) {
+});
 
-		//hide isnotauth
-		notAuth.hide();
-		//show isauth
-		Auth.show();
-
-		//chat
-		data.chat.forEach(function (room) {
-			//clone html
-			var chatRoom = jQuery('#chat').clone();
-			//add unique class
-			chatRoom.addClass(room.name);
-			//add class to form use this when sending data to server to identify
-			chatRoom.find('form').addClass(room.name);
-			//change title
-			chatRoom.find('h2').html(room.name);
-			//append it
-			chatRoom.insertAfter('#chat');
-		});
-		
-	}
-
-	//connect to game namespace
-	function connect(token) {
-		if(token) {
-
-			socket = io.connect( 'http://localhost:8080/?token=' + token ,{
-				'forceNew': true
-			});
-
-			// $.ajax({
-			// 	url: 'http://localhost:8080/login',
-			// 	type: 'POST',
-			// 	dataType: 'json',
-			// 	contentType: 'application/json',
-			// 	data: JSON.stringify({
-			// 	token: token
-			// }),
-			// success: function (data, status, xhr) {
-			// 	init(data);
-			// },
-			// error: function (xhr, status, error) {
-			// 	console.log(error)
-			// }
-			// });
-		}
-	}
-})(jQuery);
-
-
-(function ($) {
-
-	jQuery('#chat').find('form').on('submit', function (e) {
-
-		e.preventDefault();
-
-		//$this refers to the current form being submitted, take the class and send in the emit for server to identify which room
-		$this = $(this);
-
-		//message contains message, user and room
-		message = {
-			'room': $this.attr('class'),
-			'user': user.name,
-			'message': $this.find('.message').val()
-		};
-
-		socket.emit('message', message);
-
+function init(token) {
+	//connect to server
+	socket = io.connect( 'http://localhost:8080/?token=' + token ,{
+		'forceNew': true
 	});
+	//set UI
+	notAuth.hide();
+	Auth.show();
+	//load chat
+	if ($('body').attr('init') != 'true') {
+		socketIOInit();
+	}
+}
 
-})(jQuery);
-
-
-
-
-
-var chat = {
-	init: function () {
+function socketIOInit() {
+		$('body').attr('init', 'true');
 		socket.on('time', function(time) {
 			console.log(time);
 		});
 
+		socket.on('data', function (data) {
+			var chatStructure = $('.chat');
+			var sideLink = $('.link');
+			chatrooms = data.chatrooms;
+			chatrooms.forEach( function (room, i) {
+					
+				//clone chat container, add new class as room name and append to #chat
+				newContainer = chatStructure.clone();
+				newLink = sideLink.clone();
 
-		socket.on('rooms', function(room) {
-			rooms.push(room);
-			console.log(rooms);
+				//class
+				newContainer.addClass(room.name);
+
+				//add filter
+				newContainer.attr('data-filter', room.name + '-chat');
+
+				//add html "name" attribute
+				newContainer.find('.name').val(room.name);
+
+				//add name for chatroom
+				newContainer.find('.title').text(room.name);
+
+				//add new chatroom to #chat
+				$('#chat').append(newContainer);
+
+				//class
+				newLink.addClass(room.name);
+
+				//filter
+				newLink.attr('data-filter', room.name + '-chat');
+
+				//change link text to room name
+				newLink.find('a').text(room.name);
+
+				//add link to link list
+				$('#chatLinks').append(newLink);
+			});
+			
+			var excelContainer = $('.excel');
+			excelsheets = data.excelsheets;
+			excelsheets.forEach( function (room, i) {
+
+				newContainer = excelContainer.clone();
+				newLink = sideLink.clone();
+
+
+				//class
+				newContainer.addClass(room.name);
+
+				//add filter
+				newContainer.attr('data-filter', room.name + '-excel');
+
+				//add html "name" attribute
+				newContainer.find('.name').val(room.name);
+
+				//add name for chatroom
+				newContainer.find('.title').text(room.name);
+
+				//add new chatroom to #chat
+				$('#excel').append(newContainer);
+
+				//class
+				newLink.addClass(room.name);
+
+				//filter
+				newLink.attr('data-filter', room.name + '-excel');
+
+				//change link text to room name
+				newLink.find('a').text(room.name);
+
+				//add link to link list
+				$('#excelLinks').append(newLink);
+			});
+
+			test = new hideNshow({
+				main: jQuery('#isAuth'),
+				Container: jQuery('.room'),
+				Link: jQuery('.link'),
+				defaultActive: 3
+			});
+			
+			test.init();
+
+			test1 = new ewbChat({
+				form: '.chat-form'
+			});
+			test1.init();
 		});
-	}
-};
-
-
-function disconnect() {
-	socket.disconnect();
 }
+
+(function ($) {
+	$(document).on('click', '.link', function () {
+		test.init($(this));
+	});
+})(jQuery);
 
 (function($) {
 	$('#login').submit( function (e) {
 		e.preventDefault();
-		console.log(socket);
 	});
 }(jQuery));

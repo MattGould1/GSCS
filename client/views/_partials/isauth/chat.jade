@@ -1,16 +1,17 @@
 div#chat
-	div.container.chat
+	div.container.chat.room
 		div.row
 			div.col-xs-12
-				h2.text-center My chat room
+				h2.text-center.title My chat room
 			div.col-xs-12
 				div.chat-messages
 			div.col-xs-12
 				div.row
-					form
+					form.chat-form
 						div.col-xs-10
 							div.form-group
 								input(type="text" name="message").message.form-control
 						div.col-xs-2
 							div.form-group
+								input(type="hidden" name="name").name
 								button.btn.btn-primary(type="submit").form-control submit

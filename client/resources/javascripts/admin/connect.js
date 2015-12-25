@@ -16,9 +16,10 @@
 				console.log(data);
 				users = data.users;
 				chatrooms = data.chat;
-
+				excels = data.excels;
 				window.userLoad();
 				window.chatLoad();
+				window.excelLoad();
 			},
 			error: function (xhr, status, error) {
 				console.log(error)

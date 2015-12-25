@@ -70,7 +70,7 @@
 	});
 
 	container.on('click', '.user-goback', function() {
-		resetState(list);
+		resetState(container, list);
 	});
 
 	container.on('click', '.user-save', function() {

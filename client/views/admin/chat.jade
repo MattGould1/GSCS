@@ -15,18 +15,19 @@ div#chat
 				div.form-group
 					label.col-xs-2.control-label(for="username") Name
 					div.col-xs-10
-						input.form-control#edit-chat-name(type="text")
+						input.form-control#edit-chat-name(type="text" name="name")
 				div.form-group
 					label.col-xs-2.control-label(for="location") Location
 					div.col-xs-10
-						input.form-control#edit-chat-location(type="text" name="location")
+						input.form-control#edit-chat-locations(type="text" name="location")
 				div.form-group
 					label.col-xs-2.control-label(for="department") Department
 					div.col-xs-10
-						input.form-control#edit-chat-department(type="text" name="department")
+						input.form-control#edit-chat-departments(type="text" name="department")
 				div.form-group.chatsave.hide
 					div.col-xs-4.text-center
 						p.bg-info Saving...
+						input.hide#edit-chat-id(type="hidden" name="id")
 				div.form-group
 					div.col-xs-6
 						a.btn.btn-warning.chat-goback Go Back

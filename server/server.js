@@ -11,14 +11,16 @@ var path = require('path'),
 
 //models
 var db = require('./models/db');
-var User = require('./models/user');
-var Chat = require('./models/chat');
+var user = require('./models/user');
+var chat = require('./models/chat');
+var excel = require('./models/excel');
 //routes
 var index = require('./routes/index');
 var admin = require('./routes/admin');
 
 //init model
 var ChatRoom = mongoose.model('ChatRoom');
+var Excel = mongoose.model('Excel');
 
 //express
 var app = express();
@@ -72,6 +74,9 @@ sio.use(socketioJwt.authorize({
     handshake: true
 }));
 
+//socketio handlers
+var chat = require('./handlers/chat');
+
 //connect to default namespace
 sio.on('connection', function (socket) {
 
@@ -86,15 +91,21 @@ sio.on('connection', function (socket) {
         users[socket.username] = socket;
 
 
-        ChatRoom.find({}, function (err, rooms) {
-            rooms.forEach(function (room) {
-                socket.join(room.name);
-                socket.emit('rooms', room.name);
+        ChatRoom.find({}, function (err, chatrooms) {
+            if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
+            Excel.find({}, function (err, excelsheets) {
+                if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
+                
+                //emit data
+                var data = {};
+                data.chatrooms = chatrooms;
+                data.excelsheets = excelsheets;
+                socket.emit('data', data);
+
             });
         });
 
-
-
+        chat.message(sio, socket);
         // //broadcast usernames
         // chat.usernames(sio, socket, users);
 

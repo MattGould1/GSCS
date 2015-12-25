@@ -17,7 +17,6 @@ $('.row').on('submit', '#login', function (e) {
 			password: password
 		}),
 		success: function (user, status, xhr) {
-			console.log(user);
 			if (user.token) {
 				$.cookie('token', user.token, { expires: 7, path: '/' });
 				connect();

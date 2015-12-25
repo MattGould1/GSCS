@@ -90,3 +90,27 @@ exports.createChatroom = function(ChatRoom, req, callback) {
 		}
 	});
 }
+
+exports.createExcel = function(Excel, req, callback) {
+	Excel.findOne( { name: req.body.name }, function (err, findExcel) {
+		if (err) { console.log('Error finding excel: ' + err) ; }
+
+		if ( findExcel === null ) {
+			console.log('Excel does not exist, creating excel');
+
+			var excel = new Excel({
+				name: req.body.name,
+				location: req.body.location,
+				department: req.body.department
+			});
+			excel.save( function (err, savedExcel) {
+				if (err) { console.log('Error saving new excel: ' + err); callback(false); }
+
+				callback(savedExcel);
+			});
+		} else {
+			console.log('Excel already exists');
+			callback(false);
+		}
+	});
+}

@@ -45,10 +45,11 @@
 				//username
 				chat_form.find('#edit-chat-name').val(entry.name);
 				//password
-				chat_form.find('#edit-chat-location').val(entry.location);
+				chat_form.find('#edit-chat-locations').val(entry.location);
 				//firstname
-				chat_form.find('#edit-chat-department').val(entry.department);
-
+				chat_form.find('#edit-chat-departments').val(entry.department);
+				//id
+				chat_form.find('#edit-chat-id').val(entry._id);
 				//show form, hide others
 				editChat.show();
 			}
@@ -61,8 +62,10 @@
 
 	container.on('click', '.chat-save', function() {
 		var name = chat_form.find('#edit-chat-name').val();
-		var location = chat_form.find('#edit-chat-location').val();
-		var department = chat_form.find('#edit-chat-department').val();
+		var location = chat_form.find('#edit-chat-locations').val();
+		var department = chat_form.find('#edit-chat-departments').val();
+		var id = chat_form.find('#edit-chat-id').val();
+		console.log(name);
 		$.ajax({
 			url: 'http://127.0.0.1:8080/admin/chat/update',
 			type: 'POST',
@@ -70,6 +73,7 @@
 			contentType: 'application/json',
 			data: JSON.stringify({
 				token: token,
+				id: id,
 				name: name,
 				location: location,
 				department: department
@@ -78,12 +82,11 @@
 				chatsave.removeClass('hide');
 			},
 			success: function (data, status, xhr) {
-				console.log(data);
 				//update the userlist
 				//get index of updated chatroom
-				var index = findWithAttr(chatrooms, 'name', name);
-				console.log(index);
+				var index = findWithAttr(chatrooms, '_id', id);
 				//update chatroom
+				console.log(index);
 				chatrooms[index].name = name;
 				chatrooms[index].location = location;
 				chatrooms[index].department = department;
@@ -94,7 +97,7 @@
 			},
 			error: function (xhr, status, error) {
 				console.log(error)
-				chatsave.find('p').html('Error saving user, please contact support!');
+				chatsave.find('p').html('Error saving chatroom, please contact support!');
 			}
 		});
 	});
@@ -157,7 +160,7 @@
 				department: department
 			}),
 			beforeSend: function() {
-				save.removeClass('hide');
+				chatsave.removeClass('hide');
 			},
 			success: function (data, status, xhr) {
 				//update the userlist

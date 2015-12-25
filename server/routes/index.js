@@ -6,6 +6,7 @@ var express = require('express'),
     methodOverride = require('method-override'), //used to manipulate POST
     //models
     User = mongoose.model('User'),
+    login = require('./../modules/login'),
     ChatRoom = mongoose.model('ChatRoom');
     // //socketio jwt
     // socketioJwt = require('socketio-jwt');
@@ -27,7 +28,6 @@ router.post('/login', function (req, res, next) {
 			});
 		}
 	});
-
 });
 
 //register

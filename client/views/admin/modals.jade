@@ -22,3 +22,15 @@ div.modal.fade#modal-deletechat(tabindex="1" role="dialog")
 			div.modal-footer
 				button.btn.btn-default(data-dismiss="modal") Close
 				button.btn.btn-warning#deletechat(data-dismiss="modal") Delete
+div.modal.fade#modal-deleteexcel(tabindex="1" role="dialog")
+	div.modal-dialog
+		div.modal-content
+			div.modal-header
+				button.close(type="button" data-dismiss="modal")
+					span &times;
+				h4.modal-title Delete Chatroom?
+			div.modal-body
+				p.bg-info This is irreversible are you sure you wish to delete the chatroom?
+			div.modal-footer
+				button.btn.btn-default(data-dismiss="modal") Close
+				button.btn.btn-warning#deleteexcel(data-dismiss="modal") Delete

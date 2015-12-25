@@ -6,6 +6,7 @@ var express = require('express'),
     methodOverride = require('method-override'), //used to manipulate POST
     User = mongoose.model('User'),
     ChatRoom = mongoose.model('ChatRoom'),
+    Excel = mongoose.model('Excel'),
 	login = require('./../modules/login'),
     //socketio jwt
     socketioJwt = require('socketio-jwt');
@@ -25,14 +26,18 @@ router.post('/', function (req, res) {
 
 		//get users now
 		User.find({})
-			.populate('_messages')
 			.exec(function (err, users) {
 
 			if(err) { console.log('error finding users: ' + err); }
 
-			//users hold users + chat messages for each user
+			//get excelsheets
+			Excel.find({})
+				 .exec( function (err, excels) {
+				 if(err) { console.log('Error finding excel sheets: ' + err); }
 
-			res.json({ chat: rooms, users: users });
+				res.json({ chat: rooms, users: users, excels: excels });
+			});
+
 		});
 	});
 });
@@ -72,9 +77,10 @@ router.post('/user/create', function (req, res) {
 });
 
 router.post('/chat/update', function (req, res) {
-	ChatRoom.findOne({ name: req.body.name }, function (err, chatroom) {
+	console.log(req.body);
+	ChatRoom.findOne({ _id: req.body.id }, function (err, chatroom) {
 		if (err) { console.log('Error finding chatroom: ' + err); }
-		console.log(req.body);
+		console.log(chatroom);
 		console.log('updating chatroom');
 		chatroom.name = req.body.name;
 		chatroom.location = req.body.location;
@@ -98,6 +104,36 @@ router.post('/chat/delete', function (req, res) {
 
 router.post('/chat/create', function (req, res) {
 	login.createChatroom(ChatRoom, req, function (success) {
+		res.json(success);
+	});
+});
+router.post('/excel/update', function (req, res) {
+	Excel.findOne({ name: req.body.name }, function (err, excel) {
+		if (err) { console.log('Error finding excel: ' + err); }
+		console.log(req.body);
+		console.log('updating excel');
+		excel.name = req.body.name;
+		excel.location = req.body.location;
+		excel.department = req.body.department;
+
+		excel.save( function (err, saved) {
+			if (err) { console.log('Error saving excel: ' + err); }
+			console.log('excel saved');
+			res.json(true);
+		});
+	});
+});
+
+router.post('/excel/delete', function (req, res) {
+	Excel.findOne({ name: req.body.name}).remove(function (err, deleted) {
+		if (err) { console.log('Error deleting excel: ' + err) }
+		console.log('Excel deleted');
+		res.json(true);
+	});
+});
+
+router.post('/excel/create', function (req, res) {
+	login.createExcel(Excel, req, function (success) {
 		res.json(success);
 	});
 });
