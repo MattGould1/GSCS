@@ -1,28 +1,40 @@
-// var data = [
-//   ["", "Ford", "Volvo", "Toyota", "Honda"],
-//   ["2014", 10, 11, 12, 13],
-//   ["2015", 20, 11, 14, 13],
-//   ["2016", 30, 15, 12, 13]
-// ];
+var data = [
+  ["", "Ford", "Volvo", "Toyota", "Honda"],
+  ["2014", 10, 11, 12, 13],
+  ["2015", 20, 11, 14, 13],
+  ["2016", 30, 15, 12, 13]
+];
 
-// var container = $('#excel');
-// container.handsontable({
-//   data: data,
-//   minCols: 20,
-//   minRows: 20,
-//   allowInsertColumn: true,
-//   contextMenu: true
-// });
+	function excel(name, id) {
+		
+			var hot = $('[data-filter="' + name + '-excel"]').find('.hot').addClass(id);
+			$('.' + id).handsontable({
+				data: [
+					["", "Ford", "Volvo", "Toyota", "Honda"],
+					["2014", 10, 11, 12, 13],
+					["2015", 20, 11, 14, 13],
+					["2016", 30, 15, 12, 13]
+				],
+				minCols: 5,
+				minRows: 5,
+				allowInsertColumn: true,
+				contextMenu: true,
+				comments: true
+			});
 
-// var instance = container.handsontable('getInstance');
+			var hotInstance = $('.' + id).handsontable('getInstance');
 
-// console.log(instance);
+			hotInstance.addHook('afterChange', function (data, source) {
+				console.log(data +  source);
+			});
 
-// $('.update-excel').click(function() {
-// var instance = container.handsontable('getInstance').getCellsMeta();
-
-// console.log(instance);
-// });
-// $('.store').click(function() {
-	
-// });
+			hotInstance.addHook('afterChangesObserved', function () {
+				console.log('hmm');
+			});
+			hotInstance.addHook('afterSetCellMeta', function (row, col, key, value) {
+				console.log(row + col + key + value);
+			});
+			hotInstance.addHook('afterValidate', function (isValid, value, row, prop, source) {
+				console.log(isValid + value + row + prop + source);
+			});
+	}

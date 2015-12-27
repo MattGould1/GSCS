@@ -35,91 +35,72 @@ function init(token) {
 	}
 }
 
+function createContainers(room, container, link, type, typeContainer, typeLink) {
+
+	newContainer = container.clone();
+	newLink = link.clone();
+
+	//add class to container
+	newContainer.addClass(room.name);
+	//add attribute with type
+	newContainer.attr('data-filter', room.name + type);
+	//add hidden name attribute for sending data use _id as won't change
+	newContainer.find('.name').val(room._id);
+	//change title
+	newContainer.find('.title').text(room.name);
+	if (room._messages != undefined) {
+		room._messages.forEach( function (message, i) {
+			msg = '<li>' + message.username + ': ' + message.message;
+			newContainer.find('.chat-messages ul').append(msg);
+		});
+	}
+
+	//add container to typeContainer
+	$(typeContainer).append(newContainer);
+	if (type === '-excel') {
+		excel(room.name, room._id);
+	}
+
+	//do the same for link
+	newLink.addClass(room.name);
+
+	//filter
+	newLink.attr('data-filter', room.name + type);
+
+	//change link text
+	newLink.find('a').text(room.name);
+
+	//append link to list
+	$(typeLink).append(newLink);
+}
+
 function socketIOInit() {
 		$('body').attr('init', 'true');
 		socket.on('time', function(time) {
 			console.log(time);
 		});
 
+		var chatContainer = $('.chat');
+		var excelContainer = $('.excel');
+		var link = $('.link');
+
 		socket.on('data', function (data) {
-			var chatStructure = $('.chat');
-			var sideLink = $('.link');
 			chatrooms = data.chatrooms;
 			chatrooms.forEach( function (room, i) {
-					
-				//clone chat container, add new class as room name and append to #chat
-				newContainer = chatStructure.clone();
-				newLink = sideLink.clone();
-
-				//class
-				newContainer.addClass(room.name);
-
-				//add filter
-				newContainer.attr('data-filter', room.name + '-chat');
-
-				//add html "name" attribute
-				newContainer.find('.name').val(room.name);
-
-				//add name for chatroom
-				newContainer.find('.title').text(room.name);
-
-				//add new chatroom to #chat
-				$('#chat').append(newContainer);
-
-				//class
-				newLink.addClass(room.name);
-
-				//filter
-				newLink.attr('data-filter', room.name + '-chat');
-
-				//change link text to room name
-				newLink.find('a').text(room.name);
-
-				//add link to link list
-				$('#chatLinks').append(newLink);
+				createContainers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 			});
-			
-			var excelContainer = $('.excel');
+		
 			excelsheets = data.excelsheets;
 			excelsheets.forEach( function (room, i) {
 
-				newContainer = excelContainer.clone();
-				newLink = sideLink.clone();
-
-
-				//class
-				newContainer.addClass(room.name);
-
-				//add filter
-				newContainer.attr('data-filter', room.name + '-excel');
-
-				//add html "name" attribute
-				newContainer.find('.name').val(room.name);
-
-				//add name for chatroom
-				newContainer.find('.title').text(room.name);
-
-				//add new chatroom to #chat
-				$('#excel').append(newContainer);
-
-				//class
-				newLink.addClass(room.name);
-
-				//filter
-				newLink.attr('data-filter', room.name + '-excel');
-
-				//change link text to room name
-				newLink.find('a').text(room.name);
-
-				//add link to link list
-				$('#excelLinks').append(newLink);
+				createContainers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
 
 			test = new hideNshow({
 				main: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
-				defaultActive: 3
+				defaultActive: 4
 			});
 			
 			test.init();
@@ -128,6 +109,7 @@ function socketIOInit() {
 				form: '.chat-form'
 			});
 			test1.init();
+
 		});
 }
 

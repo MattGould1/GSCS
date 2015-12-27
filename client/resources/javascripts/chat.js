@@ -38,7 +38,7 @@
 			e.preventDefault();
 			//message object to send to server, contains room name + message
 			msg = {
-				room: $(this).find('.name').val(),
+				_id: $(this).find('.name').val(),
 				message: $(this).find('.message').val()
 			};
 			//emit message object
@@ -48,6 +48,9 @@
 
 	function receive() {
 		socket.on('chat-message', function (data) {
+
+			msg = '<li>' + data.username + ': ' + data.message;
+			$('[data-filter="' + data.room + '-chat"]').find('.chat-messages ul').append(msg);
 			console.log(data);
 		});
 	}

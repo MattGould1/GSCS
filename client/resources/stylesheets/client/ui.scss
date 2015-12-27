@@ -2,4 +2,13 @@
 	.active {
 		display: block !important;
 	}
+	.chat-messages {
+		height: 500px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+
+	}
+}
+#isAuth {
+	max-height: 80vh;
 }

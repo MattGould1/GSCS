@@ -18,6 +18,7 @@ var chatSchema = new mongoose.Schema({
 	created: { type: Date, default: Date.now() },
 	_room: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatRoom', required: true }],
 	_user: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true } ],
+	username: { type: String, required: true },
 	message: { type: String, required: true }
 
 });

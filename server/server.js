@@ -20,6 +20,7 @@ var admin = require('./routes/admin');
 
 //init model
 var ChatRoom = mongoose.model('ChatRoom');
+var ChatMessage = mongoose.model('ChatMessage');
 var Excel = mongoose.model('Excel');
 
 //express
@@ -76,7 +77,7 @@ sio.use(socketioJwt.authorize({
 
 //socketio handlers
 var chat = require('./handlers/chat');
-
+var excel = require('./handlers/excel');
 //connect to default namespace
 sio.on('connection', function (socket) {
 
@@ -87,11 +88,13 @@ sio.on('connection', function (socket) {
         }
         //store the username in socket for this client
         socket.username = socket.decoded_token.username;
+        //store the _id in socket for this client
+        socket._id = socket.decoded_token._id;
         //save username in global list
         users[socket.username] = socket;
 
 
-        ChatRoom.find({}, function (err, chatrooms) {
+        ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
             if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
             Excel.find({}, function (err, excelsheets) {
                 if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
@@ -105,9 +108,13 @@ sio.on('connection', function (socket) {
             });
         });
 
-        chat.message(sio, socket);
-        // //broadcast usernames
-        // chat.usernames(sio, socket, users);
+        //handle messages
+        chat.message(sio, socket, ChatRoom, ChatMessage);
+
+        //handle excel + excel data
+        excel.save(sio, socket, Excel);
+        //broadcast usernames
+        chat.usernames(sio, socket, users);
 
         // //chat
         // chat.message(sio, socket, messages);
