@@ -101,7 +101,8 @@ exports.createExcel = function(Excel, req, callback) {
 			var excel = new Excel({
 				name: req.body.name,
 				location: req.body.location,
-				department: req.body.department
+				department: req.body.department,
+				user: req.decoded_token._id,
 			});
 			excel.save( function (err, savedExcel) {
 				if (err) { console.log('Error saving new excel: ' + err); callback(false); }

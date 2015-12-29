@@ -57,10 +57,11 @@ function createContainers(room, container, link, type, typeContainer, typeLink) 
 
 	//add container to typeContainer
 	$(typeContainer).append(newContainer);
-	if (type === '-excel') {
-		excel(room.name, room._id);
-	}
 
+	if (type === '-excel') {
+		excel = new eExcel();
+		excel.init(room.name, room._id, room.data);
+	}
 	//do the same for link
 	newLink.addClass(room.name);
 
@@ -75,7 +76,9 @@ function createContainers(room, container, link, type, typeContainer, typeLink) 
 }
 
 function socketIOInit() {
+	
 		$('body').attr('init', 'true');
+
 		socket.on('time', function(time) {
 			console.log(time);
 		});
@@ -84,38 +87,47 @@ function socketIOInit() {
 		var excelContainer = $('.excel');
 		var link = $('.link');
 
+		//init ui + components when data received
 		socket.on('data', function (data) {
+			//create chatroom containers
 			chatrooms = data.chatrooms;
 			chatrooms.forEach( function (room, i) {
 				createContainers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 			});
 		
+			//create excel containers
 			excelsheets = data.excelsheets;
 			excelsheets.forEach( function (room, i) {
-
 				createContainers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
 
-			test = new hideNshow({
+			//init ui
+			ui = new hideNshow({
 				main: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
 				defaultActive: 4
 			});
 			
-			test.init();
+			ui.init();
 
-			test1 = new ewbChat({
+			//init chat
+			chat = new ewbChat({
 				form: '.chat-form'
 			});
-			test1.init();
+
+			chat.init();
+
+			//init excel update
+			excel = new eExcel();
+			excel.update();
 
 		});
 }
 
 (function ($) {
 	$(document).on('click', '.link', function () {
-		test.init($(this));
+		ui.init($(this));
 	});
 })(jQuery);
 

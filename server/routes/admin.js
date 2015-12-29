@@ -108,9 +108,10 @@ router.post('/chat/create', function (req, res) {
 	});
 });
 router.post('/excel/update', function (req, res) {
-	Excel.findOne({ name: req.body.name }, function (err, excel) {
+	Excel.findOne({ _id: req.body.id }, function (err, excel) {
 		if (err) { console.log('Error finding excel: ' + err); }
 		console.log(req.body);
+		console.log(excel);
 		console.log('updating excel');
 		excel.name = req.body.name;
 		excel.location = req.body.location;

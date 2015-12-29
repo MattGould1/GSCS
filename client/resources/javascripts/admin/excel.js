@@ -41,6 +41,8 @@
 		excels.forEach( function (entry) {
 			console.log(entry);
 			if (entry.name == name) {
+				//id
+				excel_form.find('#edit-excel-id').val(entry._id);
 				//username
 				excel_form.find('#edit-excel-name').val(entry.name);
 				//password
@@ -95,6 +97,7 @@
 	});
 
 	container.on('click', '.excelsave', function() {
+		var id = excel_form.find('#edit-excel-id').val();
 		var name = excel_form.find('#edit-excel-name').val();
 		var location = excel_form.find('#edit-excel-locations').val();
 		var department = excel_form.find('#edit-excel-departments').val();
@@ -105,6 +108,7 @@
 			contentType: 'application/json',
 			data: JSON.stringify({
 				token: token,
+				id: id,
 				name: name,
 				location: location,
 				department: department
@@ -116,8 +120,9 @@
 				console.log(data);
 				//update the userlist
 				//get index of updated excelroom
-				var index = findWithAttr(excels, 'name', name);
-				console.log(index);
+				var index = findWithAttr(excels, '_id', id);
+
+				console.log('index: ' + index)
 				//update excelroom
 				excels[index].name = name;
 				excels[index].location = location;

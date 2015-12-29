@@ -3,15 +3,22 @@ var mongoose = require('mongoose');
 var excelSchema = new mongoose.Schema({
 
 	name: { type: String, index: true, unique: true, required: true },
-	location: [],
-	department: [],
-	rolesAllowed: [],
+	location: [String],
+	department: [String],
+	rolesAllowed: [String],
+	lastModified: { type: Date, default: Date.now },
 	usersAllowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	data: [],
+	active: { type: Boolean, default: false },
 	settings: [],
-	revisions: [],
-	active: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-	lastEditted: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+	revisions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Revision' }],
+	user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 
 });
+
+var revisionSchema = new mongoose.Schema({
+	revision: { type: String, required: true },
+	user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+});
+var Revision = mongoose.model('Revision', revisionSchema);
 var Excel = mongoose.model('Excel', excelSchema);

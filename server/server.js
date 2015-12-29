@@ -86,14 +86,17 @@ sio.on('connection', function (socket) {
         if(socket.decoded_token.username == undefined) {
             socket.disconnect(true);
         }
+
         //store the username in socket for this client
         socket.username = socket.decoded_token.username;
+
         //store the _id in socket for this client
         socket._id = socket.decoded_token._id;
+
         //save username in global list
         users[socket.username] = socket;
 
-
+        //connection data
         ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
             if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
             Excel.find({}, function (err, excelsheets) {
@@ -111,15 +114,16 @@ sio.on('connection', function (socket) {
         //handle messages
         chat.message(sio, socket, ChatRoom, ChatMessage);
 
-        //handle excel + excel data
-        excel.save(sio, socket, Excel);
         //broadcast usernames
         chat.usernames(sio, socket, users);
 
-        // //chat
-        // chat.message(sio, socket, messages);
-      //  sio.emit(socket);
-        //disconnect
+        // //handle
+        // excel.update(sio, socket, Excel);
+
+        //handle edit request
+        excel.edit(sio, socket, Excel);
+
+        //handle disconnect event
         socket.on('disconnect', function(data) {
             //make sure socket has username
             if(!socket.username) return;

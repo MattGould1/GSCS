@@ -7,8 +7,6 @@ module.exports = {
 		*/
 		socket.on('chat-message', function(msg) {
 			//remove html/script tags
-			console.log(msg);
-
 			var message = msg.message;
 
 			//remove html/<script> tags
