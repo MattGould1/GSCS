@@ -1,5 +1,5 @@
 //define global vars and functions
-var token, socket, chatrooms = [], user, excelsheets = [], url = 'http://localhost:8080';
+var token, socket, chatrooms = [], user, excelsheets = [];
 
 //anything inside Auth will be shown when logged in, otherwise notAuth will be shown
 Auth = jQuery('#isAuth');

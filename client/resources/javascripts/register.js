@@ -14,7 +14,7 @@ $('.row').on('submit', '#register', function(e) {
 	var admin = true;
 
 	$.ajax({
-		url: 'http://127.0.0.1:8080/register',
+		url: url + '/register',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',

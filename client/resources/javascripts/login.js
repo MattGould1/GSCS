@@ -8,7 +8,7 @@ $('.row').on('submit', '#login', function (e) {
 	var password = $this.find('#password').val();
 
 	$.ajax({
-		url: 'http://127.0.0.1:8080/login',
+		url: url + '/login',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',
