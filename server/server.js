@@ -99,13 +99,15 @@ sio.on('connection', function (socket) {
         //connection data
         ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
             if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
-            Excel.find({}, function (err, excelsheets) {
+            Excel.find({}).populate('user').exec(function (err, excelsheets) {
                 if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
                 
                 //emit data
                 var data = {};
                 data.chatrooms = chatrooms;
                 data.excelsheets = excelsheets;
+                data.user = socket.decoded_token;
+
                 socket.emit('data', data);
 
             });
@@ -122,7 +124,8 @@ sio.on('connection', function (socket) {
 
         //handle edit request
         excel.edit(sio, socket, Excel);
-
+        excel.update(sio, socket, Excel);
+        
         //handle disconnect event
         socket.on('disconnect', function(data) {
             //make sure socket has username

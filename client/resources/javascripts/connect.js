@@ -1,38 +1,48 @@
 //define global vars and functions
-var token, socket, chatrooms = [], user, excelsheets = [];
+var token, socket, chatrooms = [], user, excelsheets = [], url = 'http://localhost:8080';
 
 //anything inside Auth will be shown when logged in, otherwise notAuth will be shown
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
 
-//check for token, authenticate if token exists
+//check for token, once document has loaded
 jQuery(document).ready(function() {
-
-	//check for token
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
+		//pass token to init, it will try to connect to the socket.io server
 		init(token);
 	} else {
 		//set UI
 		notAuth.show();
 		Auth.hide();
 	}
-
 });
 
 function init(token) {
-	//connect to server
-	socket = io.connect( 'http://localhost:8080/?token=' + token ,{
+	//attempt to connect
+	socket = io.connect( url + '/?token=' + token ,{
 		'forceNew': true
 	});
-	//set UI
-	notAuth.hide();
-	Auth.show();
-	//load chat
-	if ($('body').attr('init') != 'true') {
+
+	socket.on('connect', function (data) {
+		//set ui
+		notAuth.hide();
+		Auth.show();
+
+		//make socketio calls
 		socketIOInit();
-	}
+	});
+
+	socket.on('connect_failed', function (data) {
+		//failed to connect, set ui
+		notAuth.hide();
+		Auth.show();
+	});
+
+	socket.on('disconnect', function (data) {
+
+	});
 }
 
 function createContainers(room, container, link, type, typeContainer, typeLink) {
@@ -60,8 +70,9 @@ function createContainers(room, container, link, type, typeContainer, typeLink) 
 
 	if (type === '-excel') {
 		excel = new eExcel();
-		excel.init(room.name, room._id, room.data);
+		excel.init(room);
 	}
+
 	//do the same for link
 	newLink.addClass(room.name);
 
@@ -76,7 +87,7 @@ function createContainers(room, container, link, type, typeContainer, typeLink) 
 }
 
 function socketIOInit() {
-	
+
 		$('body').attr('init', 'true');
 
 		socket.on('time', function(time) {
@@ -89,6 +100,10 @@ function socketIOInit() {
 
 		//init ui + components when data received
 		socket.on('data', function (data) {
+
+			//add user data to global user
+			user = data.user;
+
 			//create chatroom containers
 			chatrooms = data.chatrooms;
 			chatrooms.forEach( function (room, i) {

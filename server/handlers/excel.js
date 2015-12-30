@@ -3,14 +3,12 @@ module.exports = {
 		socket.on('update-excel', function (data) {
 			Excel.findOne({ _id: data.id }, function (err, excel) {
 				if (err) { console.log('Error finding excel to save data: ' + err); }
-				console.log(excel);
-
-				excel.data = data.data;
 				excel.user = socket.decoded_token._id;
-
+				excel.data = data.data;
+				excel.active = false;
 				excel.save(function (err, saveExcel) {
-					if (err) { console.log('Error saving excel data: ' + err); }
-
+					if (err) { console.log('Error updating excel' + err);}
+					socket.emit('update-excel', saveExcel);
 				});
 			});
 		});
@@ -23,12 +21,17 @@ module.exports = {
 				if ( excel.active === true ) {
 					socket.emit('edit-excel', false);
 				} else {
+					//if not active, this can be editted return true
 					excel.active = true;
+					excel.user = socket.decoded_token._id;
 					excel.save(function (err, saveExcel) {
 						if (err) { console.log('Error saving excel edit request' + err); }
 
-						console.log(saveExcel);
-						socket.emit('edit-excel', true);
+						var data = {
+							excel: saveExcel,
+							edit: true
+						};
+						socket.emit('edit-excel', data);
 					});
 				}
 			});
