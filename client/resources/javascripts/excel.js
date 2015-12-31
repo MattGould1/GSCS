@@ -44,34 +44,45 @@
 		var container = $('[data-filter="' + room.name + '-excel"]');
 		var hot = container.find('.hot').addClass(room._id);
 
+		var headerHeight = $('#header').height();
+		var footerHeight = $('#footer').height();
+		var contentHeight = $(window).height() - footerHeight - headerHeight;
+
 		$('.' + room._id).handsontable({
 			data: room.data,
 			readOnly: true,
-			startRows: 8,
-			startCols: 6,
-			minRows: 8,
-			minCols: 8,
-			allowInsertColumn: true,
-			contextMenu: true,
-			comments: true
+			minRows: 30,
+			minCols: 30,
+			contextMenu: false,
+			comments: false,
+			//49 for excel buttons
+			height: contentHeight - 49,
+			manualColumnResize: false,
+			manualRowResize: false,
+			rowHeaders: true,
+			colHeaders: true,
 		});
 
 		var hotInstance = $('.' + room._id).handsontable('getInstance');
-		setHooks.call(this, hotInstance, room._id);
 
+		setHooks.call(this, hotInstance, room._id);
 		if ( room.active === true ) {
 			if (room.user.username === user.username) {
 				//show options
 				container.find('.current').html(excelStrings.currentEdit);
 				//make readonly false
 				hotInstance.updateSettings({
-					readOnly: false
+					readOnly: false,
+					contextMenu: true,
+					comments: true,
+					manualColumnResize: true,
+					manualRowResize: true
 				});
 				//hide edit button
 				container.find('.excel-edit').hide();
 			} else {
 				//tell people who's editting
-				container.find('.current').html('hello world');
+				container.find('.current').html(excelStrings.edittedBy + room.user.username);
 				//hide options
 				container.find('.excel-options').hide();
 			}
@@ -101,7 +112,7 @@
 				id: id,
 				data: hot.handsontable('getInstance').getData()
 			};
-
+			console.log(hot.handsontable('getInstance').getCellsMeta());
 			socket.emit('update-excel', data);
 
 		});
@@ -133,11 +144,16 @@
 	function socketExcel() {
 		//socketio methods
 		socket.on('edit-excel', function (data) {
+			var hot = $('.' + data.excel._id);
+
 			if (data.edit === true) {
-				var hot = $('.' + data.excel._id);
 				//handle response
 				hot.handsontable('getInstance').updateSettings({
-					readOnly: false
+					readOnly: false,
+					contextMenu: true,
+					comments: true,
+					manualColumnResize: true,
+					manualRowResize: true
 				});
 
 				hot.siblings('.excel-options').find('.excel-edit').hide();
@@ -145,6 +161,7 @@
 			} else {
 				//if false, excel is now true and you can edit
 				console.log('you can\'t edit');
+				hot.siblings('.current').html(excelStrings.edittedBy + data.excel.user)
 			}
 		});
 
@@ -154,12 +171,16 @@
 
 			hot.handsontable('getInstance').updateSettings({
 				data: data.data,
-				readOnly: true
+				readOnly: true,
+				contextMenu: false,
+				comments: false,
+				manualColumnResize: false,
+				manualRowResize: false
 			});
 
 			hot.siblings('.excel-options').find('.excel-edit').show();
 			hot.siblings('.current').html('');
-
+			hot.siblings('.excel-options').show();
 		});
 	}
 

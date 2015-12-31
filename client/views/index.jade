@@ -7,11 +7,10 @@ block content
 		include _partials/isnotauth/login
 		include _partials/isnotauth/register
 	div#isAuth.container-fluid
-		div.row
+		div#app.row
 			include layout/sidebar
-			div.col-xs-12.col-md-8
+			div#content.col-xs-12.col-md-8
 				include _partials/isauth/chat
 				include _partials/isauth/excel
-			div.col-xs-12.col-md-2
-				div.users
-					h1 logged in users
+			div#users.col-xs-12.col-md-2
+				include _partials/isauth/users

@@ -1,5 +1,5 @@
 //define global vars and functions
-var token, socket, chatrooms = [], user, excelsheets = [];
+var token, socket, chatrooms = [], user, excelsheets = [], users = [];
 
 //anything inside Auth will be shown when logged in, otherwise notAuth will be shown
 Auth = jQuery('#isAuth');
@@ -41,7 +41,8 @@ function init(token) {
 	});
 
 	socket.on('disconnect', function (data) {
-
+		notAuth.show();
+		Auth.hide();
 	});
 }
 
@@ -88,11 +89,9 @@ function createContainers(room, container, link, type, typeContainer, typeLink) 
 
 function socketIOInit() {
 
-		$('body').attr('init', 'true');
-
-		socket.on('time', function(time) {
-			console.log(time);
-		});
+		// socket.on('time', function (time) {
+		// 	console.log(time);
+		// });
 
 		var chatContainer = $('.chat');
 		var excelContainer = $('.excel');
@@ -116,15 +115,15 @@ function socketIOInit() {
 				createContainers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
 
-			//init ui
-			ui = new hideNshow({
+			//init hideNshow
+			hideNshow = new hideNshow({
 				main: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
 				defaultActive: 4
 			});
 			
-			ui.init();
+			hideNshow.init();
 
 			//init chat
 			chat = new ewbChat({
@@ -136,13 +135,28 @@ function socketIOInit() {
 			//init excel update
 			excel = new eExcel();
 			excel.update();
+			
+			//init ui
+			ui = new ui({});
+			ui.init();
+		});
 
+		socket.on('userList', function (userList) {
+			$('.user').remove();
+			users = userList;
+
+			for (var key in userList) {
+				if (userList.hasOwnProperty(key)) {
+					var user = userList[key];
+					$('.users').append('<div class="user">' + user.username + '</div>');
+				}
+			}
 		});
 }
 
 (function ($) {
 	$(document).on('click', '.link', function () {
-		ui.init($(this));
+		hideNshow.init($(this));
 	});
 })(jQuery);
 

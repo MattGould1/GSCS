@@ -81,21 +81,16 @@ var excel = require('./handlers/excel');
 //connect to default namespace
 sio.on('connection', function (socket) {
 
-        console.log('connected');
         //disconnect socket if no username, wtf?
         if(socket.decoded_token.username == undefined) {
             socket.disconnect(true);
         }
-
         //store the username in socket for this client
         socket.username = socket.decoded_token.username;
 
-        //store the _id in socket for this client
-        socket._id = socket.decoded_token._id;
-
         //save username in global list
-        users[socket.username] = socket;
-
+        users[socket.username] = socket.decoded_token;
+        
         //connection data
         ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
             if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
@@ -103,11 +98,11 @@ sio.on('connection', function (socket) {
                 if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
                 
                 //emit data
-                var data = {};
-                data.chatrooms = chatrooms;
-                data.excelsheets = excelsheets;
-                data.user = socket.decoded_token;
-
+                var data = {
+                    chatrooms: chatrooms,
+                    excelsheets: excelsheets,
+                    user: socket.decoded_token
+                };
                 socket.emit('data', data);
 
             });
@@ -117,10 +112,7 @@ sio.on('connection', function (socket) {
         chat.message(sio, socket, ChatRoom, ChatMessage);
 
         //broadcast usernames
-        chat.usernames(sio, socket, users);
-
-        // //handle
-        // excel.update(sio, socket, Excel);
+        chat.userList(sio, socket, users);
 
         //handle edit request
         excel.edit(sio, socket, Excel);
@@ -133,7 +125,7 @@ sio.on('connection', function (socket) {
             //delete user from global list
             delete users[socket.username];
             //broadcast new usernames
-           // chat.usernames(sio, socket, users);
+            chat.userList(sio, socket, users);
         });
     });
 

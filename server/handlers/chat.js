@@ -41,7 +41,7 @@ module.exports = {
 			});
 		});
 	},
-	usernames: function(sio, socket, users) {
-		sio.sockets.emit('usernames', Object.keys(users));
+	userList: function(sio, socket, users) {
+			sio.sockets.emit('userList', users);
 	}
 };

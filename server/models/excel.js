@@ -9,6 +9,11 @@ var excelSchema = new mongoose.Schema({
 	lastModified: { type: Date, default: Date.now },
 	usersAllowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	data: [],
+	metaData: {
+		colWidth: [],
+		rowHeight: [],
+		comments: [],
+	},
 	active: { type: Boolean, default: false },
 	settings: [],
 	revisions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Revision' }],
