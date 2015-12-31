@@ -36,11 +36,31 @@
 		return source;
 	}
 
+	function cellsMeta(room) {
+		var cellArray = [];
+		room.metaData.cellMeta.forEach( function (cell) {
+			var prop1 = cell[2];
+			meta = {
+				row: cell[0],
+				col: cell[1],
+			};
+			meta[cell[2]] = cell[3];
+			cellArray.push(meta);
+
+		});
+		return cellArray;
+	}
+
+	function setCellMeta(row, col, key, val) {
+		var cellProperties = {};
+
+	
+	}
+
 	function setExcel(room) {
 		if (room.data === null || room.data.length === 0) {
 			room.data = [[]];
 		}
-
 		var container = $('[data-filter="' + room.name + '-excel"]');
 		var hot = container.find('.hot').addClass(room._id);
 
@@ -53,8 +73,11 @@
 			readOnly: true,
 			minRows: 30,
 			minCols: 30,
+			colWidths: room.metaData.colWidths,
+			rowHeights: room.metaData.rowHeights,
 			contextMenu: false,
-			comments: false,
+			cell: cellsMeta.call(this, room),
+			comments: true,
 			//49 for excel buttons
 			height: contentHeight - 49,
 			manualColumnResize: false,
@@ -102,17 +125,44 @@
 		});
 	}
 
+	function heightNwidth(count, dimension) {
+		var array = [];
+
+		for(i = 0; i < count(); i++) {
+			array.push(dimension(i));
+		}
+
+		return array;
+	}
+
 	function updateExcel() {
 		$(document).on('click', '.excel-update', function () {
 
 			var hot = $(this).parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
+			var hotInstance = hot.handsontable('getInstance');
+
+			var cellMeta = [];
+
+			hot.handsontable('getInstance').getCellsMeta().forEach( function (cell) {
+				if (cell.hasOwnProperty('className')) {
+					thisCell = [cell.row, cell.col, 'className', cell.className];
+					cellMeta.push(thisCell);
+				}
+				if (cell.hasOwnProperty('comment')) {
+					thisCell = [cell.row, cell.col, 'comment', cell.comment];
+					cellMeta.push(thisCell);
+				}
+			});
 
 			var data = {
 				id: id,
-				data: hot.handsontable('getInstance').getData()
+				data: hotInstance.getData(),
+				colWidths: heightNwidth(hotInstance.countCols, hotInstance.getColWidth),
+				rowHeights: heightNwidth(hotInstance.countCols, hotInstance.getRowHeight),
+				cellMeta: cellMeta
 			};
-			console.log(hot.handsontable('getInstance').getCellsMeta());
+
 			socket.emit('update-excel', data);
 
 		});
@@ -120,13 +170,7 @@
 	function setHooks(hotInstance, id) {
 		// http://docs.handsontable.com/0.20.2/Hooks.html#event:afterChange
 		hotInstance.addHook('afterChange', function (data, source) {
-			// data.forEach(function (value, i) {
-			// 	hotInstance.setDataAtCell(value[0], value[1], value[3]);
-			// });
-			excel = {
-				data: data,
-				id: id
-			};
+			console.log(data);
 
 		});
 
@@ -152,6 +196,7 @@
 					readOnly: false,
 					contextMenu: true,
 					comments: true,
+					cell: cellsMeta.call(this, data.excel),
 					manualColumnResize: true,
 					manualRowResize: true
 				});
@@ -172,10 +217,15 @@
 			hot.handsontable('getInstance').updateSettings({
 				data: data.data,
 				readOnly: true,
+				minRows: 30,
+				minCols: 30,
+				colWidths: data.metaData.colWidths,
+				rowHeights: data.metaData.rowHeights,
+				cell: cellsMeta.call(this, data),
 				contextMenu: false,
-				comments: false,
+				//49 for excel buttons
 				manualColumnResize: false,
-				manualRowResize: false
+				manualRowResize: false,
 			});
 
 			hot.siblings('.excel-options').find('.excel-edit').show();

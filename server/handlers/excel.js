@@ -5,6 +5,9 @@ module.exports = {
 				if (err) { console.log('Error finding excel to save data: ' + err); }
 				excel.user = socket.decoded_token._id;
 				excel.data = data.data;
+				excel.metaData.colWidths = data.colWidths;
+				excel.metaData.rowHeights = data.rowHeights;
+				excel.metaData.cellMeta = data.cellMeta;
 				excel.active = false;
 				excel.save(function (err, saveExcel) {
 					if (err) { console.log('Error updating excel' + err);}
