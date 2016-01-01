@@ -44,6 +44,19 @@ module.exports = {
 			});
 		});
 	},
+	cancel: function (sio, socket, Excel) {
+		socket.on('cancel-excel', function (id) {
+			Excel.findOne({ _id: id }, function (err, excel) {
+				if (err) { console.log('Error finding excel cancel' +err); }
+				if (excel.active === true) {
+					excel.active = false;
+					excel.save(function (err, saveExcel) {
+						
+					});
+				}
+			});
+		});
+	},
 	load: function (sio, socket, Excel) {
 
 	}

@@ -75,59 +75,73 @@ sio.use(socketioJwt.authorize({
     handshake: true
 }));
 
+sio.use(function (socket, next){
+    console.log(Date.now());
+    next();
+});
+
 //socketio handlers
 var chat = require('./handlers/chat');
 var excel = require('./handlers/excel');
 //connect to default namespace
 sio.on('connection', function (socket) {
+    //disconnect socket if no username, wtf?
+    if(socket.decoded_token.username == undefined) {
+        socket.disconnect(true);
+    }
+    //store the username in socket for this client
+    socket.username = socket.decoded_token.username;
 
-        //disconnect socket if no username, wtf?
-        if(socket.decoded_token.username == undefined) {
-            socket.disconnect(true);
-        }
-        //store the username in socket for this client
-        socket.username = socket.decoded_token.username;
+    //save username in global list
+    users[socket.username] = socket.decoded_token;
+    
+    //connection data
+    ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
+        if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
+        Excel.find({}).populate('user').exec(function (err, excelsheets) {
+            if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
+            
+            //emit data
+            var data = {
+                chatrooms: chatrooms,
+                excelsheets: excelsheets,
+                user: socket.decoded_token
+            };
+            socket.emit('data', data);
 
-        //save username in global list
-        users[socket.username] = socket.decoded_token;
-        
-        //connection data
-        ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
-            if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
-            Excel.find({}).populate('user').exec(function (err, excelsheets) {
-                if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
-                
-                //emit data
-                var data = {
-                    chatrooms: chatrooms,
-                    excelsheets: excelsheets,
-                    user: socket.decoded_token
-                };
-                socket.emit('data', data);
-
-            });
-        });
-
-        //handle messages
-        chat.message(sio, socket, ChatRoom, ChatMessage);
-
-        //broadcast usernames
-        chat.userList(sio, socket, users);
-
-        //handle edit request
-        excel.edit(sio, socket, Excel);
-        excel.update(sio, socket, Excel);
-        
-        //handle disconnect event
-        socket.on('disconnect', function(data) {
-            //make sure socket has username
-            if(!socket.username) return;
-            //delete user from global list
-            delete users[socket.username];
-            //broadcast new usernames
-            chat.userList(sio, socket, users);
         });
     });
+
+    //handle messages
+    chat.message(sio, socket, ChatRoom, ChatMessage);
+
+    //broadcast usernames
+    chat.userList(sio, socket, users);
+
+    //handle edit request
+    excel.edit(sio, socket, Excel);
+    excel.update(sio, socket, Excel);
+    excel.cancel(sio, socket, Excel);
+    //handle disconnect event
+    socket.on('disconnect', function(data) {
+        //make sure socket has username
+        if(!socket.username) return;
+        //delete user from global list
+        delete users[socket.username];
+        //broadcast new usernames
+        chat.userList(sio, socket, users);
+        //cleanup excels
+        Excel.find({}).select('active user').where('active', true).where('user', socket.decoded_token._id).exec(function (err, excelsheets) {
+            if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
+            excelsheets.forEach( function (excelsheet, i) {
+                excelsheet.active = false;
+                excelsheet.save(function (err, success){
+                    if (err) { console.log('error reseting excelsheet' + err); }
+                });
+            });
+        });
+    });
+});
 
 //function for testing
 setInterval(function () {

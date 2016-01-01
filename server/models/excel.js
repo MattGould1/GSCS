@@ -26,5 +26,6 @@ var revisionSchema = new mongoose.Schema({
 	revision: { type: String, required: true },
 	user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
+
 var Revision = mongoose.model('Revision', revisionSchema);
 var Excel = mongoose.model('Excel', excelSchema);

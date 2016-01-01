@@ -1,9 +1,10 @@
+//post data to server, receive token as success
 $('.row').on('submit', '#login', function (e) {
 	e.preventDefault();
 
 	var $this = $(this);
 
-	//info
+	//credentials
 	var username = $this.find('#username').val();
 	var password = $this.find('#password').val();
 
@@ -18,8 +19,10 @@ $('.row').on('submit', '#login', function (e) {
 		}),
 		success: function (user, status, xhr) {
 			if (user.token) {
+				//set token as cookie to be sent with requests
 				$.cookie('token', user.token, { expires: 7, path: '/' });
-				connect();
+				//see connect.js, init will connect to socketio and display app if successfully init will also set the global token var
+				init(user.token);
 			} else {
 				console.log('No token given, do not login!');
 			}

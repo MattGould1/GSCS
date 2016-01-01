@@ -1,25 +1,27 @@
-//hide and show elements
-
 /*
+* Hide and show elements with data-filter attribute
 *
-* structure, li a data-link NAME
-* div data-link NAME
+* defaults:
+* 		  	Body: used for jquery .on, a more specific jQuery object will improve performance
+*		   	Link: jQuery Object for click event
+* 			Container: jQuery Object to hide/show
+* 			defaultActive: Numeric the container to show by default
+*			
+*			<div data-filter="show">SHOW ME</div>
+*			<a data-filter="show">Show the div</a>
 *
 */
-//make jquery available inside
 (function ($) {
 
 	//constructor
 	this.hideNshow = function() {
-		this.hide = null;
-		this.show = null;
 
+		//default options
 		var defaults = {
-			main: null,
+			body: null,
 			Link: null,
 			Container: null,
 			defaultActive: 1,
-			init: false,
 		};
 
 		// Create options by extending defaults with the passed in arugments
@@ -31,16 +33,8 @@
 
 	//public methods
 	hideNshow.prototype.init = function ($this) {
-		if (this.options.init === false) {
-			//we're initting so make this true now
-			this.options.init = true;
-			//call init
-			init.call(this);
-		} else {
-			if ($this !== undefined) {
-				showNtell.call(this, $this);
-			}
-		}
+		init.call(this);
+		show.call(this);
 	}
 
 	//private methods
@@ -48,9 +42,11 @@
 		//the default link/container to be visible
 		var chosenOne = this.options.defaultActive;
 
-		//hide all but the chosen one
+		//jQuery .each container
 		this.options.Container.each(function (i) {
+			//run careTaker to remove any containers/links without data-filter attribute (they shouldn't exist and will mess with index)
 			careTaker($(this));
+			//show default container
 			if (i === chosenOne) {
 				$(this).show();
 			} else {
@@ -58,40 +54,52 @@
 			}
 		});
 
+		//jQuery .each container
 		this.options.Link.each( function (i) {
 			careTaker($(this));
 			if ( i === chosenOne) {
+				//add class for bootstrap
 				$(this).addClass('active');
+				//end hunt, nothing else needed
 				return false;
 			}
 		});
 	}
 
+	/*
+	*	@param that: jQuery Object $(this)
+	*/
 	function careTaker(that) {
 		if (that.attr('data-filter') === undefined) {
 			that.remove();
 		}
 	}
 
-	function showNtell(that) {
-		//remove current active
-		this.options.Link.removeClass('active');
+	function show() {
+		var options = this.options;
+		//attach click handler to .link, this will be used to add active class and show the correct container
+		options.body.on('click', '.link', function () {
+			//remove current active
+			options.Link.removeClass('active');
 
-		//add active to new current
-		that.addClass('active');
+			//add active to new current
+			$(this).addClass('active');
 
-		//get data-filter for container
-		var show = that.attr('data-filter');
+			//get the data-filter attribute, used to search for corresponding container with same data-filter
+			var show = $(this).attr('data-filter');
 
-		//compare each container and look for data-filter attr
-		this.options.Container.each( function (i) {
-			if ($(this).attr('data-filter') === show) {
-				$(this).show();
-			} else {
-				$(this).hide();
-			}
+			//jQuery .each container
+			options.Container.each( function (i) {
+				//show the container if data-filter === link data-filter else hide
+				if ($(this).attr('data-filter') === show) {
+					$(this).show();
+				} else {
+					$(this).hide();
+				}
+			});
 		});
 	}
+
 
 	function extendDefaults(source, properties) {
 		var property;

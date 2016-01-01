@@ -1,13 +1,10 @@
 (function ($) {
-
+	var reset = {};
 	this.eExcel = function (name, id, data) {
-
+		
 		var options = {
 			init: null,
 		};
-		this.name = name;
-		this.data = data;
-
 
 		if ( arguments[0] && typeof arguments[0] === "object" ) {
 			this.options = extendDefaults(options, arguments[0]);
@@ -15,117 +12,172 @@
 	}
 
 	//public methods
-	eExcel.prototype.init = function (room) {
-		setExcel.call(this, room);
+	/*
+	* @param Object excelsheet: _id, name, user, revisions, department etc see @server models
+	*/
+	eExcel.prototype.init = function (excelsheet) {
+		initExcel.call(this, excelsheet);
 	}
 
 	eExcel.prototype.update = function () {
-		editExcel.call(this);
+		tryEditExcel.call(this);
 		updateExcel.call(this);
 		socketExcel.call(this);
 	}
 
 	//private methods
-	function extendDefaults(source, properties) {
-		var property;
-		for (property in properties) {
-			if (properties.hasOwnProperty(property)) {
-				source[property] = properties[property];
-			}
-		}
-		return source;
-	}
-
-	function cellsMeta(room) {
+	function cellsMeta (excelsheet) {
+		//@var holds cellmeta row, col, prop
 		var cellArray = [];
-		room.metaData.cellMeta.forEach( function (cell) {
-			var prop1 = cell[2];
+		/*
+		* @param Array cell: get handsontable cellmeta and add to cellArray, contains row, col, prop, prop value
+		*/
+		excelsheet.metaData.cellMeta.forEach( function (cell) {
+			//creata object row, col, prop
 			meta = {
 				row: cell[0],
 				col: cell[1],
 			};
 			meta[cell[2]] = cell[3];
+
 			cellArray.push(meta);
 
 		});
+
 		return cellArray;
 	}
 
-	function setCellMeta(row, col, key, val) {
-		var cellProperties = {};
-
-	
-	}
-
-	function setExcel(room) {
-		if (room.data === null || room.data.length === 0) {
-			room.data = [[]];
+	function initExcel (excelsheet) {
+		//handsontable requires an Array of Arrays as its data, by default room.data could be null or 0 in length, if this is the case make it [[]]
+		if (excelsheet.data === null || excelsheet.data.length === 0) {
+			excelsheet.data = [[]];
 		}
-		var container = $('[data-filter="' + room.name + '-excel"]');
-		var hot = container.find('.hot').addClass(room._id);
 
-		var headerHeight = $('#header').height();
-		var footerHeight = $('#footer').height();
-		var contentHeight = $(window).height() - footerHeight - headerHeight;
+		//store container, container also holds .excel-optins (edit, save, cancel etc) and .message, used to display current status
+		var container = $('[data-filter="' + excelsheet.name + '-excel"]');
 
-		$('.' + room._id).handsontable({
-			data: room.data,
+		//add excelsheet _id to make each handsontable identifiable
+		var hot = container.find('.hot').addClass(excelsheet._id);
+
+		//workout initial height
+		var headerHeight = $('#header').outerHeight();
+		var footerHeight = $('#footer').outerHeight();
+		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
+
+		//see @server Model excel for details on data
+		$('.' + excelsheet._id).handsontable({
+			//set handsontable data
+			data: excelsheet.data,
+			//readonly true, so it cannot be editted
 			readOnly: true,
 			minRows: 30,
 			minCols: 30,
-			colWidths: room.metaData.colWidths,
-			rowHeights: room.metaData.rowHeights,
+			// @param Array of Numers colWidths + rowHeights, handsontable uses to render table
+			colWidths: excelsheet.metaData.colWidths,
+			rowHeights: excelsheet.metaData.rowHeights,
+			//handsontable contextmenu hidden by default so cannot edit
 			contextMenu: false,
-			cell: cellsMeta.call(this, room),
+			//create cellmeta per cell
+			cell: cellsMeta.call(this, excelsheet),
+			//comments always true
 			comments: true,
-			//49 for excel buttons
-			height: contentHeight - 49,
+			//81 for button/message height
+			height: contentHeight - 81,
+			//manual resize false until edit is allowed
 			manualColumnResize: false,
 			manualRowResize: false,
+			//add more details for headers later @TODO
 			rowHeaders: true,
 			colHeaders: true,
 		});
 
-		var hotInstance = $('.' + room._id).handsontable('getInstance');
+		//get current instance, this will be used to set handsontable hooks @todo
+		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
+		setHooks.call(this, hotInstance, excelsheet._id);
 
-		setHooks.call(this, hotInstance, room._id);
-		if ( room.active === true ) {
-			if (room.user.username === user.username) {
+		// change ui State if the sheet is active, if the excelsheet is active it is being editted
+		if ( excelsheet.active === true ) {
+			//check if the current user == excelsheet current user change state to edit if it is
+			if (excelsheet.user.username === user.username) {
 				//show options
-				container.find('.current').html(excelStrings.currentEdit);
+				container.find('.message').html(excelStrings.currentEdit);
 				//make readonly false
 				hotInstance.updateSettings({
+					//false so it can be editted
 					readOnly: false,
+					//context menu so client can add rows, comments etc
 					contextMenu: true,
-					comments: true,
+					//allow for table resizing
 					manualColumnResize: true,
 					manualRowResize: true
 				});
 				//hide edit button
 				container.find('.excel-edit').hide();
+				//show save/cancel button
+				container.find('.excel-update').show();
+				container.find('.excel-cancel').show();
 			} else {
 				//tell people who's editting
-				container.find('.current').html(excelStrings.edittedBy + room.user.username);
+				container.find('.message').html(excelStrings.edittedBy + excelsheet.user.username);
 				//hide options
 				container.find('.excel-options').hide();
 			}
-		} else {
-
 		}
 	}
 
-	function editExcel() {
+	function tryEditExcel() {
 		$(document).on('click', '.excel-edit', function () {
-			//get excel id
+			//get the id from clicked excelsheet, id is sent to server see @server handlers/excel
 			var hot = $(this).parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
 
-			//emit id to server
 			socket.emit('edit-excel', id);
 		});
 	}
+	/*
+	*	@param Object excel @model
+	*/
+	function cancelEdit(excel) {
 
+		$(document).on('click', '.excel-cancel', function () {
+			//get the id from clicked excelsheet
+			var hot = $(this).parent('.excel-options').siblings('.hot');
+
+			var hotInstance = hot.handsontable('getInstance');
+
+			hotInstance.updateSettings({
+				//update data
+				data: excel.data,
+				//make handsontable uneditable
+				readOnly: true,
+				minRows: 30,
+				minCols: 30,
+				//update table size
+				colWidths: excel.metaData.colWidths,
+				rowHeights: excel.metaData.rowHeights,
+				//update cellMeta
+				cell: cellsMeta.call(this, excel),
+				//disable menu
+				contextMenu: false,
+				//disable table resizing
+				manualColumnResize: false,
+				manualRowResize: false,
+			});
+
+			$(this).siblings('.excel-update').hide();
+			$(this).hide();
+			$(this).siblings('.excel-edit').show();
+			$(this).parent('.excel-options').siblings('.message').html('');
+
+			socket.emit('cancel-excel', excel._id);
+		});
+	}
+	/*
+	*	@param Numeric count: handsontable.count, returns total number of cols/rows
+	* 	@param Numeric dimension: either column width or row height
+	*/
 	function heightNwidth(count, dimension) {
+		//array to save
 		var array = [];
 
 		for(i = 0; i < count(); i++) {
@@ -137,14 +189,17 @@
 
 	function updateExcel() {
 		$(document).on('click', '.excel-update', function () {
-
+			//get current id to send to server
 			var hot = $(this).parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
+
+			//get hotinstance
 			var hotInstance = hot.handsontable('getInstance');
 
 			var cellMeta = [];
 
-			hot.handsontable('getInstance').getCellsMeta().forEach( function (cell) {
+			//create array of cellMeta for handsontable cell:
+			hotInstance.getCellsMeta().forEach( function (cell) {
 				if (cell.hasOwnProperty('className')) {
 					thisCell = [cell.row, cell.col, 'className', cell.className];
 					cellMeta.push(thisCell);
@@ -155,11 +210,18 @@
 				}
 			});
 
+			/*
+			* @var data Object
+			* 			id: excelsheet._id
+			*			colWidths: Array of Numerics
+			*			rowHeights: Array of numerics
+			*			cellMeta: Array of Arrays holds row, col, prop, value (in that order)
+			*/
 			var data = {
 				id: id,
 				data: hotInstance.getData(),
 				colWidths: heightNwidth(hotInstance.countCols, hotInstance.getColWidth),
-				rowHeights: heightNwidth(hotInstance.countCols, hotInstance.getRowHeight),
+				rowHeights: heightNwidth(hotInstance.countRows, hotInstance.getRowHeight),
 				cellMeta: cellMeta
 			};
 
@@ -167,71 +229,105 @@
 
 		});
 	}
+
+	//@TODO
 	function setHooks(hotInstance, id) {
-		// http://docs.handsontable.com/0.20.2/Hooks.html#event:afterChange
-		hotInstance.addHook('afterChange', function (data, source) {
-			console.log(data);
+		// http://docs.handsontable.com/0.20.2/Hooks.html#event:afterChange @TODO add hooks later, maybe auto saves etc
+		// hotInstance.addHook('afterChange', function (data, source) {
+			
 
-		});
+		// });
 
-		hotInstance.addHook('afterChangesObserved', function () {
-			console.log('hmm');
-		});
-		hotInstance.addHook('afterSetCellMeta', function (row, col, key, value) {
-			console.log(row + col + key + value);
-		});
-		hotInstance.addHook('afterValidate', function (isValid, value, row, prop, source) {
-			console.log(isValid + value + row + prop + source);
-		});
+		// hotInstance.addHook('afterChangesObserved', function () {
+		// 	console.log('hmm');
+		// });
+		// hotInstance.addHook('afterSetCellMeta', function (row, col, key, value) {
+		// 	console.log(row + col + key + value);
+		// });
+		// hotInstance.addHook('afterValidate', function (isValid, value, row, prop, source) {
+		// 	console.log(isValid + value + row + prop + source);
+		// });
 	}
 
+	//socketio methods
 	function socketExcel() {
-		//socketio methods
+		/*
+		* @param Object data contains
+		*		excel: Object
+		*		edit: boolean
+		*	@TODO improve performance by not sending excelsheet back if edit false
+		*/
 		socket.on('edit-excel', function (data) {
+			//get jQuery object for excelsheet
+			cancelEdit.call(this, data.excel);
 			var hot = $('.' + data.excel._id);
 
 			if (data.edit === true) {
-				//handle response
+				//update handsontable instance
 				hot.handsontable('getInstance').updateSettings({
+					//allow edits
 					readOnly: false,
+					//allow insert rows etc
 					contextMenu: true,
 					comments: true,
+					//reset cellsMeta, silly handsontable requires it
 					cell: cellsMeta.call(this, data.excel),
+					//allow column/row resizing
 					manualColumnResize: true,
 					manualRowResize: true
 				});
-
+				//@TODO improve this mess
 				hot.siblings('.excel-options').find('.excel-edit').hide();
-				hot.siblings('.current').html(excelStrings.currentEdit);
+				hot.siblings('.excel-options').find('.excel-update').show();
+				hot.siblings('.excel-options').find('.excel-cancel').show();
+				hot.siblings('.message').html(excelStrings.currentEdit);
 			} else {
-				//if false, excel is now true and you can edit
-				console.log('you can\'t edit');
-				hot.siblings('.current').html(excelStrings.edittedBy + data.excel.user)
+				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
+				hot.siblings('.message').html(excelStrings.edittedBy + data.excel.user)
 			}
 		});
-
+		/*
+		* @param Object data: @server Model excel
+		*/
 		socket.on('update-excel', function (data) {
-			//reset ui
+			//reset ui for all users, edits complete
 			var hot = $('.' + data._id);
 
+			//get handsontable instance and update settings
 			hot.handsontable('getInstance').updateSettings({
+				//update data
 				data: data.data,
+				//make handsontable uneditable
 				readOnly: true,
 				minRows: 30,
 				minCols: 30,
+				//update table size
 				colWidths: data.metaData.colWidths,
 				rowHeights: data.metaData.rowHeights,
+				//update cellMeta
 				cell: cellsMeta.call(this, data),
+				//disable menu
 				contextMenu: false,
-				//49 for excel buttons
+				//disable table resizing
 				manualColumnResize: false,
 				manualRowResize: false,
 			});
-
+			//reset ui options @TODO improve mess
 			hot.siblings('.excel-options').find('.excel-edit').show();
-			hot.siblings('.current').html('');
-			hot.siblings('.excel-options').show();
+			hot.siblings('.message').html('');
+			hot.siblings('.excel-options').find('.excel-cancel').hide();
+			hot.siblings('.excel-options').find('.excel-update').hide();
 		});
+	}
+
+	function extendDefaults(source, properties) {
+		var property;
+		for (property in properties) {
+			if (properties.hasOwnProperty(property)) {
+				source[property] = properties[property];
+			}
+		}
+		return source;
 	}
 
 })(jQuery);

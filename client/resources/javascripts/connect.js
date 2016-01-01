@@ -1,7 +1,14 @@
-//define global vars and functions
+/*
+* @var String token: authorization token
+* @var Object socket: client/server connection
+* @var Array chatrooms: array of all chatrooms
+* @var Object user: Current user
+* @var Array excelsheets: array of all excelsheets
+* @var Array users: array of all users
+*/
 var token, socket, chatrooms = [], user, excelsheets = [], users = [];
 
-//anything inside Auth will be shown when logged in, otherwise notAuth will be shown
+//two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
 
@@ -10,114 +17,90 @@ jQuery(document).ready(function() {
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
-		//pass token to init, it will try to connect to the socket.io server
 		init(token);
 	} else {
-		//set UI
+		//set State
 		notAuth.show();
 		Auth.hide();
 	}
 });
 
+/*
+* @param String token: authorization token
+*/
 function init(token) {
 	//attempt to connect
 	socket = io.connect( url + '/?token=' + token ,{
 		'forceNew': true
 	});
 
+	//socketio connect event, this means we've succesfully connected so we can safely (fully) init app
 	socket.on('connect', function (data) {
 		//set ui
-		notAuth.hide();
-		Auth.show();
+		setTimeout(function() {
+			notAuth.hide();
+			Auth.show();
+		}, 500);
 
 		//make socketio calls
 		socketIOInit();
 	});
 
+	//connection failed, lets stop the app
 	socket.on('connect_failed', function (data) {
 		//failed to connect, set ui
 		notAuth.hide();
 		Auth.show();
 	});
 
+	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
 		notAuth.show();
 		Auth.hide();
 	});
 }
-
-function createContainers(room, container, link, type, typeContainer, typeLink) {
-
-	newContainer = container.clone();
-	newLink = link.clone();
-
-	//add class to container
-	newContainer.addClass(room.name);
-	//add attribute with type
-	newContainer.attr('data-filter', room.name + type);
-	//add hidden name attribute for sending data use _id as won't change
-	newContainer.find('.name').val(room._id);
-	//change title
-	newContainer.find('.title').text(room.name);
-	if (room._messages != undefined) {
-		room._messages.forEach( function (message, i) {
-			msg = '<li>' + message.username + ': ' + message.message;
-			newContainer.find('.chat-messages ul').append(msg);
-		});
-	}
-
-	//add container to typeContainer
-	$(typeContainer).append(newContainer);
-
-	if (type === '-excel') {
-		excel = new eExcel();
-		excel.init(room);
-	}
-
-	//do the same for link
-	newLink.addClass(room.name);
-
-	//filter
-	newLink.attr('data-filter', room.name + type);
-
-	//change link text
-	newLink.find('a').text(room.name);
-
-	//append link to list
-	$(typeLink).append(newLink);
-}
-
+/*
+* Start listening for data + userList socketio events
+*/
 function socketIOInit() {
 
-		// socket.on('time', function (time) {
-		// 	console.log(time);
-		// });
-
+		//vars to clone when creating containers
 		var chatContainer = $('.chat');
 		var excelContainer = $('.excel');
 		var link = $('.link');
 
-		//init ui + components when data received
+		/*
+		* @param Object data contains
+		* @param Array data.chatrooms: Array of all chatrooms
+		* @param Array data.excelsheets: Array of all excelsheets
+		* @param Object data.user: current user
+		*/
 		socket.on('data', function (data) {
-
-			//add user data to global user
+			//set current user global var
 			user = data.user;
 
-			//create chatroom containers
+			//begin ui, see @ui.js
+			ui = new ui({});
+
+			//set chatrooms global var
 			chatrooms = data.chatrooms;
+
+			//create rooms
 			chatrooms.forEach( function (room, i) {
-				createContainers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
+				ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 			});
 		
-			//create excel containers
+			//set excelsheets global var
 			excelsheets = data.excelsheets;
+
+			//create excelsheets
 			excelsheets.forEach( function (room, i) {
-				createContainers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
+				ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
 
-			//init hideNshow
+			//begin hideNshow, see hideNshow.js for usage explaination
 			hideNshow = new hideNshow({
-				main: jQuery('#isAuth'),
+				body: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
 				defaultActive: 4
@@ -125,26 +108,32 @@ function socketIOInit() {
 			
 			hideNshow.init();
 
-			//init chat
+			//init chatroom module, see chat.js
 			chat = new ewbChat({
 				form: '.chat-form'
 			});
 
 			chat.init();
 
-			//init excel update
+			//init excelsheet module, see excel.js
 			excel = new eExcel();
+			//listen for excelsheets socketio events
 			excel.update();
 			
-			//init ui
-			ui = new ui({});
+			//init main UI
 			ui.init();
 		});
-
+		/*
+		* @param Object userList: contains a list of users that are Objects
+		*/
 		socket.on('userList', function (userList) {
+			//remove current list
 			$('.user').remove();
+
+			//update global users var
 			users = userList;
 
+			//get username from each user
 			for (var key in userList) {
 				if (userList.hasOwnProperty(key)) {
 					var user = userList[key];
@@ -153,15 +142,3 @@ function socketIOInit() {
 			}
 		});
 }
-
-(function ($) {
-	$(document).on('click', '.link', function () {
-		hideNshow.init($(this));
-	});
-})(jQuery);
-
-(function($) {
-	$('#login').submit( function (e) {
-		e.preventDefault();
-	});
-}(jQuery));

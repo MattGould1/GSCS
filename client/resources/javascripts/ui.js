@@ -2,8 +2,7 @@
 
 	this.ui = function () {
 		var options = {
-			width: $(window).width(),
-			height: $(window).height()
+			Null: null		
 		};
 
 
@@ -55,6 +54,10 @@
 
 	}
 
+	ui.prototype.containers = function (room, container, link, type, typeContainer, typeLink) {
+		createContainers.call(this, room, container, link, type, typeContainer, typeLink);
+	}
+
 	//private
 	function extendDefaults(source, properties) {
 		var property;
@@ -64,6 +67,57 @@
 			}
 		}
 		return source;
+	}
+
+	/*
+	* @param Object room: chatroom or excelsheet
+	* @param jQuery element container
+	* @param jQuery element link
+	* @param String type: -chat or -excel
+	* @param String typeContainer: HTML ID
+	* @param String typeLink: HTML ID
+	*/
+	function createContainers(room, container, link, type, typeContainer, typeLink) {
+
+		//clone jQuery elements to manipulate + append
+		newContainer = container.clone();
+		newLink = link.clone();
+
+		//add class to container
+		newContainer.addClass(room.name);
+		//add attribute with type
+		newContainer.attr('data-filter', room.name + type);
+		//add hidden name attribute for sending data use _id as won't change
+		newContainer.find('.name').val(room._id);
+		//change title
+		newContainer.find('.title').text(room.name);
+		if (room._messages != undefined) {
+			room._messages.forEach( function (message, i) {
+				msg = '<li>' + message.username + ': ' + message.message;
+				newContainer.find('.chat-messages ul').append(msg);
+			});
+		}
+
+		//add container to typeContainer
+		$(typeContainer).append(newContainer);
+
+		//create handsontable
+		if (type === '-excel') {
+			excel = new eExcel();
+			excel.init(room);
+		}
+
+		//do the same for link
+		newLink.addClass(room.name);
+
+		//filter
+		newLink.attr('data-filter', room.name + type);
+
+		//change link text
+		newLink.find('a').text(room.name);
+
+		//append link to list
+		$(typeLink).append(newLink);
 	}
 
 })(jQuery)

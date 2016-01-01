@@ -1,10 +1,13 @@
-div.row
+div.row.display-cell
 	div.col-xs-12
+		h1.title.text-center GSCS
+		h3.subtitle.text-center Global Shipping Communication Services
 		form(role='form')#login.form-horizontal
+			div.form-group.input-group-lg
+				input(type='text' name='username' placeholder="Username")#username.form-control
+			div.form-group.input-group-lg
+				input(type='password' name='password' placeholder="Password")#password.form-control
 			div.form-group
-				label(for='username') username
-				input(type='text' name='username')#username.form-control
-			div.form-group
-				label(for='password') Password
-				input(type='password' name='password')#password.form-control
-			button(type='submit').btn.btn-default submit
+				button(type='submit').btn.btn-primary Log in
+		div.text-center
+			p Copyright

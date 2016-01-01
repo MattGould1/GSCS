@@ -1,11 +1,13 @@
 module.exports = {
+	/*
+	* @param Model ChatRoom
+	* @param Model ChatMessage
+	*/
 	message: function(sio, socket, ChatRoom, ChatMessage) {
 		/*
-		*
-		* msg object = room + message
-		*
+		* @param Object msg: _id: ChatRoom._id, message: client message
 		*/
-		socket.on('chat-message', function(msg) {
+		socket.on('chat-message', function (msg) {
 			//remove html/script tags
 			var message = msg.message;
 
@@ -15,9 +17,10 @@ module.exports = {
 			var message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
 			//allow colors
 			var message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
-
+			//add message back to msg Object
 			msg.message = message;
-			//save message
+
+			//find chatroom, and create chatmessage and save both, emit back to clients (including sender)
 			ChatRoom.findOne({ _id: msg._id }, function (err, chatroom) {
 				if (err) { console.log ('error finding chatroom ' + msg._id + 'error: ' + err); }
 
@@ -28,19 +31,28 @@ module.exports = {
 					message: message
 				});
 
-				newMsg.save(function (err, smsg) {
+				newMsg.save(function (err, savedmsg) {
 					if (err) { console.log('error saving message' + err); }
 
-					chatroom._messages.push(smsg._id);
+					//push ChatMessage id into chatroom _messages array
+					chatroom._messages.push(savedMsg._id);
+					//save chatroom
 					chatroom.save(function (err, success) {
+						if (err) { console.log ('Error saving chatroom after message push' + err); }
+
+						//update msg object and send back to client
 						msg.room = chatroom.name;
 						msg.username = socket.username;
+
 						sio.sockets.emit('chat-message', msg);
 					});
 				});
 			});
 		});
 	},
+	/*
+	*	@param Object users global list of users, holds all user information
+	*/
 	userList: function(sio, socket, users) {
 			sio.sockets.emit('userList', users);
 	}
