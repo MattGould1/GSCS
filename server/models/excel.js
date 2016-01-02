@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 var excelSchema = new mongoose.Schema({
 
 	name: { type: String, index: true, unique: true, required: true },
-	location: [String],
-	department: [String],
+	location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Locations' }],
+	department: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Departments'}],
 	rolesAllowed: [String],
 	lastModified: { type: Date, default: Date.now },
 	usersAllowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

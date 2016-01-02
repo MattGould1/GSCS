@@ -11,7 +11,7 @@ module.exports = {
 				excel.active = false;
 				excel.save(function (err, saveExcel) {
 					if (err) { console.log('Error updating excel' + err);}
-					sio.sockets.emit('update-excel', saveExcel);
+					sio.sockets.to(excel._id).emit('update-excel', saveExcel);
 				});
 			});
 		});
@@ -34,11 +34,16 @@ module.exports = {
 							excel: saveExcel,
 							edit: true
 						};
-						//send to current socket
-						socket.emit('edit-excel', data);
 						//send to all but current
-						data.edit = false;
-						socket.broadcast.emit('edit-excel', data);
+						var all = {
+							edit: false,
+							user: saveExcel.user,
+							id: saveExcel._id
+						};
+						//send true to current socket
+						socket.emit('edit-excel', data);
+						//send false back to every1 else
+						socket.broadcast.to(excel._id).emit('edit-excel', all);
 					});
 				}
 			});
@@ -51,7 +56,7 @@ module.exports = {
 				if (excel.active === true) {
 					excel.active = false;
 					excel.save(function (err, saveExcel) {
-						
+						sio.sockets.to(excel._id).emit('cancel-excel', excel);
 					});
 				}
 			});

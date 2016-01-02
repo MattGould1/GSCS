@@ -8,10 +8,22 @@
 	var create_chat_form = createchat.find('form');
 
 	function tableStructure (single) {
+		var location = [];
+		locations.forEach( function (loc) {
+			if (single.location.indexOf(loc._id) != -1) {
+				location.push( ' ' + loc.locations);
+			}
+		});
+		var department = [];
+		departments.forEach( function (dep) {
+			if (single.department. indexOf(dep._id) != -1) {
+				department.push( ' ' + dep.departments );
+			}
+		});
 		html = '<tr class="' + single.name + '">';
 		html +=		'<td>' + single.name + '</td>';
-		html +=		'<td>' + single.department + '</td>';
-		html += 	'<td>' + single.location + '</td>';
+		html +=		'<td>' + department + '</td>';
+		html += 	'<td>' + location + '</td>';
 		html += 	'<td><a class="btn btn-primary col-xs-6 edit">Edit</a><button type="button" data-toggle="modal" data-target="#modal-deletechat" class="btn btn-danger col-xs-6 delete">Delete</button></td>';
 		html += '</tr>';
 
@@ -42,12 +54,17 @@
 		chatrooms.forEach( function (entry) {
 			console.log(entry);
 			if (entry.name == name) {
-				//username
+				//name
 				chat_form.find('#edit-chat-name').val(entry.name);
-				//password
-				chat_form.find('#edit-chat-locations').val(entry.location);
-				//firstname
-				chat_form.find('#edit-chat-departments').val(entry.department);
+				chat_form.find('#edit-chat-departments').html('');
+				chat_form.find('#edit-chat-locations').html('');
+				locations.forEach(function (location, i) {
+					
+					chat_form.find('#edit-chat-locations').append('<input type="checkbox" class="chat-locations" value="' + location._id + '"/>' + location.locations);
+				});
+				departments.forEach( function (department, i) {
+					chat_form.find('#edit-chat-departments').append('<input type="checkbox" class="chat-departments" value="' + department._id + '"/>' + department.departments);
+				});
 				//id
 				chat_form.find('#edit-chat-id').val(entry._id);
 				//show form, hide others
@@ -62,10 +79,21 @@
 
 	container.on('click', '.chat-save', function() {
 		var name = chat_form.find('#edit-chat-name').val();
-		var location = chat_form.find('#edit-chat-locations').val();
-		var department = chat_form.find('#edit-chat-departments').val();
+
+		var location = [];
+		chat_form.find('#edit-chat-locations').find('.chat-locations').each( function (i) {
+			if ($(this).prop('checked')) {
+				location.push($(this).val());
+			}
+		});
+		var department = [];
+		chat_form.find('#edit-chat-departments').find('.chat-departments').each (function (i) {
+			if ( $(this).prop('checked') ) {
+				department.push($(this).val());
+			}
+		});
+
 		var id = chat_form.find('#edit-chat-id').val();
-		console.log(name);
 		$.ajax({
 			url: 'http://127.0.0.1:8080/admin/chat/update',
 			type: 'POST',
@@ -139,14 +167,32 @@
 	});
 
 	container.on('click', '.createchat', function() {
+		$('#create-chat-department').html('');
+		$('#create-chat-location').html('');
+		locations.forEach(function (location, i) {
+			$('#create-chat-location').append('<input type="checkbox" class="chat-locations" value="' + location._id + '"/>' + location.locations);
+		});
+		departments.forEach( function (department, i) {
+			$('#create-chat-department').append('<input type="checkbox" class="chat-departments" value="' + department._id + '"/>' + department.departments);
+		});
 		resetState(container, createchat);
 	});
 
 	container.on('click', '.chat-create', function(e) {
 		e.preventDefault();
 		var name = create_chat_form.find('#create-chat-name').val();
-		var location = create_chat_form.find('#create-chat-location').val();
-		var department = create_chat_form.find('#create-chat-department').val();
+		var location = [];
+		$('#create-chat-location').find('.chat-locations').each( function (i) {
+			if ( $(this).prop('checked') ) {
+				location.push($(this).val());
+			}
+		});
+		var department = [];
+		$('#create-chat-department').find('.chat-departments').each( function (i) {
+			if ( $(this).prop('checked') ) {
+				department.push($(this).val());
+			}
+		});
 
 		$.ajax({
 			url: 'http://127.0.0.1:8080/admin/chat/create',

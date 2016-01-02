@@ -14,6 +14,7 @@ var db = require('./models/db');
 var user = require('./models/user');
 var chat = require('./models/chat');
 var excel = require('./models/excel');
+var locdep = require('./models/locdep');
 //routes
 var index = require('./routes/index');
 var admin = require('./routes/admin');
@@ -22,6 +23,8 @@ var admin = require('./routes/admin');
 var ChatRoom = mongoose.model('ChatRoom');
 var ChatMessage = mongoose.model('ChatMessage');
 var Excel = mongoose.model('Excel');
+var Locations = mongoose.model('Locations');
+var Departments = mongoose.model('Departments');
 
 //express
 var app = express();
@@ -75,11 +78,6 @@ sio.use(socketioJwt.authorize({
     handshake: true
 }));
 
-sio.use(function (socket, next){
-    console.log(Date.now());
-    next();
-});
-
 //socketio handlers
 var chat = require('./handlers/chat');
 var excel = require('./handlers/excel');
@@ -96,17 +94,23 @@ sio.on('connection', function (socket) {
     users[socket.username] = socket.decoded_token;
     
     //connection data
-    ChatRoom.find({}).populate('_messages').exec(function (err, chatrooms) {
+    ChatRoom.find({ location: socket.decoded_token.location, department: socket.decoded_token.department }).populate('_messages').exec(function (err, chatrooms) {
         if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
-        Excel.find({}).populate('user').exec(function (err, excelsheets) {
+        Excel.find({ location: socket.decoded_token.location, department: socket.decoded_token.department }).populate('user').exec(function (err, excelsheets) {
+
             if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
-            
             //emit data
             var data = {
                 chatrooms: chatrooms,
                 excelsheets: excelsheets,
                 user: socket.decoded_token
             };
+            chatrooms.forEach(function (chatroom) {
+                socket.join(chatroom._id);
+            });
+            excelsheets.forEach(function (excelsheet) {
+                socket.join(excelsheet._id);
+            });
             socket.emit('data', data);
 
         });
@@ -122,6 +126,7 @@ sio.on('connection', function (socket) {
     excel.edit(sio, socket, Excel);
     excel.update(sio, socket, Excel);
     excel.cancel(sio, socket, Excel);
+
     //handle disconnect event
     socket.on('disconnect', function(data) {
         //make sure socket has username
@@ -137,6 +142,7 @@ sio.on('connection', function (socket) {
                 excelsheet.active = false;
                 excelsheet.save(function (err, success){
                     if (err) { console.log('error reseting excelsheet' + err); }
+                    sio.sockets.to(success._id).emit('cancel-excel', success);
                 });
             });
         });

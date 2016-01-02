@@ -13,7 +13,7 @@
 
 	//public methods
 	/*
-	* @param Object excelsheet: _id, name, user, revisions, department etc see @server models
+	* @param Object excelsheet: _id, name, user, revisions, department etc see @server Model Excel
 	*/
 	eExcel.prototype.init = function (excelsheet) {
 		initExcel.call(this, excelsheet);
@@ -118,6 +118,7 @@
 				container.find('.excel-cancel').show();
 			} else {
 				//tell people who's editting
+				container.find('.message').show();
 				container.find('.message').html(excelStrings.edittedBy + excelsheet.user.username);
 				//hide options
 				container.find('.excel-options').hide();
@@ -163,11 +164,6 @@
 				manualColumnResize: false,
 				manualRowResize: false,
 			});
-
-			$(this).siblings('.excel-update').hide();
-			$(this).hide();
-			$(this).siblings('.excel-edit').show();
-			$(this).parent('.excel-options').siblings('.message').html('');
 
 			socket.emit('cancel-excel', excel._id);
 		});
@@ -259,10 +255,9 @@
 		*/
 		socket.on('edit-excel', function (data) {
 			//get jQuery object for excelsheet
-			cancelEdit.call(this, data.excel);
-			var hot = $('.' + data.excel._id);
-
 			if (data.edit === true) {
+				cancelEdit.call(this, data.excel);
+				var hot = $('.' + data.excel._id);
 				//update handsontable instance
 				hot.handsontable('getInstance').updateSettings({
 					//allow edits
@@ -280,10 +275,22 @@
 				hot.siblings('.excel-options').find('.excel-edit').hide();
 				hot.siblings('.excel-options').find('.excel-update').show();
 				hot.siblings('.excel-options').find('.excel-cancel').show();
+				hot.siblings('.message').show();
 				hot.siblings('.message').html(excelStrings.currentEdit);
 			} else {
+				var hot = $('.' + data.id);
 				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
-				hot.siblings('.message').html(excelStrings.edittedBy + data.excel.user)
+				for (var key in users) {
+					if(users.hasOwnProperty(key)) {
+						var user = users[key];
+						if (user._id === data.user) {
+							name = user.username;
+						}
+					}
+				}
+				hot.siblings('.message').show();
+				hot.siblings('.excel-options').find('.excel-edit').hide();
+				hot.siblings('.message').html(excelStrings.edittedBy + name)
 			}
 		});
 		/*
@@ -315,8 +322,18 @@
 			//reset ui options @TODO improve mess
 			hot.siblings('.excel-options').find('.excel-edit').show();
 			hot.siblings('.message').html('');
+			hot.siblings('.message').hide();
 			hot.siblings('.excel-options').find('.excel-cancel').hide();
 			hot.siblings('.excel-options').find('.excel-update').hide();
+		});
+
+		socket.on('cancel-excel', function (excel) {
+			console.log(excel);
+			var hot = $('.' + excel._id);
+			hot.siblings('.message').hide();
+			hot.siblings('.excel-options').find('.excel-cancel').hide();
+			hot.siblings('.excel-options').find('.excel-update').hide();
+			hot.siblings('.excel-options').find('.excel-edit').show();
 		});
 	}
 

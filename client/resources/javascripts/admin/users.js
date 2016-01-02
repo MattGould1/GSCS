@@ -8,12 +8,30 @@
 	var create_form = createuser.find('form');
 
 	function tableStructure(single) {
+			var location = [];
+			console.log(single);
+			locations.forEach( function (loc) {
+				if (single.location != undefined) {
+					if (single.location.indexOf(loc._id) != -1) {
+						location.push( ' ' + loc.locations);
+						console.log(loc.locations);
+					}
+				}
+			});
+			var department = [];
+			departments.forEach( function (dep) {
+				if (single.department != undefined) {
+					if (single.department.indexOf(dep._id) != -1) {
+						department.push( ' ' + dep.departments );
+					}
+				}
+			});
 			html = '<tr class="' + single.username + '">';
 			html +=		'<td>' + single.username + '</td>';
 			html +=		'<td>' + single.firstName + '</td>';
 			html += 	'<td>' + single.lastName + '</td>';
-			html += 	'<td>' + single.location + '</td>';
-			html +=		'<td>' + single.department + '</td>';
+			html += 	'<td>' + location + '</td>';
+			html +=		'<td>' + department + '</td>';
 			html += 	'<td><a class="btn btn-primary col-xs-6 edit">Edit</a><button type="button" data-toggle="modal" data-target="#modal-deleteuser" class="btn btn-danger col-xs-6 delete">Delete</button></td>';
 			html += '</tr>';
 			return html
@@ -56,10 +74,17 @@
 				edit_form.find('#edit-lastname').val(single.lastName);
 				//email
 				edit_form.find('#edit-email').val(single.email);
-				//location
-				edit_form.find('#edit-location').val(single.location);
-				//department
-				edit_form.find('#edit-department').val(single.department);
+
+				edit_form.find('#edit-department').html('');
+				edit_form.find('#edit-location').html('');
+				locations.forEach(function (location, i) {
+					
+					edit_form.find('#edit-location').append('<option class="user-locations" value="' + location._id + '">' + location.locations + '</option>');
+				});
+				departments.forEach( function (department, i) {
+					edit_form.find('#edit-department').append('<option class="user-departments" value="' + department._id + '">' + department.departments + '</option>');
+				});
+
 				//status
 				edit_form.find('#edit-status').val(single.status);
 
@@ -165,6 +190,14 @@
 	});
 
 	container.on('click', '.createuser', function() {
+		$('#create-department').html('');
+		$('#create-location').html('');
+		locations.forEach(function (location, i) {
+			$('#create-location').append('<option class="user-locations" value="' + location._id + '">' + location.locations + '</option>');
+		});
+		departments.forEach( function (department, i) {
+			$('#create-department').append('<option class="user-departments" value="' + department._id + '">' + department.departments + '</option>');
+		});
 		resetState(container, createuser);
 	});
 

@@ -1,4 +1,4 @@
-var admin, token, users, chatrooms, excels;
+var admin, token, users, chatrooms, excels, locations, departments;
 
 
 admin = $('#admin');

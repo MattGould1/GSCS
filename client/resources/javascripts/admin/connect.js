@@ -17,6 +17,9 @@
 				users = data.users;
 				chatrooms = data.chat;
 				excels = data.excels;
+				locations = data.locations;
+				departments = data.departments;
+				window.setLocDep();
 				window.userLoad();
 				window.chatLoad();
 				window.excelLoad();

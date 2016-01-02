@@ -55,6 +55,7 @@
 		* @param Object chatroom: _id = chatroom._id, message, chatroom.room, user.username
 		*/
 		socket.on('chat-message', function (message) {
+			console.log(message);
 			//build message, include na
 			msg = '<li>' + message.username + ': ' + message.message;
 			//jquery append

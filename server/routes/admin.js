@@ -7,6 +7,8 @@ var express = require('express'),
     User = mongoose.model('User'),
     ChatRoom = mongoose.model('ChatRoom'),
     Excel = mongoose.model('Excel'),
+	Locations = mongoose.model('Locations'),
+	Departments = mongoose.model('Departments'),
 	login = require('./../modules/login'),
     //socketio jwt
     socketioJwt = require('socketio-jwt');
@@ -35,11 +37,48 @@ router.post('/', function (req, res) {
 				 .exec( function (err, excels) {
 				 if(err) { console.log('Error finding excel sheets: ' + err); }
 
-				res.json({ chat: rooms, users: users, excels: excels });
+				 Locations.find({}).exec( function (err, locations) {
+				 	Departments.find({}).exec( function (err, departments) {
+						res.json({ chat: rooms, users: users, excels: excels, locations: locations, departments: departments });
+				 	});
+				 });
 			});
 
 		});
 	});
+});
+router.post('/locdep', function (req, res) {
+	req.body.locations.forEach( function (location, i) {
+		var loc = new Locations({
+			locations: location
+		});
+		loc.save( function (err, saved) {
+
+		});
+	});
+
+	req.body.departments.forEach( function (department, i) {
+		var dep = new Departments({
+			departments: department
+		});
+		dep.save( function (err, saved) {
+
+		});
+	});
+});
+
+router.post('/locdep/delete', function (req, res) {
+	if (req.body.data.type === 'locations') {
+		Locations.findOneAndRemove({ locations: req.body.data.value }, function (err, location) {
+			location.remove();
+		});
+	}
+	if (req.body.data.type === 'departments') {
+		Departments.findOneAndRemove({ departments: req.body.data.value }, function (err, department) {
+			department.remove();
+		});
+	}
+
 });
 
 router.post('/user/update', function (req, res) {

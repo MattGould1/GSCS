@@ -8,10 +8,23 @@
 	var create_excel_form = createexcel.find('form');
 
 	function tableStructure (single) {
+		var location = [];
+		locations.forEach( function (loc) {
+			if (single.location.indexOf(loc._id) != -1) {
+				location.push( ' ' + loc.locations);
+				console.log(loc.locations);
+			}
+		});
+		var department = [];
+		departments.forEach( function (dep) {
+			if (single.department. indexOf(dep._id) != -1) {
+				department.push( ' ' + dep.departments );
+			}
+		});
 		html = '<tr class="' + single.name + '">';
 		html +=		'<td>' + single.name + '</td>';
-		html +=		'<td>' + single.department + '</td>';
-		html += 	'<td>' + single.location + '</td>';
+		html +=		'<td>' + department + '</td>';
+		html += 	'<td>' + location + '</td>';
 		html += 	'<td><a class="btn btn-primary col-xs-6 edit">Edit</a><button type="button" data-toggle="modal" data-target="#modal-deleteexcel" class="btn btn-danger col-xs-6 delete">Delete</button></td>';
 		html += '</tr>';
 
@@ -43,10 +56,15 @@
 			if (entry.name == name) {
 				//id
 				excel_form.find('#edit-excel-id').val(entry._id);
-				//username
-				excel_form.find('#edit-excel-name').val(entry.name);
-				//password
-				excel_form.find('#edit-excel-location').val(entry.location);
+				excel_form.find('#edit-chat-departments').html('');
+				excel_form.find('#edit-chat-locations').html('');
+				locations.forEach(function (location, i) {
+					
+					excel_form.find('#edit-excel-locations').append('<input type="checkbox" class="excel-locations" value="' + location._id + '"/>' + location.locations);
+				});
+				departments.forEach( function (department, i) {
+					excel_form.find('#edit-excel-departments').append('<input type="checkbox" class="excel-departments" value="' + department._id + '"/>' + department.departments);
+				});
 				//firstname
 				excel_form.find('#edit-excel-department').val(entry.department);
 
@@ -99,8 +117,18 @@
 	container.on('click', '.excelsave', function() {
 		var id = excel_form.find('#edit-excel-id').val();
 		var name = excel_form.find('#edit-excel-name').val();
-		var location = excel_form.find('#edit-excel-locations').val();
-		var department = excel_form.find('#edit-excel-departments').val();
+		var location = [];
+		excel_form.find('#edit-excel-locations').find('.excel-locations').each( function (i) {
+			if ($(this).prop('checked')) {
+				location.push($(this).val());
+			}
+		});
+		var department = [];
+		excel_form.find('#edit-excel-departments').find('.excel-departments').each (function (i) {
+			if ( $(this).prop('checked') ) {
+				department.push($(this).val());
+			}
+		});
 		$.ajax({
 			url: 'http://127.0.0.1:8080/admin/excel/update',
 			type: 'POST',
@@ -140,15 +168,32 @@
 	});
 
 	container.on('click', '.create-excel', function() {
+		$('#create-excel-departments').html('');
+		$('#create-excel-locations').html('');
+		locations.forEach(function (location, i) {
+			$('#create-excel-locations').append('<input type="checkbox" class="excel-locations" value="' + location._id + '"/>' + location.locations);
+		});
+		departments.forEach( function (department, i) {
+			$('#create-excel-departments').append('<input type="checkbox" class="excel-departments" value="' + department._id + '"/>' + department.departments);
+		});
 		resetState(container, createexcel);
 	});
 
 	container.on('click', '.createexcel', function(e) {
 		e.preventDefault();
 		var name = create_excel_form.find('#create-excel-name').val();
-		var location = create_excel_form.find('#create-excel-locations').val();
-		var department = create_excel_form.find('#create-excel-departments').val();
-
+		var location = [];
+		$('#create-excel-locations').find('.excel-locations').each( function (i) {
+			if ( $(this).prop('checked') ) {
+				location.push($(this).val());
+			}
+		});
+		var department = [];
+		$('#create-excel-departments').find('.excel-departments').each( function (i) {
+			if ( $(this).prop('checked') ) {
+				department.push($(this).val());
+			}
+		});
 		$.ajax({
 			url: 'http://127.0.0.1:8080/admin/excel/create',
 			type: 'POST',

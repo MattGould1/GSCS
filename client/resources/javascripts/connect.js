@@ -41,7 +41,7 @@ function init(token) {
 			notAuth.hide();
 			Auth.show();
 		}, 500);
-
+		console.log('connected');
 		//make socketio calls
 		socketIOInit();
 	});
@@ -49,12 +49,14 @@ function init(token) {
 	//connection failed, lets stop the app
 	socket.on('connect_failed', function (data) {
 		//failed to connect, set ui
+		console.log('connect fail');
 		notAuth.hide();
 		Auth.show();
 	});
 
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
+		console.log('disconnect');
 		notAuth.show();
 		Auth.hide();
 	});

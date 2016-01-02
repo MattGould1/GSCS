@@ -4,8 +4,8 @@ var mongoose = require('mongoose');
 var roomSchema = new mongoose.Schema({
 
 	name: { type: String, index: true, unique: true, required: true },
-	location: [],
-	department: [],
+	location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Locations' }],
+	department: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Departments'}],
 	rolesAllowed: [],
 	usersAllowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	_messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }]

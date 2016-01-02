@@ -31,9 +31,8 @@ module.exports = {
 					message: message
 				});
 
-				newMsg.save(function (err, savedmsg) {
+				newMsg.save(function (err, savedMsg) {
 					if (err) { console.log('error saving message' + err); }
-
 					//push ChatMessage id into chatroom _messages array
 					chatroom._messages.push(savedMsg._id);
 					//save chatroom
@@ -44,7 +43,7 @@ module.exports = {
 						msg.room = chatroom.name;
 						msg.username = socket.username;
 
-						sio.sockets.emit('chat-message', msg);
+						sio.sockets.to(chatroom._id).emit('chat-message', msg);
 					});
 				});
 			});
