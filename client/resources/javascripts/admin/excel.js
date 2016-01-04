@@ -195,7 +195,7 @@
 			}
 		});
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/excel/create',
+			url: url + '/admin/excel/create',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
