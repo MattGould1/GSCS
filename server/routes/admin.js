@@ -36,7 +36,7 @@ router.post('/', function (req, res) {
 			Excel.find({})
 				 .exec( function (err, excels) {
 				 if(err) { console.log('Error finding excel sheets: ' + err); }
-
+				 console.log(excels);
 				 Locations.find({}).exec( function (err, locations) {
 				 	Departments.find({}).exec( function (err, departments) {
 						res.json({ chat: rooms, users: users, excels: excels, locations: locations, departments: departments });

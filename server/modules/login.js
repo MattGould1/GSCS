@@ -94,7 +94,7 @@ exports.createChatroom = function(ChatRoom, req, callback) {
 exports.createExcel = function(Excel, req, callback) {
 	Excel.findOne( { name: req.body.name }, function (err, findExcel) {
 		if (err) { console.log('Error finding excel: ' + err) ; }
-
+		console.log('finding excel');
 		if ( findExcel === null ) {
 			console.log('Excel does not exist, creating excel');
 
