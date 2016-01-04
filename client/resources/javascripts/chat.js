@@ -52,7 +52,7 @@
 	*/
 	function receive() {
 		/*
-		* @param Object chatroom: _id = chatroom._id, message, chatroom.room, user.username
+		* @param Object message: _id = chatroom._id, message, chatroom.room, user.username
 		*/
 		socket.on('chat-message', function (message) {
 			console.log(message);
@@ -60,6 +60,11 @@
 			msg = '<li>' + message.username + ': ' + message.message;
 			//jquery append
 			$('[data-filter="' + message.room + '-chat"]').find('.chat-messages ul').append(msg);
+
+			var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
+			console.log(container.height());
+			console.log(container[0].scrollHeight);
+			container.scrollTop(container[0].scrollHeight);
 		});
 	}
 

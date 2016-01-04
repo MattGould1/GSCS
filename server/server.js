@@ -25,7 +25,7 @@ var ChatMessage = mongoose.model('ChatMessage');
 var Excel = mongoose.model('Excel');
 var Locations = mongoose.model('Locations');
 var Departments = mongoose.model('Departments');
-
+var User = mongoose.model('User');
 //express
 var app = express();
 
@@ -81,6 +81,8 @@ sio.use(socketioJwt.authorize({
 //socketio handlers
 var chat = require('./handlers/chat');
 var excel = require('./handlers/excel');
+var user = require('./handlers/user');
+
 //connect to default namespace
 sio.on('connection', function (socket) {
     //disconnect socket if no username, wtf?
@@ -122,6 +124,8 @@ sio.on('connection', function (socket) {
     //broadcast usernames
     chat.userList(sio, socket, users);
 
+    //user handles
+    user.update(sio, socket, User);
     //handle edit request
     excel.edit(sio, socket, Excel);
     excel.update(sio, socket, Excel);

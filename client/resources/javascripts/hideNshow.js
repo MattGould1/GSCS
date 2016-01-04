@@ -93,6 +93,10 @@
 				//show the container if data-filter === link data-filter else hide
 				if ($(this).attr('data-filter') === show) {
 					$(this).show();
+					var container = $(this).find('.chat-messages');
+					if(container.length > 0) {
+						container.scrollTop(container[0].scrollHeight);
+					}
 				} else {
 					$(this).hide();
 				}

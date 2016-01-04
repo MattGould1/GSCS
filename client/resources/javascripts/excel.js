@@ -89,12 +89,20 @@
 			//add more details for headers later @TODO
 			rowHeaders: true,
 			colHeaders: true,
+			cells: function (row, col, prop) {
+				var cellProperties = {};
+				console.log(row);
+				if (row === 0, col === 0) {
+					cellProperties.renderer = customRender.call(this); // uses function directly
+				}
+			}
 		});
 
 		//get current instance, this will be used to set handsontable hooks @todo
 		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
 		setHooks.call(this, hotInstance, excelsheet._id);
-
+		hotInstance.setCellMeta(0,0,'test', 'hmm');
+		console.log(hotInstance.getCellMeta(0,0));
 		// change ui State if the sheet is active, if the excelsheet is active it is being editted
 		if ( excelsheet.active === true ) {
 			//check if the current user == excelsheet current user change state to edit if it is
@@ -126,6 +134,19 @@
 		}
 	}
 
+	function customRender(instance, td, row, col, prop, value, cellProperties) {
+	    // change to the type of renderer you need; eg. if this is supposed
+	    // to be a checkbox, use CheckboxRenderer instead of TextRenderer
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+
+	    // get the jquery selector for the td or add the class name using native JS
+	    $(td).addClass("error");
+
+	    return td;
+	}
+
+
+	//check to see if we can edit, the button won't be visible if it is active, but who knows right?
 	function tryEditExcel() {
 		$(document).on('click', '.excel-edit', function () {
 			//get the id from clicked excelsheet, id is sent to server see @server handlers/excel
@@ -326,7 +347,7 @@
 			hot.siblings('.excel-options').find('.excel-cancel').hide();
 			hot.siblings('.excel-options').find('.excel-update').hide();
 		});
-
+		//reset ui back to edit
 		socket.on('cancel-excel', function (excel) {
 			console.log(excel);
 			var hot = $('.' + excel._id);

@@ -24,8 +24,6 @@ $('.row').on('submit', '#register', function(e) {
 			lastName: lastName,
 			firstName: firstName,
 			email: email,
-			location: location,
-			department: department,
 			admin: admin
 		}),
 		success: function (data, status, xhr) {

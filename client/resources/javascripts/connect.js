@@ -109,14 +109,6 @@ function socketIOInit() {
 			});
 			
 			hideNshow.init();
-
-			//init chatroom module, see chat.js
-			chat = new ewbChat({
-				form: '.chat-form'
-			});
-
-			chat.init();
-
 			//init excelsheet module, see excel.js
 			excel = new eExcel();
 			//listen for excelsheets socketio events
@@ -124,6 +116,13 @@ function socketIOInit() {
 			
 			//init main UI
 			ui.init();
+
+			//init chatroom module, see chat.js
+			chat = new ewbChat({
+				form: '.chat-form'
+			});
+
+			chat.init();
 		});
 		/*
 		* @param Object userList: contains a list of users that are Objects
