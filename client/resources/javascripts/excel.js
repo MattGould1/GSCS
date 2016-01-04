@@ -46,6 +46,17 @@
 
 		return cellArray;
 	}
+	function customRender(instance, td, row, col, prop, value, cellProperties) {
+	    // change to the type of renderer you need; eg. if this is supposed
+	    // to be a checkbox, use CheckboxRenderer instead of TextRenderer
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+	    console.log('hmm');
+	   // // get the jquery selector for the td or add the class name using native JS
+	   $(td).addClass("error");
+
+	     return td;
+	}
+
 
 	function initExcel (excelsheet) {
 		//handsontable requires an Array of Arrays as its data, by default room.data could be null or 0 in length, if this is the case make it [[]]
@@ -91,9 +102,11 @@
 			colHeaders: true,
 			cells: function (row, col, prop) {
 				var cellProperties = {};
-				console.log(row);
 				if (row === 0, col === 0) {
-					cellProperties.renderer = customRender.call(this); // uses function directly
+					cellProperties.renderer = function (td) {
+						console.log(td);
+						return td;
+					}
 				}
 			}
 		});
@@ -101,8 +114,7 @@
 		//get current instance, this will be used to set handsontable hooks @todo
 		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
 		setHooks.call(this, hotInstance, excelsheet._id);
-		hotInstance.setCellMeta(0,0,'test', 'hmm');
-		console.log(hotInstance.getCellMeta(0,0));
+
 		// change ui State if the sheet is active, if the excelsheet is active it is being editted
 		if ( excelsheet.active === true ) {
 			//check if the current user == excelsheet current user change state to edit if it is
@@ -133,18 +145,6 @@
 			}
 		}
 	}
-
-	function customRender(instance, td, row, col, prop, value, cellProperties) {
-	    // change to the type of renderer you need; eg. if this is supposed
-	    // to be a checkbox, use CheckboxRenderer instead of TextRenderer
-	    Handsontable.renderers.TextRenderer.apply(this, arguments);
-
-	    // get the jquery selector for the td or add the class name using native JS
-	    $(td).addClass("error");
-
-	    return td;
-	}
-
 
 	//check to see if we can edit, the button won't be visible if it is active, but who knows right?
 	function tryEditExcel() {
