@@ -95,7 +95,7 @@
 
 		var id = chat_form.find('#edit-chat-id').val();
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/chat/update',
+			url: url + '/admin/chat/update',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
@@ -145,7 +145,7 @@
 		var name = $(this).parents('#modal-deletechat').attr('name');
 
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/chat/delete',
+			url: url + '/admin/chat/delete',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
@@ -195,7 +195,7 @@
 		});
 
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/chat/create',
+			url: url + '/admin/chat/create',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',

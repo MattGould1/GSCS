@@ -5,7 +5,7 @@
 	if($.cookie('token')) {
 		token = $.cookie('token');
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin',
+			url: url + '/admin',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',

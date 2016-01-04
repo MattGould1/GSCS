@@ -108,7 +108,7 @@
 		editDepartment = edit_form.find('#edit-department').val();
 		editStatus = edit_form.find('#edit-status').val()
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/user/update',
+			url: url + '/admin/user/update',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
@@ -167,7 +167,7 @@
 		var username = $(this).parents('#modal-deleteuser').attr('username');
 
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/user/delete',
+			url: url + '/admin/user/delete',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
@@ -212,7 +212,7 @@
 		createStatus = create_form.find('#create-status').val();
 		createAdmin = create_form.find('#create-admin').is(':checked');
 		$.ajax({
-			url: 'http://127.0.0.1:8080/admin/user/create',
+			url: url + '/admin/user/create',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',

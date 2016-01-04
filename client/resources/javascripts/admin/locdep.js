@@ -52,7 +52,7 @@ $('#locdep').on('click', '.delete', function (e) {
 	var input = $(this).parent().siblings('div').find('input');
 
 	$.ajax({
-		url: 'http://127.0.0.1:8080/admin/locdep/delete',
+		url: url + '/admin/locdep/delete',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',
@@ -106,7 +106,7 @@ $('#locdep').on('click', '.locdep-save', function (e) {
 	});
 	console.log(depArray);
 	$.ajax({
-		url: 'http://127.0.0.1:8080/admin/locdep',
+		url: url + '/admin/locdep',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',
