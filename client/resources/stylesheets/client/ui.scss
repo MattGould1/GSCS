@@ -47,7 +47,7 @@
 		background: #3572b0;
 		border-bottom: 1px solid #337ab7;
 		padding: 0px 15px;
-		.edit-profile {
+		.edit-profile, .logout {
 			margin: 18px;
 		}
 	}
@@ -82,3 +82,62 @@
 		font-weight: 700;
 	}
 }
+$full-width: 100%;
+$size-ten: 10px;
+
+.flex-wrap-end{
+	display: -webkit-flex;		-webkit-justify-content: flex-end;		-webkit-align-items: center;
+	display: -moz-flex;			-moz-justify-content: flex-end;			-moz-align-items: center;
+	display: -ms-flex;			-ms-justify-content: flex-end;			-ms-align-items: center;
+	display: flex;				justify-content: flex-end;				align-items: center;
+}
+.flex-wrap-center{	
+	display: -webkit-flex;		-webkit-justify-content: center;		-webkit-align-items: center;
+	display: -moz-flex;			-moz-justify-content: center;			-moz-align-items: center;
+	display: -ms-flex;			-ms-justify-content:center;			    -ms-align-items: center;
+	display: flex;				justify-content: center;				align-items: center;
+}
+.text-title-new{color: #aaa;}
+/* header */
+header {color: white;}
+header div h1,header div p{margin: 0;}
+header .flex-button-h-end{ @extend  .flex-wrap-end; }
+header .row{ @extend .flex-wrap-center; }
+header button{margin: 18px 0 !important;}
+header button.edit-profile{margin-right: 10px !important;}
+/* sidebar */
+#sidebar h1{@extend .text-title-new;}
+/* users */
+#users h3 {@extend .text-title-new;}
+/* login page */ 
+.size-center-login {
+	width:450px;
+	margin-right:auto;
+	margin-left:auto;
+}
+
+#login div a{margin-left: $size-ten;}
+.row.display-cell{width: $full-width;}
+.form-horizontal#login{ @extend .size-center-login; } 
+#login div input#checkbox {
+	float: left; 
+	font-size: 18px; /* 18px; */
+	margin:2px 10px 0 0 ;
+}
+.modal-content .my-profile-content form .form-group label {
+	padding-right: $size-ten;
+	padding-left: $size-ten;
+}
+
+@media (max-width: 767px) {
+	#sidebar,#users{height: 300px !important;}
+}
+
+@media (max-width: 500px) {
+  .size-center-login {width: $full-width;}
+  header .flex-button-h-end{ display: block; }
+  header button.edit-profile{margin-right: 0 !important;margin-bottom: -5px !important;}
+}
+
+
+
