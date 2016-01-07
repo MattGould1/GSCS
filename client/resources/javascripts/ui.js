@@ -41,10 +41,6 @@
 					Compartment.find('#excel .excel-options').css('height', '49px');
 				}
 
-				if (compartment === '#users') {
-
-				}
-
 				$(compartment).css('height', contentHeight);
 			});
 
@@ -52,21 +48,6 @@
 
 	ui.prototype.resize = function () {
 
-	}
-
-	ui.prototype.containers = function (room, container, link, type, typeContainer, typeLink) {
-		createContainers.call(this, room, container, link, type, typeContainer, typeLink);
-	}
-
-	//private
-	function extendDefaults(source, properties) {
-		var property;
-		for (property in properties) {
-			if (properties.hasOwnProperty(property)) {
-				source[property] = properties[property];
-			}
-		}
-		return source;
 	}
 
 	/*
@@ -77,11 +58,60 @@
 	* @param String typeContainer: HTML ID
 	* @param String typeLink: HTML ID
 	*/
-	function createContainers(room, container, link, type, typeContainer, typeLink) {
+	ui.prototype.containers = function (room, container, link, type, typeContainer, typeLink) {
 
-		//clone jQuery elements to manipulate + append
-		newContainer = container.clone();
-		newLink = link.clone();
+		//create jquery objects with the html
+		var chatHTML = '<div class="container chat room">' +
+								'<div class="row">' +
+									'<div class="col-xs-12 chat-messages">' +
+										'<ul>' +
+										'</ul>' +
+									'</div>' +
+								'<div class="col-xs-12">' +
+									'<div class="row">' +
+										'<form class="chat-form">' +
+											'<div class="col-xs-10">' +
+												'<div class="form-group">' +
+													'<input type="text" class="message form-control"/>' +
+												'</div>' +
+											'</div>' +
+											'<div class="col-xs-2">' +
+												'<div class="form-group">' +
+													'<input type="hidden" class="name">' +
+													'<button class="btn btn-primary form-control" type="submit">Submit</button>' +
+												'</div>' +
+											'</div>' +
+										'</form>' +
+									'</div>' +
+								'</div>' +
+							'</div>';
+
+		var excelHTML = '<div class="container excel room">' +
+							'<div class="row">' +
+								'<div class="col-xs-12">' +
+									'<div class="excel-options">' +
+										'<a class="btn btn-info excel-edit">Edit</a>' +
+										'<a class="btn btn-primary excel-update soft-hide">Update</a>' +
+										'<a class="btn btn-warning excel-cancel soft-hide">Cancel</a>' +
+									'</div>' +
+									'<div class="message alert alert-info soft-hide"></div>' +
+									'<div class="hot"></div>' +
+								'</div>' +
+							'</div>' +
+						'</div>';
+
+		var linkHTML = '<li class="link"><a></a></li>';
+
+		//turn html into jquery objects
+		$chat = $($.parseHTML(chatHTML));
+		$excel = $($.parseHTML(excelHTML));
+		$link = $($.parseHTML(linkHTML));
+		
+		if (type === '-chat') {
+			newContainer = $chat;
+		} else if (type === '-excel') {
+			newContainer = $excel;
+		}
 
 		//add class to container
 		newContainer.addClass(room.name);
@@ -108,16 +138,27 @@
 		}
 
 		//do the same for link
-		newLink.addClass(room.name);
+		$link.addClass(room.name);
 
 		//filter
-		newLink.attr('data-filter', room.name + type);
+		$link.attr('data-filter', room.name + type);
 
 		//change link text
-		newLink.find('a').text(room.name);
+		$link.find('a').text(room.name);
 
 		//append link to list
-		$(typeLink).append(newLink);
+		$(typeLink).append($link);
+	}
+
+	//private
+	function extendDefaults(source, properties) {
+		var property;
+		for (property in properties) {
+			if (properties.hasOwnProperty(property)) {
+				source[property] = properties[property];
+			}
+		}
+		return source;
 	}
 
 })(jQuery)

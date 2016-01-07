@@ -22,14 +22,13 @@ jQuery(document).ready(function() {
 		//set State
 		notAuth.show();
 		Auth.hide();
+		$('.link').remove();
+		$('.chat').remove();
+		$('.excel').remove();
 	}
 
 	$('#header').on('click', '.logout', function (e) {
-
 		$.removeCookie('token');
-		socket.emit('logout');
-		notAuth.show();
-		Auth.hide();
 	});
 });
 
@@ -37,21 +36,35 @@ jQuery(document).ready(function() {
 * @param String token: authorization token
 */
 function init(token) {
+
 	//attempt to connect
 	socket = io.connect( url + '/?token=' + token ,{
 		'forceNew': true
 	});
 
 	//socketio connect event, this means we've succesfully connected so we can safely (fully) init app
-	socket.on('connect', function (data) {
+	socket.once('connect', function (data) {
 		//set ui
 		setTimeout(function() {
 			notAuth.hide();
 			Auth.show();
 		}, 500);
-		console.log('connected');
 		//make socketio calls
 		socketIOInit();
+
+		//load modules, once
+		if (appInit === undefined) {
+			//set to true
+			appInit = true;
+			//modules
+			ui = new ui();
+			//init chatroom module, see chat.js
+			chat = new ewbChat({
+				form: '.chat-form'
+			});
+			//init excelsheet module, see excel.js
+			excel = new eExcel();
+		}
 	});
 
 	//connection failed, lets stop the app
@@ -65,8 +78,16 @@ function init(token) {
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
 		console.log('disconnect');
-		notAuth.show();
-		Auth.hide();
+		//cleanup
+		//reset global data vars
+		users = null;
+		chatrooms = null;
+		excelsheets = null;
+		user = null;
+		//clear containers, incase of disconnect etc
+		$('.chat').remove();
+		$('.excel').remove();
+		$('.link').remove();
 	});
 }
 /*
@@ -78,30 +99,25 @@ function socketIOInit() {
 		var chatContainer = $('.chat');
 		var excelContainer = $('.excel');
 		var link = $('.link');
-		console.log(appInit);
-		
-		if (appInit === undefined) {
-			//begin ui, see @ui.js
-			ui = new ui;
-			console.log('hmm');
-			appInit = true;
-		}
+
+
 		/*
 		* @param Object data contains
 		* @param Array data.chatrooms: Array of all chatrooms
 		* @param Array data.excelsheets: Array of all excelsheets
 		* @param Object data.user: current user
 		*/
-
 		socket.on('data', function (data) {
 			//set current user global var
 			user = data.user;
-
+			var count = 0;
+			console.log(count++);
 			//set chatrooms global var
 			chatrooms = data.chatrooms;
 
 			//create rooms
 			chatrooms.forEach( function (room, i) {
+				console.log('hmm');
 				ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 			});
 		
@@ -112,30 +128,22 @@ function socketIOInit() {
 			excelsheets.forEach( function (room, i) {
 				ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
-			
+
 			//begin hideNshow, see hideNshow.js for usage explaination
-			hideNshow = new hideNshow({
+			new hideNshow({
 				body: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
 				defaultActive: 3
-			});
+			}).init();
 
-			hideNshow.init();
-			//init excelsheet module, see excel.js
-			excel = new eExcel();
 			//listen for excelsheets socketio events
 			excel.update();
-			
 			//init main UI
 			ui.init();
-
-			//init chatroom module, see chat.js
-			chat = new ewbChat({
-				form: '.chat-form'
-			});
-
+			//init chat functions
 			chat.init();
+
 		});
 		/*
 		* @param Object userList: contains a list of users that are Objects

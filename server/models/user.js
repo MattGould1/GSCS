@@ -9,6 +9,7 @@ var userSchema = new mongoose.Schema({
 	email: String,
 	picture: String,
 	status: { type: String, default: 'I am here' },
+	online: { type: String, default: 'Online' },
 	admin: Boolean,
 	created: { type: Date, default: Date.now() },
 	location: { type: mongoose.Schema.Types.ObjectId, ref: 'Locations' },

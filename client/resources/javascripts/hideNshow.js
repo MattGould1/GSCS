@@ -6,9 +6,35 @@
 *		   	Link: jQuery Object for click event
 * 			Container: jQuery Object to hide/show
 * 			defaultActive: Numeric the container to show by default
+* usage:
 *			
-*			<div data-filter="show">SHOW ME</div>
-*			<a data-filter="show">Show the div</a>
+	hideNshow = new hideNshow({
+		body: jQuery('#isAuth'),
+		Container: jQuery('.room'),
+		Link: jQuery('.link'),
+		defaultActive: 1
+	});
+
+	hideNshow.init();
+
+	html will look something like this
+
+	<div class="body">
+		<div class="link" data-filter="1">
+			link1
+		</div>
+		<div class="link" data-filter="2">
+			link2
+		</div>
+
+		<div class="room" data-filter"1">
+			room1
+		</div>
+
+		<div class="room" data-filter="2">
+			room2
+		</div>
+	</div>
 *
 */
 (function ($) {
@@ -71,7 +97,7 @@
 	*/
 	function careTaker(that) {
 		if (that.attr('data-filter') === undefined) {
-			that.remove();
+			that.hide();
 		}
 	}
 

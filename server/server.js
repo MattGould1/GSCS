@@ -107,6 +107,7 @@ sio.on('connection', function (socket) {
                 excelsheets: excelsheets,
                 user: socket.decoded_token
             };
+
             chatrooms.forEach(function (chatroom) {
                 socket.join(chatroom._id);
             });
@@ -130,10 +131,7 @@ sio.on('connection', function (socket) {
     excel.edit(sio, socket, Excel);
     excel.update(sio, socket, Excel);
     excel.cancel(sio, socket, Excel);
-    //logout
-    socket.on('logout', function () {
-        socket.disconnect();
-    });
+
     //handle disconnect event
     socket.on('disconnect', function(data) {
         //make sure socket has username

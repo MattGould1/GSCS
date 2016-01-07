@@ -46,17 +46,12 @@
 
 		return cellArray;
 	}
-	function customRender(instance, td, row, col, prop, value, cellProperties) {
-	    // change to the type of renderer you need; eg. if this is supposed
-	    // to be a checkbox, use CheckboxRenderer instead of TextRenderer
+
+	function totalesRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
-	    console.log('hmm');
-	   // // get the jquery selector for the td or add the class name using native JS
-	   $(td).addClass("error");
-
-	     return td;
+	    $(td).addClass('pnc');
+	    instance.setCellMeta(row, col, 'PNC', 'red');
 	}
-
 
 	function initExcel (excelsheet) {
 		//handsontable requires an Array of Arrays as its data, by default room.data could be null or 0 in length, if this is the case make it [[]]
@@ -100,21 +95,22 @@
 			//add more details for headers later @TODO
 			rowHeaders: true,
 			colHeaders: true,
-			cells: function (row, col, prop) {
-				var cellProperties = {};
-				if (row === 0, col === 0) {
-					cellProperties.renderer = function (td) {
-						console.log(td);
-						return td;
-					}
-				}
-			}
+            cells: function (row, col, prop, hmm) {
+                var cellProperties = {};
+                
+                if (prop === 'PNC') {
+                //if ( row == 0 || col == 0) {
+                    cellProperties.readOnly = true;
+                    cellProperties.renderer = totalesRenderer;
+                }
+
+                return cellProperties;
+            }
 		});
 
 		//get current instance, this will be used to set handsontable hooks @todo
 		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
 		setHooks.call(this, hotInstance, excelsheet._id);
-
 		// change ui State if the sheet is active, if the excelsheet is active it is being editted
 		if ( excelsheet.active === true ) {
 			//check if the current user == excelsheet current user change state to edit if it is
@@ -126,11 +122,12 @@
 					//false so it can be editted
 					readOnly: false,
 					//context menu so client can add rows, comments etc
-					contextMenu: true,
+					contextMenu: {},
 					//allow for table resizing
 					manualColumnResize: true,
 					manualRowResize: true
 				});
+
 				//hide edit button
 				container.find('.excel-edit').hide();
 				//show save/cancel button
@@ -225,6 +222,10 @@
 					thisCell = [cell.row, cell.col, 'comment', cell.comment];
 					cellMeta.push(thisCell);
 				}
+				if (cell.hasOwnProperty('PNC')) {
+					thisCell = [cell.row, cell.col, 'PNC', cell.PNC];
+					cellMeta.push(thisCell);
+				}
 			});
 
 			/*
@@ -284,7 +285,13 @@
 					//allow edits
 					readOnly: false,
 					//allow insert rows etc
-					contextMenu: true,
+					contextMenu: {
+						items: {
+							'extra': function (a, b, c, d) {
+								//console.log(a + b);
+							}
+						}
+					},
 					comments: true,
 					//reset cellsMeta, silly handsontable requires it
 					cell: cellsMeta.call(this, data.excel),
