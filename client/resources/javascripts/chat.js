@@ -38,13 +38,27 @@
 	function send(form) {
 		$('#chat').on('submit', form, function (e) {
 			e.preventDefault();
+
+			var $this = $(this);
+
+			if ($this.find('.message').val() == '') {
+				return false;
+			}
+
 			//message object to send to server
 			msg = {
-				_id: $(this).find('.name').val(),
-				message: $(this).find('.message').val()
+				_id: $this.find('.name').val(),
+				message: $this.find('.message').val()
 			};
-			//emit message object
+
 			socket.emit('chat-message', msg);
+
+			//regardless of success disable message for half a second
+			$this.find('button').prop('disabled', true);
+
+			setTimeout(function() {
+				$this.find('button').prop('disabled', false);
+			}, 500);
 		});
 	}
 	/*
@@ -55,15 +69,12 @@
 		* @param Object message: _id = chatroom._id, message, chatroom.room, user.username
 		*/
 		socket.on('chat-message', function (message) {
-			console.log(message);
 			//build message, include na
 			msg = '<li>' + message.username + ': ' + message.message;
 			//jquery append
 			$('[data-filter="' + message.room + '-chat"]').find('.chat-messages ul').append(msg);
 
 			var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
-			console.log(container.height());
-			console.log(container[0].scrollHeight);
 			container.scrollTop(container[0].scrollHeight);
 		});
 	}

@@ -6,7 +6,7 @@
 * @var Array excelsheets: array of all excelsheets
 * @var Array users: array of all users
 */
-var token, socket, chatrooms = [], user, excelsheets = [], users = [];
+var token, socket, chatrooms = [], user, excelsheets = [], users = [], appInit;
 
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
@@ -23,6 +23,14 @@ jQuery(document).ready(function() {
 		notAuth.show();
 		Auth.hide();
 	}
+
+	$('#header').on('click', '.logout', function (e) {
+
+		$.removeCookie('token');
+		socket.emit('logout');
+		notAuth.show();
+		Auth.hide();
+	});
 });
 
 /*
@@ -70,19 +78,24 @@ function socketIOInit() {
 		var chatContainer = $('.chat');
 		var excelContainer = $('.excel');
 		var link = $('.link');
-
+		console.log(appInit);
+		
+		if (appInit === undefined) {
+			//begin ui, see @ui.js
+			ui = new ui;
+			console.log('hmm');
+			appInit = true;
+		}
 		/*
 		* @param Object data contains
 		* @param Array data.chatrooms: Array of all chatrooms
 		* @param Array data.excelsheets: Array of all excelsheets
 		* @param Object data.user: current user
 		*/
+
 		socket.on('data', function (data) {
 			//set current user global var
 			user = data.user;
-
-			//begin ui, see @ui.js
-			ui = new ui({});
 
 			//set chatrooms global var
 			chatrooms = data.chatrooms;
@@ -99,15 +112,15 @@ function socketIOInit() {
 			excelsheets.forEach( function (room, i) {
 				ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			});
-
+			
 			//begin hideNshow, see hideNshow.js for usage explaination
 			hideNshow = new hideNshow({
 				body: jQuery('#isAuth'),
 				Container: jQuery('.room'),
 				Link: jQuery('.link'),
-				defaultActive: 4
+				defaultActive: 3
 			});
-			
+
 			hideNshow.init();
 			//init excelsheet module, see excel.js
 			excel = new eExcel();
