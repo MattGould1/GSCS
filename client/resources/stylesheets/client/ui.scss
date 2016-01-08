@@ -1,7 +1,4 @@
 #isAuth {
-	.soft-hide {
-		display: none;
-	}
 	#chat {
 		.active {
 			display: block !important;
@@ -87,6 +84,25 @@
 		font-weight: 700;
 	}
 }
+
+#disconnect {
+	position: fixed;
+	top: 0px;
+	background: rgba(0,0,0,0.7);
+	height: 100vh;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+	.display-cell{
+	    display: table-cell;
+	    vertical-align: middle;
+	    float: none;
+	    padding: 0px 15px;
+	    color: white;
+	    text-align: center;
+	    font-size: 2em;
+	}
+}
 $full-width: 100%;
 $size-ten: 10px;
 
@@ -132,10 +148,6 @@ header button.edit-profile{margin-right: 10px !important;}
 .modal-content .my-profile-content form .form-group label {
 	padding-right: $size-ten;
 	padding-left: $size-ten;
-}
-
-@media (max-width: 767px) {
-	#sidebar,#users{height: 300px !important;}
 }
 
 @media (max-width: 500px) {

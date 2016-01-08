@@ -21,7 +21,8 @@ jQuery(document).ready(function() {
 	} else {
 		//set State
 		notAuth.show();
-		Auth.hide();
+		//hide app
+		Auth.addClass('trick-hide');
 		$('.link').remove();
 		$('.chat').remove();
 		$('.excel').remove();
@@ -46,11 +47,13 @@ function init(token) {
 	socket.once('connect', function (data) {
 		//set ui
 		setTimeout(function() {
+			//show app
+			Auth.removeClass('trick-hide');
 			notAuth.hide();
-			Auth.show();
 		}, 500);
 		//make socketio calls
 		socketIOInit();
+
 
 		//load modules, once
 		if (appInit === undefined) {
@@ -71,8 +74,9 @@ function init(token) {
 	socket.on('connect_failed', function (data) {
 		//failed to connect, set ui
 		console.log('connect fail');
-		notAuth.hide();
-		Auth.show();
+		notAuth.show();
+		//show app
+		Auth.removeClass('trick-hide');
 	});
 
 	//disconnect, stop the app
@@ -88,79 +92,95 @@ function init(token) {
 		$('.chat').remove();
 		$('.excel').remove();
 		$('.link').remove();
+
+		$time = 0;
+
+		var disconnect = $('#disconnect');
+		var dc = function () {
+			if (chatrooms === null ) {
+				$time ++;
+
+				disconnect.removeClass('trick-hide');
+				disconnect.find('.disconnect-message').html(disconnectStrings.message + $time + ' Seconds <br>' + disconnectStrings.reconnect);
+			} else {
+				disconnect.addClass('trick-hide');
+			}
+			clearInterval(dc);
+		}
+
+		setInterval(dc, 1000);
 	});
 }
 /*
 * Start listening for data + userList socketio events
 */
 function socketIOInit() {
+	//vars to clone when creating containers
+	var chatContainer = $('.chat');
+	var excelContainer = $('.excel');
+	var link = $('.link');
 
-		//vars to clone when creating containers
-		var chatContainer = $('.chat');
-		var excelContainer = $('.excel');
-		var link = $('.link');
 
+	/*
+	* @param Object data contains
+	* @param Array data.chatrooms: Array of all chatrooms
+	* @param Array data.excelsheets: Array of all excelsheets
+	* @param Object data.user: current user
+	*/
+	socket.on('data', function (data) {
+		//set current user global var
+		user = data.user;
+		var count = 0;
+		console.log(count++);
+		//set chatrooms global var
+		chatrooms = data.chatrooms;
 
-		/*
-		* @param Object data contains
-		* @param Array data.chatrooms: Array of all chatrooms
-		* @param Array data.excelsheets: Array of all excelsheets
-		* @param Object data.user: current user
-		*/
-		socket.on('data', function (data) {
-			//set current user global var
-			user = data.user;
-			var count = 0;
-			console.log(count++);
-			//set chatrooms global var
-			chatrooms = data.chatrooms;
-
-			//create rooms
-			chatrooms.forEach( function (room, i) {
-				console.log('hmm');
-				ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
-			});
-		
-			//set excelsheets global var
-			excelsheets = data.excelsheets;
-
-			//create excelsheets
-			excelsheets.forEach( function (room, i) {
-				ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
-			});
-
-			//begin hideNshow, see hideNshow.js for usage explaination
-			new hideNshow({
-				body: jQuery('#isAuth'),
-				Container: jQuery('.room'),
-				Link: jQuery('.link'),
-				defaultActive: 3
-			}).init();
-
-			//listen for excelsheets socketio events
-			excel.update();
-			//init main UI
-			ui.init();
-			//init chat functions
-			chat.init();
-
+		//create rooms
+		chatrooms.forEach( function (room, i) {
+			console.log('hmm');
+			ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 		});
-		/*
-		* @param Object userList: contains a list of users that are Objects
-		*/
-		socket.on('userList', function (userList) {
-			//remove current list
-			$('.user').remove();
+	
+		//set excelsheets global var
+		excelsheets = data.excelsheets;
 
-			//update global users var
-			users = userList;
+		//create excelsheets
+		excelsheets.forEach( function (room, i) {
+			ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
+		});
 
-			//get username from each user
-			for (var key in userList) {
-				if (userList.hasOwnProperty(key)) {
-					var user = userList[key];
-					$('.users').append('<div class="user">' + user.username + '</div>');
-				}
+		//begin hideNshow, see hideNshow.js for usage explaination
+		new hideNshow({
+			body: jQuery('#isAuth'),
+			Container: jQuery('.room'),
+			Link: jQuery('.link'),
+			defaultActive: 3
+		}).init();
+
+		//listen for excelsheets socketio events
+		excel.update();
+		//init main UI
+		ui.init();
+		//init chat functions
+		chat.init();
+
+	});
+	/*
+	* @param Object userList: contains a list of users that are Objects
+	*/
+	socket.on('userList', function (userList) {
+		//remove current list
+		$('.user').remove();
+
+		//update global users var
+		users = userList;
+
+		//get username from each user
+		for (var key in userList) {
+			if (userList.hasOwnProperty(key)) {
+				var user = userList[key];
+				$('.users').append('<div class="user">' + user.username + '</div>');
 			}
-		});
+		}
+	});
 }

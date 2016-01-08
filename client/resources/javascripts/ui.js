@@ -14,7 +14,7 @@
 	//public
 	ui.prototype.init = function () {
 			//get heights
-			var headerHeight = $('#header').height();
+			var headerHeight = $('#header').outerHeight();
 			var footerHeight = $('#footer').height();
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
 

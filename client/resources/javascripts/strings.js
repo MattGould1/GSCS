@@ -10,3 +10,8 @@ chatStrings = {
 userStrings = {
 
 };
+
+disconnectStrings = {
+	message: 'You have been disconnected for: ',
+	reconnect: 'We are attempting to reconnect...'
+};
