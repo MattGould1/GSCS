@@ -19,7 +19,7 @@
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
 
 			//set app height based on header height and window height, use overflow hidden on rest
-			$('#isAuth').css('height', contentHeight);
+		
 			/*
 			*	Three more compartments to handle, #sidebar #content and #users
 			*/
@@ -33,12 +33,12 @@
 
 				if (compartment === '#content') {
 					//chatroom heights
-					Compartment.find('#chat').find('.chat-form').css('height', '49px');
-					Compartment.find('#chat').find('.chat-messages').css('height', contentHeight - 49);
+					var cform = $('.chat-form');
+					cform.siblings('.chat-messages').css('height', contentHeight - 80);
 
 					//excel
 					//Compartment.find('#excel .current').css('height', '49px');
-					Compartment.find('#excel .excel-options').css('height', '49px');
+					Compartment.find('#excel .excel-options').css('height', '60px');
 				}
 
 				$(compartment).css('height', contentHeight);
@@ -64,13 +64,13 @@
 		var chatHTML = '<div class="container chat room">' +
 								'<div class="row">' +
 									'<div class="col-xs-12 chat-messages">' +
-										'<ul>' +
+										'<ul class="list-unstyled">' +
 										'</ul>' +
 									'</div>' +
-								'<div class="col-xs-12">' +
-									'<div class="row">' +
-										'<form class="chat-form">' +
-											'<div class="col-xs-10">' +
+								'<div class="col-xs-12 chat-form">' +
+									'<form>' +
+										'<div class="row">' +
+											'<div class="col-xs-10" style="padding: 0px;">' +
 												'<div class="form-group">' +
 													'<input type="text" class="message form-control"/>' +
 												'</div>' +
@@ -78,11 +78,39 @@
 											'<div class="col-xs-2">' +
 												'<div class="form-group">' +
 													'<input type="hidden" class="name">' +
-													'<button class="btn btn-primary form-control" type="submit">Submit</button>' +
+													'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
 												'</div>' +
 											'</div>' +
-										'</form>' +
-									'</div>' +
+										'</div>' +
+										'<div class="row">' +
+											'<div class="col-xs-12">' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="normal" checked>' +
+														'Normal' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="pnc">' +
+														'Private and Confidential' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="fxd">' +
+														'Fixed' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="subs">' +
+														'Subs' +
+													'</label>' +
+												'</div>' +
+											'</div>' +
+										'</div>' +
+									'</form>' +
 								'</div>' +
 							'</div>';
 
@@ -91,10 +119,13 @@
 								'<div class="col-xs-12">' +
 									'<div class="excel-options">' +
 										'<a class="btn btn-info excel-edit">Edit</a>' +
-										'<a class="btn btn-primary excel-update soft-hide">Update</a>' +
-										'<a class="btn btn-warning excel-cancel soft-hide">Cancel</a>' +
+										'<a class="btn btn-primary save-to-excel pull-left" style="display: inline-block;">Save To Excel</a>' +
+										'<div class="edit-options soft-hide" style="width: 150px; float: left; margin-left: 10px;">' +
+											'<a class="btn btn-primary excel-update">Update</a>' +
+											'<a class="btn btn-warning excel-cancel">Cancel</a>' +
+										'</div>' +
 									'</div>' +
-									'<div class="message alert alert-info soft-hide"></div>' +
+									'<div class="message alert alert-info soft-hide" style="max-width: 300px;"></div>' +
 									'<div class="hot"></div>' +
 								'</div>' +
 							'</div>' +

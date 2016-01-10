@@ -1,6 +1,6 @@
 var admin, token, users, chatrooms, excels, locations, departments;
 
-var url = 'http://178.62.100.159:8080';
+var url = 'http://localhost:8080';
 admin = $('#admin');
 
 function findWithAttr(array, attr, value) {

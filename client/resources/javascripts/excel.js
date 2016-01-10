@@ -17,6 +17,7 @@
 	*/
 	eExcel.prototype.init = function (excelsheet) {
 		initExcel.call(this, excelsheet);
+		saveToExcel.call(this);
 	}
 
 	eExcel.prototype.update = function () {
@@ -47,10 +48,27 @@
 		return cellArray;
 	}
 
-	function totalesRenderer(instance, td, row, col, prop, value, cellProperties) {
+	function saveToExcel() {
+		$('.save-to-excel').click(function(e) {
+			window.open('data:application/vnd.ms-excel,' + encodeURIComponent($(this).parent('.excel-options').siblings('.hot').find('.ht_master').html()));
+			e.preventDefault();
+		});
+	}
+
+	//@TODO
+	function statusRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
-	    $(td).addClass('pnc');
-	    instance.setCellMeta(row, col, 'PNC', 'red');
+
+	    //var cell = instance.getCellMeta(row, col);
+	  	if (cellProperties['status'] === 'pnc') {
+	  		$(td).css('background-color', 'red');
+	  	} else if (cellProperties['status'] === 'fxd') {
+	  		$(td).css('background-color', 'green');
+	  	} else if (cellProperties['status'] === 'subs') {
+			$(td).css('background-color', 'blue');
+	  	} else if (cellProperties['status'] === 'remove') {
+	  		$(td).css('background-color', 'none');
+	  	}
 	}
 
 	function initExcel (excelsheet) {
@@ -88,21 +106,16 @@
 			//comments always true
 			comments: true,
 			//81 for button/message height
-			height: contentHeight - 81,
+			height: contentHeight - 90,
 			//manual resize false until edit is allowed
 			manualColumnResize: false,
 			manualRowResize: false,
 			//add more details for headers later @TODO
 			rowHeaders: true,
 			colHeaders: true,
-            cells: function (row, col, prop, hmm) {
+            cells: function (row, col, prop) {
                 var cellProperties = {};
-                
-                if (prop === 'PNC') {
-                //if ( row == 0 || col == 0) {
-                    cellProperties.readOnly = true;
-                    cellProperties.renderer = totalesRenderer;
-                }
+                cellProperties.renderer = statusRenderer;
 
                 return cellProperties;
             }
@@ -111,35 +124,10 @@
 		//get current instance, this will be used to set handsontable hooks @todo
 		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
 		setHooks.call(this, hotInstance, excelsheet._id);
+		console.log(hotInstance.getCellsMeta());
 		// change ui State if the sheet is active, if the excelsheet is active it is being editted
 		if ( excelsheet.active === true ) {
-			//check if the current user == excelsheet current user change state to edit if it is
-			if (excelsheet.user.username === user.username) {
-				//show options
-				container.find('.message').html(excelStrings.currentEdit);
-				//make readonly false
-				hotInstance.updateSettings({
-					//false so it can be editted
-					readOnly: false,
-					//context menu so client can add rows, comments etc
-					contextMenu: {},
-					//allow for table resizing
-					manualColumnResize: true,
-					manualRowResize: true
-				});
-
-				//hide edit button
-				container.find('.excel-edit').hide();
-				//show save/cancel button
-				container.find('.excel-update').show();
-				container.find('.excel-cancel').show();
-			} else {
-				//tell people who's editting
-				container.find('.message').show();
-				container.find('.message').html(excelStrings.edittedBy + excelsheet.user.username);
-				//hide options
-				container.find('.excel-options').hide();
-			}
+			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
 		}
 	}
 
@@ -160,7 +148,7 @@
 
 		$(document).on('click', '.excel-cancel', function () {
 			//get the id from clicked excelsheet
-			var hot = $(this).parent('.excel-options').siblings('.hot');
+			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
 
 			var hotInstance = hot.handsontable('getInstance');
 
@@ -204,7 +192,7 @@
 	function updateExcel() {
 		$(document).on('click', '.excel-update', function () {
 			//get current id to send to server
-			var hot = $(this).parent('.excel-options').siblings('.hot');
+			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
 
 			//get hotinstance
@@ -222,8 +210,8 @@
 					thisCell = [cell.row, cell.col, 'comment', cell.comment];
 					cellMeta.push(thisCell);
 				}
-				if (cell.hasOwnProperty('PNC')) {
-					thisCell = [cell.row, cell.col, 'PNC', cell.PNC];
+				if (cell.hasOwnProperty('status')) {
+					thisCell = [cell.row, cell.col, 'status', cell.status];
 					cellMeta.push(thisCell);
 				}
 			});
@@ -265,6 +253,92 @@
 		// hotInstance.addHook('afterValidate', function (isValid, value, row, prop, source) {
 		// 	console.log(isValid + value + row + prop + source);
 		// });
+		// hotInstance.addHook( 'afterSelectionEnd', function(r, c, r2, c2) {
+		
+		// });
+	}
+
+	/*
+	*	@
+	*/
+	function getSelectedCells(hotInstance) {
+
+		var selectedRange = hotInstance.getSelectedRange();
+
+		var fromCol = selectedRange.from.col;
+		var fromRow = selectedRange.from.row;
+
+		var toCol = selectedRange.to.col;
+		var toRow = selectedRange.to.row;
+
+		var highlightCol = selectedRange.highlight.col;
+		var highlightRow = selectedRange.highlight.row;
+
+		//create an array of rows and columns with the selected
+		var lowestCol = {};
+
+		//get the top-left cell for reading
+		if ( fromCol > toCol ) {
+			var colStart = toCol;
+			var colEnd = fromCol;
+		} else {
+			var colStart = fromCol;
+			var colEnd = toCol;
+		}
+
+		if ( fromRow > toRow) {
+			var rowStart = toRow;
+			var rowEnd = fromRow;
+		} else {
+			var rowStart = fromRow;
+			var rowEnd = toRow;
+		}
+
+		cells = [];
+		resetCol = colStart;
+		while (rowStart !== rowEnd+1) {
+			//get current position
+			cell = hotInstance.getCellMeta(rowStart, colStart);
+			//add to column
+			colStart++;
+			//check to see if the columns now at the end, and also check row position
+			if (colStart == colEnd+1) {
+				//if column is at the end go to next row
+				rowStart++;
+				//reset col
+				colStart = resetCol;
+			}
+			//push cell to array
+			cells.push(cell);
+		}
+
+		return cells;
+	}
+
+	/*
+	*
+	*/
+	function checkSelectedCellsMeta(cells, metaProperty, metaValue) {
+		var hasMeta = false;
+		cells.forEach( function (cell) {
+			if (cell[metaProperty] == metaValue) {
+				hasMeta = true;
+			}
+			return hasMeta;
+		});
+		return hasMeta;
+	}
+
+	//for context menu
+	function markLabelAsSelected(label) {
+	  return '<span class="selected">' + String.fromCharCode(10003) + '</span>' + label;
+	}
+
+	//set cell meta
+	function setSelectedCellsMeta (hotInstance, cells, meta, value) {
+		cells.forEach( function (cell) {
+			hotInstance.setCellMeta(cell.row, cell.col, meta, value);
+		});
 	}
 
 	//socketio methods
@@ -279,30 +353,106 @@
 			//get jQuery object for excelsheet
 			if (data.edit === true) {
 				cancelEdit.call(this, data.excel);
+				//get hot instance
 				var hot = $('.' + data.excel._id);
-				//update handsontable instance
-				hot.handsontable('getInstance').updateSettings({
+				var hotInstance = hot.handsontable('getInstance');
+				hotInstance.updateSettings({
 					//allow edits
 					readOnly: false,
 					//allow insert rows etc
-					contextMenu: {
-						items: {
-							'extra': function (a, b, c, d) {
-								//console.log(a + b);
+					contextMenu:  {
+						callback: function (key, options) {
+							var selected = getSelectedCells.call(this, hotInstance);
+							if (key === 'status:pnc') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'pnc');
+							} else if (key === 'status:fxd') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'fxd');
+							} else if (key === 'status:subs') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'subs');	
+							} else if (key === 'status:remove') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'remove');	
 							}
+							hotInstance.render();
+						},
+						items: {
+							"row_above": {},
+							"row_below": {},
+							"hsep1": "---------",
+							"col_left": {},
+							"col_right": {},
+							"hsep2": "---------",
+							"remove_row": {},
+							"remove_col": {},
+							"hsep3": "---------",
+							"status": {
+								name: 'Status',
+								submenu: {
+									items: [{
+										key: 'status:pnc',
+										name: function() {
+											var label = 'Private and Confidential';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'pnc');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:fxd',
+										name: function() {
+											var label = 'Fixed';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'fxd');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:subs',
+										name: function() {
+											var label = 'Subs';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'subs');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:remove',
+										name: 'Remove Status'
+									}]
+								}
+							},
+							"alignment": {},
+							"hsep4": "---------",
+							"undo": {},
+							"redo": {},
+							"commentsAddEdit": {},
+							"commentsRemove": {}
 						}
 					},
 					comments: true,
 					//reset cellsMeta, silly handsontable requires it
 					cell: cellsMeta.call(this, data.excel),
 					//allow column/row resizing
-					manualColumnResize: true,
-					manualRowResize: true
+					manualColumnResize: false,
+					manualRowResize: false,
+		            cells: function (row, col, prop) {
+		                var cellProperties = {};
+		                cellProperties.renderer = statusRenderer;
+
+		                return cellProperties;
+		            }
 				});
 				//@TODO improve this mess
 				hot.siblings('.excel-options').find('.excel-edit').hide();
-				hot.siblings('.excel-options').find('.excel-update').show();
-				hot.siblings('.excel-options').find('.excel-cancel').show();
+				hot.siblings('.excel-options').find('.edit-options').show();
 				hot.siblings('.message').show();
 				hot.siblings('.message').html(excelStrings.currentEdit);
 			} else {
@@ -351,16 +501,14 @@
 			hot.siblings('.excel-options').find('.excel-edit').show();
 			hot.siblings('.message').html('');
 			hot.siblings('.message').hide();
-			hot.siblings('.excel-options').find('.excel-cancel').hide();
-			hot.siblings('.excel-options').find('.excel-update').hide();
+			hot.siblings('.excel-options').find('.edit-options').hide();
 		});
 		//reset ui back to edit
 		socket.on('cancel-excel', function (excel) {
 			console.log(excel);
 			var hot = $('.' + excel._id);
 			hot.siblings('.message').hide();
-			hot.siblings('.excel-options').find('.excel-cancel').hide();
-			hot.siblings('.excel-options').find('.excel-update').hide();
+			hot.siblings('.excel-options').find('.edit-options').hide();
 			hot.siblings('.excel-options').find('.excel-edit').show();
 		});
 	}

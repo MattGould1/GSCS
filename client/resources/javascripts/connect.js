@@ -130,14 +130,12 @@ function socketIOInit() {
 	socket.on('data', function (data) {
 		//set current user global var
 		user = data.user;
-		var count = 0;
-		console.log(count++);
+
 		//set chatrooms global var
 		chatrooms = data.chatrooms;
 
 		//create rooms
 		chatrooms.forEach( function (room, i) {
-			console.log('hmm');
 			ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 		});
 	
@@ -154,7 +152,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 3
+			defaultActive: 1
 		}).init();
 
 		//listen for excelsheets socketio events
