@@ -28,7 +28,7 @@ module.exports = {
 
 				var newMsg = new ChatMessage({
 					_room: msg._id,
-					_user: socket._id,
+					_user: socket.decoded_token._id,
 					username: socket.username,
 					message: message
 				});
