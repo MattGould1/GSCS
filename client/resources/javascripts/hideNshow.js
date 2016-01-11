@@ -75,6 +75,10 @@
 			//show default container
 			if (i === chosenOne) {
 				$(this).show();
+				var container = $(this).find('.chat-messages');
+				if(container.length > 0) {
+					container.scrollTop(container[0].scrollHeight + 500);
+				}
 			} else {
 				$(this).hide();
 			}

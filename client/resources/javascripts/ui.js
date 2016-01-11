@@ -86,7 +86,7 @@
 											'<div class="col-xs-12">' +
 												'<div class="radio-inline">' +
 													'<label>' +
-														'<input type="radio" name="msgType" value="normal" checked>' +
+														'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
 														'Normal' +
 													'</label>' +
 												'</div>' +

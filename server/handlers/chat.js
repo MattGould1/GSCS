@@ -5,7 +5,7 @@ module.exports = {
 	*/
 	message: function(sio, socket, ChatRoom, ChatMessage) {
 		/*
-		* @param Object msg: _id: ChatRoom._id, message: client message
+		* @param Object msg: _id: ChatRoom._id, type: type of message, message: client message
 		*/
 		socket.on('chat-message', function (msg) {
 			//remove html/script tags
@@ -17,6 +17,8 @@ module.exports = {
 			var message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
 			//allow colors
 			var message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
+			//wrap message in its type
+			var message = '<span class="' + msg.type + '">' + message + '</span>';
 			//add message back to msg Object
 			msg.message = message;
 

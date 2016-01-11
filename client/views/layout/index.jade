@@ -5,15 +5,45 @@ html(lang='en')
 		meta(chatset='utf8')
 		block title
 			title GSCS
-		link(rel='stylesheet', href='css/bootstrap.css')
-		link(rel='stylesheet', href='css/lib.css')
+		style.
+			html .load {
+				display: none !important;
+			}
+		link(href="/css/bootstrap.css" rel="stylesheet" type="text/css")
+		link(href="/css/lib.css" rel="stylesheet" type="text/css")
 		//link(href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css')
+		script.
+			function async(u, c) {
+				var d = document, t = 'script',
+				o = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				o.src = u;
+
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+
+			async('js/bundle.js', function() {
+				console.log('hello');
+				jQuery('#loading').hide();
+				jQuery('#isAuth').removeClass('load');
+				jQuery('#isNotAuth').removeClass('load');
+			});
 	body
+		div#loading
+			div.display-cell
+				div.showloader
+					div.title
+						h1 Global Shipping Communication Services
+						h3 GSCS is loading... please wait
+					div.loader
+						svg.circular(viewBox="25 25 50 50")
+							circle.path(cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10")
 		//not logged in content
-		div#isNotAuth.container-fluid
+		div#isNotAuth.load.container-fluid
 			include ../_partials/isnotauth/login
 			include ../_partials/isnotauth/register
-		div#isAuth.container-fluid.trick-hide
+		div#isAuth.load.container-fluid.trick-hide
 			include header
 			div#app.row
 				include sidebar

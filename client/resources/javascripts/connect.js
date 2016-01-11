@@ -146,7 +146,9 @@ function socketIOInit() {
 		excelsheets.forEach( function (room, i) {
 			ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 		});
-
+		//init main UI
+		ui.init();
+		
 		//begin hideNshow, see hideNshow.js for usage explaination
 		new hideNshow({
 			body: jQuery('#isAuth'),
@@ -157,11 +159,8 @@ function socketIOInit() {
 
 		//listen for excelsheets socketio events
 		excel.update();
-		//init main UI
-		ui.init();
 		//init chat functions
 		chat.init();
-
 	});
 	/*
 	* @param Object userList: contains a list of users that are Objects

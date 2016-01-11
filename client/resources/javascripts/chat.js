@@ -48,6 +48,7 @@
 			//message object to send to server
 			msg = {
 				_id: $this.find('.name').val(),
+				type: $this.find('input[name="msgType"]:checked').val(),
 				message: $this.find('.message').val()
 			};
 
@@ -58,7 +59,7 @@
 
 			setTimeout(function() {
 				$this.find('button').prop('disabled', false);
-			}, 500);
+			}, 1000);
 		});
 	}
 	/*
@@ -72,10 +73,14 @@
 			//build message, include na
 			msg = '<li>' + message.username + ': ' + message.message;
 			//jquery append
-			$('[data-filter="' + message.room + '-chat"]').find('.chat-messages ul').append(msg);
-
+			var chatroom = $('[data-filter="' + message.room + '-chat"]');
+			chatroom.find('.chat-messages ul').append(msg);
+			//scroll to bottom
 			var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
 			container.scrollTop(container[0].scrollHeight);
+			//empty chat message + reset type
+			chatroom.find('.message').val('');
+			chatroom.find('.reset-radio').prop('checked', true);
 		});
 	}
 
