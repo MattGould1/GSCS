@@ -7,6 +7,7 @@ var path = require('path'),
     bodyParser = require('body-parser'),
     http = require('http'),
     users = {},
+    cUser,
     socketioJwt = require('socketio-jwt');
 
 //models
@@ -86,44 +87,55 @@ var user = require('./handlers/user');
 //connect to default namespace
 sio.on('connection', function (socket) {
     //disconnect socket if no username, wtf?
-    if(socket.decoded_token.username == undefined) {
+    if(socket.decoded_token.username == undefined || socket.decoded_token._id == undefined) {
         socket.disconnect(true);
     }
-    //store the username in socket for this client
-    socket.username = socket.decoded_token.username;
 
-    //save username in global list
-    users[socket.username] = socket.decoded_token;
-    
-    //connection data
-    ChatRoom.find({ location: socket.decoded_token.location, department: socket.decoded_token.department }).populate('_messages').exec(function (err, chatrooms) {
-        if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
-        Excel.find({ location: socket.decoded_token.location, department: socket.decoded_token.department }).populate('user').exec(function (err, excelsheets) {
+    //find the current user, do this so the location/department is always up to date it's only one extra query so its not a huge overhead
+    User.findOne({_id: socket.decoded_token._id}, function (err, cUser) {
+        if (err) { console.log(err); socket.disconnect(true); }
+        //check to see if current user is undefined == not found
+        if (cUser) {
+            //store the username in socket for this client
+            socket.username = cUser.username;
 
-            if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
-            //emit data
-            var data = {
-                chatrooms: chatrooms,
-                excelsheets: excelsheets,
-                user: socket.decoded_token
-            };
+            //save user in global list
+            users[socket.username] = cUser;
+            
+            //connection data
+            ChatRoom.find({ location: cUser.location, department: cUser.department }).populate('_messages').exec(function (err, chatrooms) {
+                if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
+                Excel.find({ location: cUser.location, department: cUser.department }).populate('user').exec(function (err, excelsheets) {
 
-            chatrooms.forEach(function (chatroom) {
-                socket.join(chatroom._id);
+                    if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
+                    //emit data
+                    var data = {
+                        chatrooms: chatrooms,
+                        excelsheets: excelsheets,
+                        user: cUser
+                    };
+
+                    chatrooms.forEach(function (chatroom) {
+                        socket.join(chatroom._id);
+                    });
+                    excelsheets.forEach(function (excelsheet) {
+                        socket.join(excelsheet._id);
+                    });
+                    socket.emit('data', data);
+
+                });
             });
-            excelsheets.forEach(function (excelsheet) {
-                socket.join(excelsheet._id);
-            });
-            socket.emit('data', data);
-
-        });
+            //broadcast usernames
+            chat.userList(sio, socket, users);
+        } else {
+            //error handling
+            socket.disconnect(true);
+        }
     });
 
     //handle messages
     chat.message(sio, socket, ChatRoom, ChatMessage);
 
-    //broadcast usernames
-    chat.userList(sio, socket, users);
 
     //user handles
     user.update(sio, socket, User);
@@ -133,15 +145,17 @@ sio.on('connection', function (socket) {
     excel.cancel(sio, socket, Excel);
 
     //handle disconnect event
-    socket.on('disconnect', function(data) {
+    socket.on('disconnect', function (data) {
         //make sure socket has username
         if(!socket.username) return;
         //delete user from global list
+        cUser = users[socket.username];
+        console.log(users[socket.username]);
         delete users[socket.username];
         //broadcast new usernames
         chat.userList(sio, socket, users);
         //cleanup excels
-        Excel.find({}).select('active user').where('active', true).where('user', socket.decoded_token._id).exec(function (err, excelsheets) {
+        Excel.find({}).select('active user').where('active', true).where('user', cUser._id).exec(function (err, excelsheets) {
             if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
             excelsheets.forEach( function (excelsheet, i) {
                 excelsheet.active = false;

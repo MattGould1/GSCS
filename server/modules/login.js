@@ -50,10 +50,16 @@ exports.login = function (User, req, jwt, db, callback) {
 		//if findUser
 		if(findUser) {
 			if ( findUser.password === req.body.password ) {
-				console.log('User found, generating token');
-				var data = {};
-				data.token = jwt.sign( findUser, db.secret, { expires: 60*60*5 } );
-				data.user = findUser;
+
+
+				var signWith = {
+					username: findUser.username,
+					_id: findUser._id,
+				};
+				var data = {
+					token: jwt.sign( signWith, db.secret, { expires: 60*60*5 } ),
+					user: findUser,
+				};
 
 				//send data back to client
 				callback(data);

@@ -25,5 +25,13 @@ module.exports = {
 				});
 			});
 		});
+	},
+	online: function (sio, socket, User, user) {
+		/*
+		*
+		*/
+		socket.on('update-online', function (status) {
+
+		});
 	}
 };

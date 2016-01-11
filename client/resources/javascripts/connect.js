@@ -171,7 +171,7 @@ function socketIOInit() {
 
 		//update global users var
 		users = userList;
-
+		console.log(users);
 		//get username from each user
 		for (var key in userList) {
 			if (userList.hasOwnProperty(key)) {

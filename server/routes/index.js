@@ -8,24 +8,19 @@ var express = require('express'),
     User = mongoose.model('User'),
     login = require('./../modules/login'),
     ChatRoom = mongoose.model('ChatRoom');
-    // //socketio jwt
-    // socketioJwt = require('socketio-jwt');
 
 //db
 var db = require('./../models/db');
 
 //login
 router.post('/login', function (req, res, next) {
-	var user, chatrooms, data;
 	login.login(User, req, jwt, db, function (user) {
-		//@param user holds logged in user information and token
-		user = user;
-		//check to see if user is true
+		//if user true, send back token
 		if (user) {
-			ChatRoom.find({}, function ( err, rooms ) { 
-				user.chatrooms = rooms;
-				res.json( user );
-			});
+			res.json( user );
+		} else {
+		//else report failure to client
+			res.json ( false );
 		}
 	});
 });
