@@ -50,10 +50,10 @@ exports.login = function (User, req, jwt, db, callback) {
 		//if findUser
 		if(findUser) {
 			if ( findUser.password === req.body.password ) {
-				// var signWith = {
-				// 	username: findUser.username,
-				// 	_id: findUser._id,
-				// };
+				var signWith = {
+					username: findUser.username,
+					_id: findUser._id,
+				};
 				var data = {
 					token: jwt.sign( signWith, db.secret, { expires: 60*60*5 } ),
 					user: findUser,
