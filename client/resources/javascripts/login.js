@@ -18,7 +18,6 @@ $('.row').on('submit', '#login', function (e) {
 			password: password
 		}),
 		success: function (user, status, xhr) {
-			console.log(user);
 			if (user.token) {
 				//set token as cookie to be sent with requests
 				$.cookie('token', user.token, { expires: 7, path: '/' });

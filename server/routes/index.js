@@ -37,8 +37,4 @@ router.post('/register', function (req, res, next) {
 	});
 });
 
-//chatrooms
-router.post('/chatrooms', function (req, res, next) {
-
-});
 module.exports = router;

@@ -76,7 +76,6 @@
 		if (excelsheet.data === null || excelsheet.data.length === 0) {
 			excelsheet.data = [[]];
 		}
-
 		//store container, container also holds .excel-optins (edit, save, cancel etc) and .message, used to display current status
 		var container = $('[data-filter="' + excelsheet.name + '-excel"]');
 
@@ -124,7 +123,6 @@
 		//get current instance, this will be used to set handsontable hooks @todo
 		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
 		setHooks.call(this, hotInstance, excelsheet._id);
-		console.log(hotInstance.getCellsMeta());
 		// change ui State if the sheet is active, if the excelsheet is active it is being editted
 		if ( excelsheet.active === true ) {
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
@@ -182,8 +180,11 @@
 		//array to save
 		var array = [];
 
-		for(i = 0; i < count(); i++) {
-			array.push(dimension(i));
+		for(i = 0; i < count; i++) {
+			var size = dimension(i);
+			if (size != null) {
+				array.push(size);
+			}
 		}
 
 		return array;
@@ -202,19 +203,7 @@
 
 			//create array of cellMeta for handsontable cell:
 			hotInstance.getCellsMeta().forEach( function (cell) {
-				if (cell.hasOwnProperty('className')) {
-					thisCell = [cell.row, cell.col, 'className', cell.className];
-					cellMeta.push(thisCell);
-				}
-				if (cell.hasOwnProperty('comment')) {
-					thisCell = [cell.row, cell.col, 'comment', cell.comment];
-					cellMeta.push(thisCell);
-				}
-				if (cell.hasOwnProperty('status')) {
-					thisCell = [cell.row, cell.col, 'status', cell.status];
-					cellMeta.push(thisCell);
-				}
-			});
+				});
 
 			/*
 			* @var data Object
@@ -226,8 +215,9 @@
 			var data = {
 				id: id,
 				data: hotInstance.getData(),
-				colWidths: heightNwidth(hotInstance.countCols, hotInstance.getColWidth),
-				rowHeights: heightNwidth(hotInstance.countRows, hotInstance.getRowHeight),
+				//@TODO FIX BUG SOMETHING WRONG WITH WIDTH/HEIGHT CAUSING TABLE TO JUMP TO TOP AFTER SAVING
+				colWidths: heightNwidth(hotInstance.countCols(), hotInstance.getColWidth),
+				rowHeights: heightNwidth(hotInstance.countRows(), hotInstance.getRowHeight),
 				cellMeta: cellMeta
 			};
 
@@ -441,8 +431,8 @@
 					//reset cellsMeta, silly handsontable requires it
 					cell: cellsMeta.call(this, data.excel),
 					//allow column/row resizing
-					manualColumnResize: false,
-					manualRowResize: false,
+					manualColumnResize: true,
+					manualRowResize: true,
 		            cells: function (row, col, prop) {
 		                var cellProperties = {};
 		                cellProperties.renderer = statusRenderer;
