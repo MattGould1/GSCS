@@ -16,10 +16,19 @@
 		}
 		.excel-options {
 			float: right;
-			margin-top: 10px;
-		}
-		.message {
-			margin-top: 10px
+			width: 100%;
+			height: 40px;
+			a {
+				height: 40px;
+				line-height: 25px;
+			}
+			.options {
+				width: 100%;
+				height: 40px;
+				.edit-options {
+					float: right;
+				}
+			}
 		}
 	}
 	#sidebar, #content, #users {

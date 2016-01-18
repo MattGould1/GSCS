@@ -1,5 +1,6 @@
 (function ($) {
-	var reset = {};
+
+	//launch excel module
 	this.eExcel = function (name, id, data) {
 		
 		var options = {
@@ -24,6 +25,7 @@
 		tryEditExcel.call(this);
 		updateExcel.call(this);
 		socketExcel.call(this);
+		viewEdits.call(this);
 	}
 
 	//private methods
@@ -105,19 +107,19 @@
 			//comments always true
 			comments: true,
 			//81 for button/message height
-			height: contentHeight - 90,
+			height: contentHeight - 70,
 			//manual resize false until edit is allowed
 			manualColumnResize: false,
 			manualRowResize: false,
 			//add more details for headers later @TODO
 			rowHeaders: true,
 			colHeaders: true,
-            cells: function (row, col, prop) {
-                var cellProperties = {};
-                cellProperties.renderer = statusRenderer;
+			cells: function (row, col, prop) {
+				var cellProperties = {};
+				cellProperties.renderer = statusRenderer;
 
-                return cellProperties;
-            }
+				return cellProperties;
+			}
 		});
 
 		//get current instance, this will be used to set handsontable hooks @todo
@@ -133,7 +135,7 @@
 	function tryEditExcel() {
 		$(document).on('click', '.excel-edit', function () {
 			//get the id from clicked excelsheet, id is sent to server see @server handlers/excel
-			var hot = $(this).parent('.excel-options').siblings('.hot');
+			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
 
 			socket.emit('edit-excel', id);
@@ -146,9 +148,11 @@
 
 		$(document).on('click', '.excel-cancel', function () {
 			//get the id from clicked excelsheet
-			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
+			var hot = $(this).parent().parent().parent('.excel-options').siblings('.hot');
 
 			var hotInstance = hot.handsontable('getInstance');
+			//clearup the changes
+			delete changes[excel._id];
 
 			hotInstance.updateSettings({
 				//update data
@@ -174,7 +178,7 @@
 	}
 	/*
 	*	@param Numeric count: handsontable.count, returns total number of cols/rows
-	* 	@param Numeric dimension: either column width or row height
+	* 	@param Function dimension: get the height/width of the respective count
 	*/
 	function heightNwidth(count, dimension) {
 		//array to save
@@ -190,20 +194,38 @@
 		return array;
 	}
 
+	/*
+	*	Sends an Object with excel's data, meta and changes
+	*/
 	function updateExcel() {
 		$(document).on('click', '.excel-update', function () {
 			//get current id to send to server
-			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
+			var hot = $(this).parent().parent().parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];
 
 			//get hotinstance
 			var hotInstance = hot.handsontable('getInstance');
 
+			//
 			var cellMeta = [];
 
 			//create array of cellMeta for handsontable cell:
 			hotInstance.getCellsMeta().forEach( function (cell) {
-				});
+				if (cell != undefined) {
+					if (cell.hasOwnProperty('className')) {
+						thisCell = [cell.row, cell.col, 'className', cell.className];
+						cellMeta.push(thisCell);
+					}
+					if (cell.hasOwnProperty('comment')) {
+						thisCell = [cell.row, cell.col, 'comment', cell.comment];
+						cellMeta.push(thisCell);
+					}
+					if (cell.hasOwnProperty('status')) {
+						thisCell = [cell.row, cell.col, 'status', cell.status];
+						cellMeta.push(thisCell);
+					}
+				}
+			});
 
 			/*
 			* @var data Object
@@ -211,6 +233,7 @@
 			*			colWidths: Array of Numerics
 			*			rowHeights: Array of numerics
 			*			cellMeta: Array of Arrays holds row, col, prop, value (in that order)
+			*			changes: recent changes from the afterChange event
 			*/
 			var data = {
 				id: id,
@@ -218,25 +241,79 @@
 				//@TODO FIX BUG SOMETHING WRONG WITH WIDTH/HEIGHT CAUSING TABLE TO JUMP TO TOP AFTER SAVING
 				colWidths: heightNwidth(hotInstance.countCols(), hotInstance.getColWidth),
 				rowHeights: heightNwidth(hotInstance.countRows(), hotInstance.getRowHeight),
-				cellMeta: cellMeta
+				cellMeta: cellMeta,
+				changes: changes[id]
 			};
 
+			//emit all data
 			socket.emit('update-excel', data);
 
 		});
 	}
 
+	//@TODO implement this in a better way
+	function viewEdits() {
+
+		$(document).on('click', '.view-edits', function (e) {
+			var id = $(this).parent().parent('.excel-options').siblings('.hot').attr('class').split(' ')[1];
+
+			var popup = $('#viewedits');
+			var body = popup.find('.viewedits-body');
+			body.html('');
+			var html = '<table class="table table-striped" style="max-height: 400px; overflow: scroll;">' +
+					    	'<thead>' +
+					    		'<tr>' +
+						    		'<th>Row</th>' +
+						    		'<th>Column</th>' +
+						    		'<th>Before</th>' +
+						    		'<th>After</th>' +
+						    	'</tr>' +
+					    	'</thead>' +
+					    	'<tbody>';
+			changes[id].reverse().forEach( function (change) {
+				change = change[0];
+
+				html += '<tr>' +
+							'<td>' + change[0] + '</td>' +
+							'<td>' + change[1] + '</td>' +
+							'<td>' + change[2] + '</td>' +
+							'<td>' + change[3] + '</td>' +
+						'</tr>';
+			});
+
+			html += 	'</tbody>' +
+					'</table>';
+
+			body.append(html);
+		});
+	}
+
 	//@TODO
 	function setHooks(hotInstance, id) {
+
 		// http://docs.handsontable.com/0.20.2/Hooks.html#event:afterChange @TODO add hooks later, maybe auto saves etc
-		// hotInstance.addHook('afterChange', function (data, source) {
+		/*
+		*	@Array data: an array of cell data, row column last value and new value
+		* 	@String source: The source of the change e.g. edit 
+		*/
+		hotInstance.addHook('afterChange', function (data, source) {
+			logger('after change');
+			if (source === 'edit') {
+				//create changes array with id as key
+				if (changes[id] === undefined) {
+					//make array
+					changes[id] = [];
+				}
+
+				changes[id].push(data);
+				logger(changes);
+			}
 			
+		});
 
-		// });
-
-		// hotInstance.addHook('afterChangesObserved', function () {
-		// 	console.log('hmm');
-		// });
+		hotInstance.addHook('afterChangesObserved', function () {
+			logger('change observed');
+		});
 		// hotInstance.addHook('afterSetCellMeta', function (row, col, key, value) {
 		// 	console.log(row + col + key + value);
 		// });
@@ -249,7 +326,7 @@
 	}
 
 	/*
-	*	@
+	* Takes the selected range and walks through adding each cell, finally gets that cells meta and adds it to an array. The array is returned.
 	*/
 	function getSelectedCells(hotInstance) {
 
@@ -306,7 +383,7 @@
 	}
 
 	/*
-	*
+	* accepts an array of cells, checks to see if they have cell meta/value @SEE setSelectedCellsMeta
 	*/
 	function checkSelectedCellsMeta(cells, metaProperty, metaValue) {
 		var hasMeta = false;
@@ -324,7 +401,9 @@
 	  return '<span class="selected">' + String.fromCharCode(10003) + '</span>' + label;
 	}
 
-	//set cell meta
+	/*
+	*	Accepts an array of cells, sets the cell meta/value as provided @SEE checkSelectedCellsMeta
+	*/
 	function setSelectedCellsMeta (hotInstance, cells, meta, value) {
 		cells.forEach( function (cell) {
 			hotInstance.setCellMeta(cell.row, cell.col, meta, value);
@@ -337,7 +416,7 @@
 		* @param Object data contains
 		*		excel: Object
 		*		edit: boolean
-		*	@TODO improve performance by not sending excelsheet back if edit false
+		*	@TODO improve performanc by not sending excelsheet back if edit false
 		*/
 		socket.on('edit-excel', function (data) {
 			//get jQuery object for excelsheet
@@ -441,10 +520,11 @@
 		            }
 				});
 				//@TODO improve this mess
-				hot.siblings('.excel-options').find('.excel-edit').hide();
-				hot.siblings('.excel-options').find('.edit-options').show();
-				hot.siblings('.message').show();
-				hot.siblings('.message').html(excelStrings.currentEdit);
+				var options = hot.siblings('.excel-options');
+				options.find('.excel-edit').hide();
+				options.find('.edit-options').show();
+				options.find('.message').show();
+				options.find('.message').html(excelStrings.currentEdit);
 			} else {
 				var hot = $('.' + data.id);
 				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
@@ -456,9 +536,10 @@
 						}
 					}
 				}
-				hot.siblings('.message').show();
-				hot.siblings('.excel-options').find('.excel-edit').hide();
-				hot.siblings('.message').html(excelStrings.edittedBy + name)
+				var options = hot.siblings('.excel-options');
+				options.find('.message').show();
+				options.find('.excel-edit').hide();
+				options.find('.message').html(excelStrings.edittedBy + name)
 			}
 		});
 		/*
@@ -487,19 +568,23 @@
 				manualColumnResize: false,
 				manualRowResize: false,
 			});
+			//update changes array
+			changes[data._id] = data.changes;
+			var options = hot.siblings('.excel-options');
 			//reset ui options @TODO improve mess
-			hot.siblings('.excel-options').find('.excel-edit').show();
-			hot.siblings('.message').html('');
-			hot.siblings('.message').hide();
-			hot.siblings('.excel-options').find('.edit-options').hide();
+			options.find('.excel-edit').show();
+			options.find('.message').html('');
+			options.find('.message').hide();
+			options.find('.edit-options').hide();
 		});
 		//reset ui back to edit
 		socket.on('cancel-excel', function (excel) {
 			console.log(excel);
 			var hot = $('.' + excel._id);
-			hot.siblings('.message').hide();
-			hot.siblings('.excel-options').find('.edit-options').hide();
-			hot.siblings('.excel-options').find('.excel-edit').show();
+			var options = hot.siblings('.excel-options');
+			options.find('.message').hide();
+			options.find('.edit-options').hide();
+			options.find('.excel-edit').show();
 		});
 	}
 

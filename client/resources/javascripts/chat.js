@@ -77,6 +77,14 @@
 			chatroom.find('.chat-messages ul').append(msg);
 			//scroll to bottom
 			var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
+
+			//add message count to chatroom if not visible (not looking @ it)
+			if (!container.is(':visible')) {
+				var badge = chatroom.find('.messageCount');
+				var count = +badge.html();
+				badge.html(count + 1);				
+			}
+
 			container.scrollTop(container[0].scrollHeight);
 			//empty chat message + reset type
 			chatroom.find('.message').val('');

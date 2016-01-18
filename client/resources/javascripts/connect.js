@@ -6,7 +6,7 @@
 * @var Array excelsheets: array of all excelsheets
 * @var Array users: array of all users
 */
-var token, socket, chatrooms = [], user, excelsheets = [], users = [], appInit;
+var token, socket, chatrooms = [], user, excelsheets = [], users = [], appInit, changes = {};
 
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
@@ -145,6 +145,7 @@ function socketIOInit() {
 		//create excelsheets
 		excelsheets.forEach( function (room, i) {
 			ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
+			changes[room._id] = room.changes;
 		});
 		//init main UI
 		ui.init();
@@ -154,7 +155,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 1
+			defaultActive: 2
 		}).init();
 
 		//listen for excelsheets socketio events
@@ -171,7 +172,6 @@ function socketIOInit() {
 
 		//update global users var
 		users = userList;
-		console.log(users);
 		//get username from each user
 		for (var key in userList) {
 			if (userList.hasOwnProperty(key)) {

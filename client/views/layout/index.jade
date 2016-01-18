@@ -24,7 +24,6 @@ html(lang='en')
 			}
 
 			async('js/bundle.js', function() {
-				console.log('hello');
 				jQuery('#loading').hide();
 				jQuery('#isAuth').removeClass('load');
 				jQuery('#isNotAuth').removeClass('load');
@@ -53,4 +52,5 @@ html(lang='en')
 				div#users.col-xs-12.col-md-3.col-sm-3.col-lg-2
 					include ../_partials/isauth/users
 			include ../_partials/isauth/modals/my-profile
+			include ../_partials/isauth/modals/viewedits
 			include footer

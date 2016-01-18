@@ -115,6 +115,8 @@
 			//add active to new current
 			$(this).addClass('active');
 
+			$(this).find('.badge').html('');
+			
 			//get the data-filter attribute, used to search for corresponding container with same data-filter
 			var show = $(this).attr('data-filter');
 

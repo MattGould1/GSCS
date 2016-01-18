@@ -22,10 +22,12 @@ gulp.task('build-js', function() {
   return gulp.src([
       'resources/javascripts/libs/jquery.1.11.3.js',
       'resources/javascripts/libs/!(jquery.1.11.3)*.js',
+      'resources/javascripts/env.js',
+      'resources/javascripts/helpers.js',
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/connect.js',
       'resources/javascripts/strings.js',
-      'resources/javascripts/!(bootstrap, connect, strings)*.js'
+      'resources/javascripts/!(bootstrap, connect, strings, helpers env)*.js'
     ])
     .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));

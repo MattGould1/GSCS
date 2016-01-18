@@ -37,8 +37,7 @@
 					cform.siblings('.chat-messages').css('height', contentHeight - 80);
 
 					//excel
-					//Compartment.find('#excel .current').css('height', '49px');
-					Compartment.find('#excel .excel-options').css('height', '60px');
+					// Compartment.find('#excel .excel-options').css('height', '60px');
 				}
 
 				$(compartment).css('height', contentHeight);
@@ -118,20 +117,23 @@
 							'<div class="row">' +
 								'<div class="col-xs-12">' +
 									'<div class="excel-options">' +
-										'<a class="btn btn-info excel-edit">Edit</a>' +
-										'<a class="btn btn-primary save-to-excel pull-left" style="display: inline-block;">Save To Excel</a>' +
-										'<div class="edit-options soft-hide" style="width: 150px; float: left; margin-left: 10px;">' +
-											'<a class="btn btn-primary excel-update">Update</a>' +
-											'<a class="btn btn-warning excel-cancel">Cancel</a>' +
+										'<div class="btn-group options">' +
+											'<a class="btn btn-primary save-to-excel pull-left">Save To Excel</a>' +
+											'<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
+											'<a class="btn btn-info excel-edit pull-left">Edit</a>' +
+											'<div class="btn-group edit-options soft-hide">' +
+												'<a class="btn btn-primary excel-update">Update</a>' +
+												'<a class="btn btn-warning excel-cancel">Cancel</a>' +
+											'</div>' +
 										'</div>' +
+										'<div class="message soft-hide" style="max-width: 300px;"></div>' +
 									'</div>' +
-									'<div class="message alert alert-info soft-hide" style="max-width: 300px;"></div>' +
 									'<div class="hot"></div>' +
 								'</div>' +
 							'</div>' +
 						'</div>';
 
-		var linkHTML = '<li class="link"><a></a></li>';
+		var linkHTML = '<li class="link"><a><span class="badge messageCount" style="float:right;"></span></a></li>';
 
 		//turn html into jquery objects
 		$chat = $($.parseHTML(chatHTML));
@@ -175,7 +177,8 @@
 		$link.attr('data-filter', room.name + type);
 
 		//change link text
-		$link.find('a').text(room.name);
+		var badge = $link.find('a').html();
+		$link.find('a').html(room.name + badge);
 
 		//append link to list
 		$(typeLink).append($link);

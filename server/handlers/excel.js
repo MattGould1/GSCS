@@ -1,17 +1,43 @@
 module.exports = {
-	update: function (sio, socket, Excel) {
+	update: function (sio, socket, Excel, Revision) {
 		socket.on('update-excel', function (data) {
 			Excel.findOne({ _id: data.id }, function (err, excel) {
-				if (err) { console.log('Error finding excel to save data: ' + err); }
+				if (err) {
+					console.log('Error finding excel to save data: ' + err);
+				}
+
+				if (excel === undefined) {
+					console.log('socketio update excel undefined');
+				}
+
 				excel.user = socket.decoded_token._id;
 				excel.data = data.data;
 				excel.metaData.colWidths = data.colWidths;
 				excel.metaData.rowHeights = data.rowHeights;
 				excel.metaData.cellMeta = data.cellMeta;
+				excel.changes = data.changes;
 				excel.active = false;
 				excel.save(function (err, saveExcel) {
-					if (err) { console.log('Error updating excel' + err);}
-					sio.sockets.to(excel._id).emit('update-excel', saveExcel);
+					if (err) {
+						console.log('Error updating excel' + err);
+					}
+
+					if (saveExcel === undefined) {
+						console.log('socketio save update excel undefined');
+					}
+
+					revision = new Revision({
+						revision: saveExcel,
+						user: socket.decoded_token._id
+					});
+					
+					revision.save(function (err, success) {
+						if (err) {
+							console.log('Error saving excel revision' + err);
+						}
+
+						sio.sockets.to(excel._id).emit('update-excel', saveExcel);
+					});
 				});
 			});
 		});

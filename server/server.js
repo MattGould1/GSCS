@@ -16,6 +16,7 @@ var user = require('./models/user');
 var chat = require('./models/chat');
 var excel = require('./models/excel');
 var locdep = require('./models/locdep');
+
 //routes
 var index = require('./routes/index');
 var admin = require('./routes/admin');
@@ -24,9 +25,11 @@ var admin = require('./routes/admin');
 var ChatRoom = mongoose.model('ChatRoom');
 var ChatMessage = mongoose.model('ChatMessage');
 var Excel = mongoose.model('Excel');
+var Revision = mongoose.model('Revision');
 var Locations = mongoose.model('Locations');
 var Departments = mongoose.model('Departments');
 var User = mongoose.model('User');
+
 //express
 var app = express();
 
@@ -142,19 +145,22 @@ sio.on('connection', function (socket) {
     user.update(sio, socket, User);
     //handle edit request
     excel.edit(sio, socket, Excel);
-    excel.update(sio, socket, Excel);
+    excel.update(sio, socket, Excel, Revision);
     excel.cancel(sio, socket, Excel);
 
     //handle disconnect event
     socket.on('disconnect', function (data) {
         //make sure socket has username
         if(!socket.username) return;
-        //delete user from global list
+
         cUser = users[socket.username];
-        console.log(users[socket.username]);
-        delete users[socket.username];
-        //broadcast new usernames
-        chat.userList(sio, socket, users);
+
+        console.log('dc');
+        if (!cUser) {
+            console.log(cUser);
+            return;
+        }
+
         //cleanup excels
         Excel.find({}).select('active user').where('active', true).where('user', cUser._id).exec(function (err, excelsheets) {
             if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
@@ -166,6 +172,11 @@ sio.on('connection', function (socket) {
                 });
             });
         });
+
+        //delete user from global
+        delete users[socket.username];
+        //broadcast new usernames
+        chat.userList(sio, socket, users);
     });
 });
 
