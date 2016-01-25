@@ -27,7 +27,7 @@ gulp.task('build-js', function() {
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/connect.js',
       'resources/javascripts/strings.js',
-      'resources/javascripts/!(bootstrap, connect, strings, helpers env)*.js'
+      'resources/javascripts/!(bootstrap, connect, strings, helpers, env)*.js'
     ])
     .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));

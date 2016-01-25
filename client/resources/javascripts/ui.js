@@ -50,6 +50,73 @@
 	}
 
 	/*
+	*	Create the html for a private chat
+	*/
+	ui.prototype.privateChatRoom = function () {
+		var html = '<div class="private-chat chat room">' +
+								'<div class="row">' +
+									'<div class="col-xs-12 pc-header">' +
+										'<span class="glyphicon glyphicon-remove"></span>' +
+									'</div>' +
+								'</div>' +
+								'<div class="row">' +
+									'<div class="col-xs-12 chat-messages">' +
+										'<ul class="list-unstyled">' +
+										'</ul>' +
+									'</div>' +
+								'<div class="col-xs-12 chat-form">' +
+									'<form>' +
+										'<div class="row">' +
+											'<div class="col-xs-10" style="padding: 0px;">' +
+												'<div class="form-group">' +
+													'<input type="text" class="message form-control"/>' +
+												'</div>' +
+											'</div>' +
+											'<div class="col-xs-2">' +
+												'<div class="form-group">' +
+													'<input type="hidden" class="name">' +
+													'<input type="hidden" class="private" value="private">' +
+													'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
+												'</div>' +
+											'</div>' +
+										'</div>' +
+										'<div class="row">' +
+											'<div class="col-xs-12">' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
+														'Normal' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="pnc">' +
+														'Private and Confidential' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="fxd">' +
+														'Fixed' +
+													'</label>' +
+												'</div>' +
+												'<div class="radio-inline">' +
+													'<label>' +
+														'<input type="radio" name="msgType" value="subs">' +
+														'Subs' +
+													'</label>' +
+												'</div>' +
+											'</div>' +
+										'</div>' +
+									'</form>' +
+								'</div>' +
+							'</div>';
+
+
+		return html;
+	}
+
+	/*
 	* @param Object room: chatroom or excelsheet
 	* @param jQuery element container
 	* @param jQuery element link
@@ -118,7 +185,7 @@
 								'<div class="col-xs-12">' +
 									'<div class="excel-options">' +
 										'<div class="btn-group options">' +
-											'<a class="btn btn-primary save-to-excel pull-left">Save To Excel</a>' +
+											'<a class="btn btn-primary save-to-excel pull-left">Download</a>' +
 											'<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
 											'<a class="btn btn-info excel-edit pull-left">Edit</a>' +
 											'<div class="btn-group edit-options soft-hide">' +
@@ -195,4 +262,4 @@
 		return source;
 	}
 
-})(jQuery)
+})(jQuery);

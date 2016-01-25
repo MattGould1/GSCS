@@ -45,6 +45,7 @@ function init(token) {
 
 	//socketio connect event, this means we've succesfully connected so we can safely (fully) init app
 	socket.once('connect', function (data) {
+		console.log('connect');
 		//set ui
 		setTimeout(function() {
 			//show app
@@ -67,6 +68,10 @@ function init(token) {
 			});
 			//init excelsheet module, see excel.js
 			excel = new eExcel();
+			//listen for excelsheets socketio events
+			excel.update();
+			//init chat functions
+			chat.init();
 		}
 	});
 
@@ -92,6 +97,7 @@ function init(token) {
 		$('.chat').remove();
 		$('.excel').remove();
 		$('.link').remove();
+		$('.private-chat').remove();
 
 		$time = 0;
 
@@ -119,7 +125,6 @@ function socketIOInit() {
 	var chatContainer = $('.chat');
 	var excelContainer = $('.excel');
 	var link = $('.link');
-
 
 	/*
 	* @param Object data contains
@@ -158,26 +163,10 @@ function socketIOInit() {
 			defaultActive: 2
 		}).init();
 
-		//listen for excelsheets socketio events
-		excel.update();
-		//init chat functions
-		chat.init();
 	});
-	/*
-	* @param Object userList: contains a list of users that are Objects
-	*/
-	socket.on('userList', function (userList) {
-		//remove current list
-		$('.user').remove();
 
-		//update global users var
-		users = userList;
-		//get username from each user
-		for (var key in userList) {
-			if (userList.hasOwnProperty(key)) {
-				var user = userList[key];
-				$('.users').append('<div class="user">' + user.username + '</div>');
-			}
-		}
-	});
+	//only load once
+	if (appInit === undefined) {
+		new users().load();
+	}
 }

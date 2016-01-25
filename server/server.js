@@ -7,6 +7,7 @@ var path = require('path'),
     bodyParser = require('body-parser'),
     http = require('http'),
     users = {},
+    socketss = {},
     cUser,
     socketioJwt = require('socketio-jwt');
 
@@ -105,7 +106,13 @@ sio.on('connection', function (socket) {
 
             //save user in global list
             users[socket.username] = cUser;
-            
+
+            //save socket
+            socketss[socket.username] = socket;
+
+            //join my own room
+            socket.join(cUser._id);
+
             //connection data
             ChatRoom.find({ location: cUser.location, department: cUser.department }).populate('_messages').exec(function (err, chatrooms) {
                 if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
@@ -138,10 +145,11 @@ sio.on('connection', function (socket) {
     });
 
     //handle messages
-    chat.message(sio, socket, ChatRoom, ChatMessage);
+    chat.message(sio, socket, ChatRoom, ChatMessage, users, socketss);
+    chat.privatechat(sio, socket, socketss, ChatMessage, users);
+    chat.getPrivateMessages(sio, socket, ChatMessage);
 
-
-    //user handles
+    //user handler
     user.update(sio, socket, User);
     //handle edit request
     excel.edit(sio, socket, Excel);
@@ -173,16 +181,22 @@ sio.on('connection', function (socket) {
             });
         });
 
+        //broadcast the person who left
+        sio.sockets.emit('leave', users[socket.username]);
         //delete user from global
         delete users[socket.username];
+        delete socketss[socket.username];
         //broadcast new usernames
         chat.userList(sio, socket, users);
+
+
     });
 });
 
 //function for testing
 setInterval(function () {
   sio.emit('time', Date());
+  console.log(process.memoryUsage());
 }, 5000);
 
 //start listening

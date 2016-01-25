@@ -568,9 +568,18 @@
 				manualColumnResize: false,
 				manualRowResize: false,
 			});
+
 			//update changes array
 			changes[data._id] = data.changes;
 			var options = hot.siblings('.excel-options');
+
+			linkC = $('[data-filter="' + data.name + '-excel"');
+			if (!hot.is(':visible')) {
+				var badge = linkC.find('.messageCount');
+				var count = +badge.html();
+				badge.html(count + 1);				
+			}
+
 			//reset ui options @TODO improve mess
 			options.find('.excel-edit').show();
 			options.find('.message').html('');
