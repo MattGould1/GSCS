@@ -1,0 +1,26 @@
+.private-chat {
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	width: 400px;
+	background: #ccc;
+	z-index: 1000;
+	height: auto;
+
+	.private-chat-header {
+		height: 40px;
+		background: #337AB7;
+	}
+	.private-chat-body {
+		height: 100%;
+	}
+	.chat-messages {
+		max-height: 150px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+	}
+	.private-chat-footer {
+		height: 80px;
+		background: #337AB7;
+	}
+}
