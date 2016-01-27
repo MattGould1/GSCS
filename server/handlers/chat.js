@@ -56,16 +56,21 @@ module.exports = {
 				//create the new message
 				var newMsg = new ChatMessage({
 					_user: socket.decoded_token._id,
-					_to: msg.me._id,
+					_to: msg.to.to,
 					username: socket.username,
 					message: message
 				});
 
 				newMsg.save( function (err, savedMsg) {
 					if (err) { console.log('Error saving private message' + err); }
+			
 					//update msg object
 					msg.username = socket.username;
-					sio.sockets.to(msg.to.unique).emit('chat-message', msg);
+					console.log(msg);
+					//emit to my partner
+					sio.sockets.to(msg.to.to).emit('chat-message', msg);
+					// //emit to me
+					//sio.sockets.to(socket.decoded_token._id).emit('chat-message', msg);
 				});
 			}
 		});
@@ -81,15 +86,11 @@ module.exports = {
 	*/
 	privatechat: function (sio, socket, socketss, ChatMessage, users) {
 		socket.on('privatechat', function (connect) {
-			console.log('check');
-			//create a new room for the private chat
-			socket.join(connect.unique);
-			socketss[connect.partner.username].join(connect.unique);
-			
+			console.log(socket.decoded_token._id);
+			console.log(connect.partner._id);
 			var query = ChatMessage
 							.find({})
-							.where('_to', socket.decoded_token._id)
-							.where('_to', connect.partner._id)
+							.where('_to').in([socket.decoded_token._id, connect.partner._id])
 							.sort({_id: -1})
 							.limit(30);
 
@@ -101,9 +102,12 @@ module.exports = {
 					unique: connect.unique,
 					messages: messages
 				};
-				console.log(socket.rooms);
-				//only emit to your partner, this should only ever fire once, perhaps some server side validation to stop more @TODO consider later
-				sio.sockets.to(connect.unique).emit('joinprivatechat', info);
+ 
+				//only emit to your partner @TODO consider later
+				sio.sockets.to(connect.partner._id).emit('joinprivatechat', info);
+
+				//emit to me
+				sio.sockets.to(socket.decoded_token._id).emit('joinprivatechat', info);
 			});
 		});
 	},

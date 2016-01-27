@@ -45,6 +45,7 @@
 			var to = false;
 			var me = false;
 			var unique = false;
+
 			if ($this.find('.message').val() == '') {
 				return false;
 			}
@@ -67,9 +68,27 @@
 				pc: pc,
 				me: me,
 				to: {
+					to: to,
 					unique: unique
 				}
 			};
+
+			if ( $this.find('.private').val() == 'private' ) {
+				var message = $this.find('.message').val();
+				message = message.replace(/<(?:.|\s)*?>/g, "");
+				message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
+				//allow colors
+				message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
+				//wrap message in its type
+				message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
+				message = '<li>' + user.username + ': ' + message + '</li>';
+				$this.parent().parent('.private-chat').find('.chat-messages ul').append(message);
+
+
+				chatToBottom(this, $this.parent().parent('.private-chat').find('.chat-messages'));
+			}
+
+			//send to server, emits to all if public if private chat only emits to partner
 			logger('sending message');
 			socket.emit('chat-message', msg);
 
@@ -96,25 +115,30 @@
 
 			//private chat?
 			if ( message.pc === true ) {
-				var unique = message.to.unique;
-				var chatroom = $('#' + unique);
+				var id = '#' + message.me._id;
+				var chatroom = $(id);
 				if (chatroom.length == 0) {
 					//is chatroom visible?
-					if ( !chatroom.is(':visible') ) {
+					if ( chatroom.is(':visible') ) {
 						console.log('not visible atm');
 					}
 
-					socket.emit('getprivatemessages', message.me);
 					var app = $('#app');
+
 					//html
 					var chatroom = $($.parseHTML(ui.privateChatRoom()));
+					
 					//give some information for socketio
-					chatroom.addClass(message.to.unique);
-					chatroom.attr('id', unique);	
-					chatroom.attr('data-unique', message.to.unique);
+					chatroom.addClass('.' + user._id);
+
+					chatroom.attr('id', message.me._id);	
+					chatroom.attr('data-to', message.me._id);
 					app.append(chatroom);
 				}
 				chatroom.find('.chat-messages ul').append(msg);
+
+				var container = chatroom.find('.chat-messages');
+
 			} else {
 				//jquery append
 				var chatroom = $('[data-filter="' + message.room + '-chat"]');
@@ -128,12 +152,12 @@
 					var count = +badge.html();
 					badge.html(count + 1);				
 				}
-
-				container.scrollTop(container[0].scrollHeight);
-				//empty chat message + reset type
-				chatroom.find('.message').val('');
-				chatroom.find('.reset-radio').prop('checked', true);
 			}
+			container.scrollTop(container[0].scrollHeight);
+			//empty chat message + reset type
+			chatroom.find('.message').val('');
+			chatroom.find('.reset-radio').prop('checked', true);
+			
 		});
 	}
 
@@ -143,29 +167,24 @@
 	function initPrivateChat() {
 		$('#app').on('click', '.user', function () {
 
-			//get me and this user, to create the room
-			me = user;
+			//my partner
 			partner = $(this).data();
 
-			//create a unique string, maybe use username in future? @TODO consider later
-			var unique = me._id + partner._id;
-
 			//check if ur tryin to chat with yourself
-			if ( me.username === partner.username ) {
+			if ( user.username === partner.username ) {
 				alert('Opps you cannot chat with yourself! Click another user!');
 				return false;
 			}
 
 			//chat is already open so no need to open a new one
-			if ( $('[data-to-name="' + partner.username + '"]').length == 1 ) {
-				$('[data-to-name="' + partner.username + '"]').show();
+			if ( $('[data-to="' + partner._id + '"]').length == 1 ) {
+				$('[data-to="' + partner._id + '"]').show();
 				return false;
 			}
 
 			//send this to the server, used by your partner to create room with the same unique id
 			var connect = {
-				partner: partner,
-				unique: unique
+				partner: partner
 			};
 
 			//add the room to the app rather than chat, keep things cleaner and easier to maintain looking forward @TODO consider redoing later
@@ -174,14 +193,17 @@
 			//create jQuery object @SEE ui.js
 			var room = $($.parseHTML(ui.privateChatRoom()));
 
-			//add meta to the jquery object, used to validate and determine who's who
-			room.addClass(unique);
-			room.attr('id', unique);
-			room.attr('data-to-name', partner.username);
+			//add a class to the chatroom, this is used by us on the client side
+			room.addClass(user._id);
+
+			//add the partnets message to the room, used to send message to his socket
+			room.attr('id', partner._id);
+			room.attr('data-to', partner._id);
 
 			//add jquery object to the dom
 			app.append(room);
 
+			chatToBottom.call(this, room.find('.chat-messages'));
 			//create a private room on server and invite your partner
 			socket.emit('privatechat', connect);
 		});
@@ -192,23 +214,18 @@
 		socket.on('joinprivatechat', function (join) {
 			logger(join);
 			messages = '';
-			join.messages.forEach( function (message) {
+			join.messages.reverse().forEach( function (message) {
 				messages += '<li>' + message.username + ': ' + message.message + '</li>';
 			});
 
 			//this shouldn't be possible, but hey, lets make sure @SEE initPrivatechat() function
-			if ($('div[data-to-name="' + join.partner.username + '"]').length > 0 || $('div[data-to-name="' + join.me.username + '"]').length > 0) {
+			if ($('.' + user._id).length > 0) {
 				logger('alrdy open');
-				$('div[data-to-name="' + join.partner.username + '"]').find('.chat-messages ul').append(messages);
-				$('div[data-to-name="' + join.me.username + '"]').find('.chat-messages ul').append(messages);
+				$('.' + user._id).find('.chat-messages ul').append(messages);
 			} else {
-
-				//me and my partner
-				me = user;
-				you = join.me;
-
-				//create unique reverse of jquery .user click 
-				var unique = join.unique;
+				logger('creating room');
+				//my partner, is actually the user who clicked .user
+				partner = join.me;
 
 				//app
 				var app = $('#app');
@@ -217,13 +234,18 @@
 				var room = $($.parseHTML(ui.privateChatRoom()));
 
 				//give some information for socketio
-				room.addClass(unique);
-				room.attr('id', unique);
-				room.attr('data-to-name', you.username);
+				room.addClass(user._id);
 
+				//set up the meta for socketio
+				room.attr('id', partner._id);
+				room.attr('data-to', partner._id);
+
+				//append msgs and add room to dom
 				room.find('.chat-messages ul').append(messages);
 				app.append(room);
-				
+
+
+				chatToBottom.call(this, room.find('.chat-messages ul'));
 			}
 		});
 
@@ -237,6 +259,10 @@
 		});
 	}
 
+	function chatToBottom(container) {
+		logger(container);
+		container.scrollTop(container[0].scrollHeight);
+	}
 	function getRoom() {
 
 	}

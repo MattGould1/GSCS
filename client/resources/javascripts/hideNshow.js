@@ -136,7 +136,6 @@
 		});
 	}
 
-
 	function extendDefaults(source, properties) {
 		var property;
 		for (property in properties) {
