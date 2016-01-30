@@ -105,10 +105,10 @@ sio.on('connection', function (socket) {
             socket.username = cUser.username;
 
             //save user in global list
-            users[socket.username] = cUser;
+            users[socket.decoded_token._id] = cUser;
 
             //save socket
-            socketss[socket.username] = socket;
+            socketss[socket.decoded_token._id] = socket;
 
             //join my own room
             socket.join(cUser._id);
@@ -117,23 +117,33 @@ sio.on('connection', function (socket) {
             ChatRoom.find({ location: cUser.location, department: cUser.department }).populate('_messages').exec(function (err, chatrooms) {
                 if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
                 Excel.find({ location: cUser.location, department: cUser.department }).populate('user').exec(function (err, excelsheets) {
-
                     if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
-                    //emit data
-                    var data = {
-                        chatrooms: chatrooms,
-                        excelsheets: excelsheets,
-                        user: cUser
-                    };
-
-                    chatrooms.forEach(function (chatroom) {
-                        socket.join(chatroom._id);
+                    ChatMessage.find()
+                        .where('_user').equals(socket.decoded_token._id)
+                        .where('read').equals(false)
+                        .exec ( function (err, unreadMessages) {
+                            if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
+                            User.find()
+                                .select('username')
+                                .exec( function (err, names) {
+                                    //emit data
+                                    var data = {
+                                        chatrooms: chatrooms,
+                                        excelsheets: excelsheets,
+                                        user: cUser,
+                                        users: names
+                                    };
+                                    
+                                    console.log(unreadMessages);
+                                    chatrooms.forEach(function (chatroom) {
+                                        socket.join(chatroom._id);
+                                    });
+                                    excelsheets.forEach(function (excelsheet) {
+                                        socket.join(excelsheet._id);
+                                    });
+                                    socket.emit('data', data);
+                                });
                     });
-                    excelsheets.forEach(function (excelsheet) {
-                        socket.join(excelsheet._id);
-                    });
-                    socket.emit('data', data);
-
                 });
             });
             //broadcast usernames
@@ -161,7 +171,7 @@ sio.on('connection', function (socket) {
         //make sure socket has username
         if(!socket.username) return;
 
-        cUser = users[socket.username];
+        cUser = users[socket.decoded_token._id];
 
         console.log('dc');
         if (!cUser) {
@@ -182,10 +192,10 @@ sio.on('connection', function (socket) {
         });
 
         //broadcast the person who left
-        sio.sockets.emit('leave', users[socket.username]);
+        sio.sockets.emit('leave', users[socket.decoded_token._id]);
         //delete user from global
-        delete users[socket.username];
-        delete socketss[socket.username];
+        delete users[socket.decoded_token._id];
+        delete socketss[socket.decoded_token._id];
         //broadcast new usernames
         chat.userList(sio, socket, users);
 

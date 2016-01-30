@@ -18,7 +18,7 @@ var chatSchema = new mongoose.Schema({
 	created: { type: Date, default: Date.now() },
 	_room: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatRoom' }],
 	_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-	_to: {type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+	_to: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
 	username: { type: String, required: true },
 	message: { type: String, required: true },
 	read: Boolean

@@ -75,6 +75,7 @@
 
 			if ( $this.find('.private').val() == 'private' ) {
 				var message = $this.find('.message').val();
+				var chatroom = $this.parent().parent('.private-chat');
 				message = message.replace(/<(?:.|\s)*?>/g, "");
 				message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
 				//allow colors
@@ -82,10 +83,10 @@
 				//wrap message in its type
 				message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
 				message = '<li>' + user.username + ': ' + message + '</li>';
-				$this.parent().parent('.private-chat').find('.chat-messages ul').append(message);
-
-
-				chatToBottom(this, $this.parent().parent('.private-chat').find('.chat-messages'));
+				chatroom.find('.chat-messages ul').append(message);
+				chatroom.find('.message').val('');
+				chatroom.find('.reset-radio').prop('checked', true);
+				chatToBottom.call(this, data.find('.chat-messages'));
 			}
 
 			//send to server, emits to all if public if private chat only emits to partner
@@ -115,9 +116,11 @@
 
 			//private chat?
 			if ( message.pc === true ) {
-				var id = '#' + message.me._id;
-				var chatroom = $(id);
+				var chatroom = $('#' + message.me._id);
+
+				//make room if it doesn't exist
 				if (chatroom.length == 0) {
+					logger('room doesn\'t exist');
 					//is chatroom visible?
 					if ( chatroom.is(':visible') ) {
 						console.log('not visible atm');
@@ -134,10 +137,33 @@
 					chatroom.attr('id', message.me._id);	
 					chatroom.attr('data-to', message.me._id);
 					app.append(chatroom);
-				}
-				chatroom.find('.chat-messages ul').append(msg);
+					room = {
+						partner: message.me._id
+					}
+					socket.emit('getprivatemessages', room);
 
-				var container = chatroom.find('.chat-messages');
+					socket.on('receiveprivatemessages', function (messages) {
+						var messages = appendMessages.call(this, messages);
+						chatroom.find('.chat-messages ul').append(messages);
+
+						var container = chatroom.find('.chat-messages');
+
+						container.scrollTop(container[0].scrollHeight);
+					});
+				} else {
+					//add the message
+					chatroom.find('.chat-messages ul').append(msg);
+						var container = chatroom.find('.chat-messages');
+
+						container.scrollTop(container[0].scrollHeight);
+				}
+
+				if ( !chatroom.is(':visible')) {
+					var chatPartner = $('[data-_id="' + message.me._id + '"]');
+					var badge = chatPartner.find('.messageCount');
+					var count = +badge.html();
+					badge.html(count + 1);
+				}
 
 			} else {
 				//jquery append
@@ -152,8 +178,9 @@
 					var count = +badge.html();
 					badge.html(count + 1);				
 				}
+
+				container.scrollTop(container[0].scrollHeight);
 			}
-			container.scrollTop(container[0].scrollHeight);
 			//empty chat message + reset type
 			chatroom.find('.message').val('');
 			chatroom.find('.reset-radio').prop('checked', true);
@@ -166,6 +193,11 @@
 	*/
 	function initPrivateChat() {
 		$('#app').on('click', '.user', function () {
+			//check if there's a message count
+			if ( $(this).find('.messageCount').html() > 0) {
+				//set it to zero
+				$(this).find('.messageCount').html('');
+			}
 
 			//my partner
 			partner = $(this).data();
@@ -175,9 +207,10 @@
 				alert('Opps you cannot chat with yourself! Click another user!');
 				return false;
 			}
-
+			$('.private-chat').hide();
 			//chat is already open so no need to open a new one
 			if ( $('[data-to="' + partner._id + '"]').length == 1 ) {
+				$('.private-chat').hide();
 				$('[data-to="' + partner._id + '"]').show();
 				return false;
 			}
@@ -212,11 +245,12 @@
 		*	@param Object join: contains me (partner) and unique (id) between both you and your partner
 		*/
 		socket.on('joinprivatechat', function (join) {
+			logger('hmm');
 			logger(join);
 			messages = '';
-			join.messages.reverse().forEach( function (message) {
-				messages += '<li>' + message.username + ': ' + message.message + '</li>';
-			});
+
+			//
+			var messages = appendMessages.call(this, join.messages);
 
 			//this shouldn't be possible, but hey, lets make sure @SEE initPrivatechat() function
 			if ($('.' + user._id).length > 0) {
@@ -243,7 +277,8 @@
 				//append msgs and add room to dom
 				room.find('.chat-messages ul').append(messages);
 				app.append(room);
-
+				//finally hide the room, no messages yet so don't popup
+				room.hide();
 
 				chatToBottom.call(this, room.find('.chat-messages ul'));
 			}
@@ -254,7 +289,7 @@
 		});
 
 		$('#app').on('click', '.glyphicon-remove', function () {
-			$(this).parent().parent().parent('.private-chat').hide();
+			$(this).parent().parent().parent().parent('.private-chat').hide();
 			logger('hide private chat');
 		});
 	}
@@ -268,6 +303,16 @@
 	}
 	function validate() {
 
+	}
+
+	function appendMessages(messages) {
+		var msgs = '';
+
+		messages.reverse().forEach( function (message) {
+			msgs += '<li>' + message.username + ': ' + message.message + '</li>';
+		});
+
+		return msgs;
 	}
 
 })(jQuery);

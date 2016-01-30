@@ -53,20 +53,26 @@ module.exports = {
 					});
 				});
 			} else if (msg.pc === true) {
+
+				if (users[msg.to.to] === undefined) {
+					read = false;
+				} else {
+					read = true;
+				}
 				//create the new message
 				var newMsg = new ChatMessage({
 					_user: socket.decoded_token._id,
 					_to: msg.to.to,
 					username: socket.username,
-					message: message
+					message: message,
+					read: read
 				});
 
 				newMsg.save( function (err, savedMsg) {
 					if (err) { console.log('Error saving private message' + err); }
-			
-					//update msg object
+					console.log(savedMsg);
+					//update msg Object
 					msg.username = socket.username;
-					console.log(msg);
 					//emit to my partner
 					sio.sockets.to(msg.to.to).emit('chat-message', msg);
 					// //emit to me
@@ -85,21 +91,21 @@ module.exports = {
 	* 	Create a private room for chatting 
 	*/
 	privatechat: function (sio, socket, socketss, ChatMessage, users) {
-		socket.on('privatechat', function (connect) {
-			console.log(socket.decoded_token._id);
-			console.log(connect.partner._id);
+		socket.on('privatechat', function (connect) {		
+			console.log(connect);	
 			var query = ChatMessage
 							.find({})
-							.where('_to').in([socket.decoded_token._id, connect.partner._id])
+							.and([ 
+								{ $or: [{'_to': connect.partner._id}, {'_to': socket.decoded_token._id}] },
+								{ $or: [{'_user': connect.partner._id}, {'_user': socket.decoded_token._id}] }])
 							.sort({_id: -1})
 							.limit(30);
 
 			query.exec(function (err, messages) {
 				//info required for the client, me will = you, on the partners side unique is the link between the to
 				var info = {
-					me: users[socket.username],
+					me: users[socket.decoded_token._id],
 					partner: connect.partner,
-					unique: connect.unique,
 					messages: messages
 				};
  
@@ -116,7 +122,18 @@ module.exports = {
 	*/
 	getPrivateMessages: function (sio, socket, ChatMessage) {
 		socket.on('getprivatemessages', function (data) {
-			console.log(data);
+			var query = ChatMessage
+							.find({})
+							.and([ 
+								{ $or: [{'_to': data.partner}, {'_to': socket.decoded_token._id}] },
+								{ $or: [{'_user': data.partner}, {'_user': socket.decoded_token._id}] }])
+							.sort({_id: -1})
+							.limit(30);
+			query.exec( function (err, messages) {
+				if (err) { console.log(err); return false; }
+
+				sio.sockets.to(socket.decoded_token._id).emit('receiveprivatemessages', messages);
+			});
 		});
 	}
 };

@@ -56,8 +56,11 @@
 		var html = '<div class="private-chat chat room">' +
 								'<div class="row">' +
 									'<div class="col-xs-12 pc-header">' +
-										'<span class="glyphicon glyphicon-remove"></span>' +
+										'<div class="pc-hide">' +
+											'<span class="glyphicon glyphicon-remove"></span>' +
+										'</div>' + 
 									'</div>' +
+
 								'</div>' +
 								'<div class="row">' +
 									'<div class="col-xs-12 chat-messages">' +
