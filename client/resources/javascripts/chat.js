@@ -193,21 +193,25 @@
 	*/
 	function initPrivateChat() {
 		$('#app').on('click', '.user', function () {
+			//my partner
+			partner = $(this).data();
+
 			//check if there's a message count
 			if ( $(this).find('.messageCount').html() > 0) {
 				//set it to zero
 				$(this).find('.messageCount').html('');
-			}
 
-			//my partner
-			partner = $(this).data();
+				socket.emit('pcreadmessages', partner._id);
+			}
 
 			//check if ur tryin to chat with yourself
 			if ( user.username === partner.username ) {
 				alert('Opps you cannot chat with yourself! Click another user!');
 				return false;
 			}
+
 			$('.private-chat').hide();
+			
 			//chat is already open so no need to open a new one
 			if ( $('[data-to="' + partner._id + '"]').length == 1 ) {
 				$('.private-chat').hide();

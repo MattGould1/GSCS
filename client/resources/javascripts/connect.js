@@ -162,7 +162,8 @@ function socketIOInit() {
 			Link: jQuery('.link'),
 			defaultActive: 2
 		}).init();
-$('.user-offline').remove();
+
+		$('.user-offline').remove();
 		data.users.forEach ( function (name, i) {
 			var offline = $('.people-offline');
 
@@ -171,9 +172,20 @@ $('.user-offline').remove();
 			var html = '<div class="user user-offline"' +
 							'data-_id="' + name._id + '"' +
 							'data-username=" ' + name.username + '">' +
-								name.username +
-							'</div>';
+								name.username + 
+							'<span class="badge messageCount" style="float:right;"></span></div>';
 			offline.after(html);
+		});
+		$('.messageCount').html('');
+		//append a badge and number for each unreadmessage
+		data.unread.forEach ( function (message, i) {
+
+			var partner = $('[data-_id="' + message._user + '"]');
+
+			var badge = partner.find('.messageCount');
+			var count = +badge.html();
+			badge.html(count +1);
+			logger(message);
 		});
 	});
 	//only load once

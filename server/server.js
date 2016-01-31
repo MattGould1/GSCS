@@ -119,7 +119,7 @@ sio.on('connection', function (socket) {
                 Excel.find({ location: cUser.location, department: cUser.department }).populate('user').exec(function (err, excelsheets) {
                     if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
                     ChatMessage.find()
-                        .where('_user').equals(socket.decoded_token._id)
+                        .where('_to').equals(socket.decoded_token._id)
                         .where('read').equals(false)
                         .exec ( function (err, unreadMessages) {
                             if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
@@ -131,10 +131,9 @@ sio.on('connection', function (socket) {
                                         chatrooms: chatrooms,
                                         excelsheets: excelsheets,
                                         user: cUser,
-                                        users: names
+                                        users: names,
+                                        unread: unreadMessages
                                     };
-                                    
-                                    console.log(unreadMessages);
                                     chatrooms.forEach(function (chatroom) {
                                         socket.join(chatroom._id);
                                     });
@@ -158,7 +157,7 @@ sio.on('connection', function (socket) {
     chat.message(sio, socket, ChatRoom, ChatMessage, users, socketss);
     chat.privatechat(sio, socket, socketss, ChatMessage, users);
     chat.getPrivateMessages(sio, socket, ChatMessage);
-
+    chat.readPrivateMessages(sio, socket, ChatMessage);
     //user handler
     user.update(sio, socket, User);
     //handle edit request

@@ -21,7 +21,9 @@
 						var user = userList[key];
 
 						//remove from offline
-						$('[data-_id="' + user._id + '"]').remove();
+						var offline = $('[data-_id="' + user._id + '"]');
+						var offlineMsgs = offline.find('.messageCount').html();
+						offline.remove();
 
 						var html = '<div class="user"' +
 										'data-admin="' + user.admin + '"' +
@@ -34,7 +36,7 @@
 										'data-online="' + user.online + '"' +
 										'data-status="' + user.status + '"' +
 										'data-username="' + user.username + '"' +
-										'>' + user.username + '<span class="badge messageCount" style="float:right;"></span></div>';
+										'>' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);
 						$('.private-chat').each( function () {
 							if ($(this).attr('id').indexOf(user._id) !== -1) {
@@ -51,12 +53,16 @@
 		*/
 		socket.on('leave', function (otherUser) {
 			logger('leave');
+			var online = $('[data-_id="' + otherUser._id + '"]');
+			var onlineMsgs = online.find('.messageCount').html();
+			online.remove();
+
 			var offline = $('.people-offline');
 			var html = '<div class="user"' +
 							'data-_id="' + otherUser._id + '"' +
 							'data-username=" ' + otherUser.username + '">' +
 								otherUser.username +
-							'</div>';
+							'<span class="badge messageCount" style="float:right;">' + onlineMsgs + '</span></div>';
 			offline.after(html);
 			$('.private-chat').each( function () {
 				if ($(this).attr('id').indexOf(otherUser._id) !== -1) {

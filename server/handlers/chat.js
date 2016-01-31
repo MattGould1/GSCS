@@ -70,7 +70,6 @@ module.exports = {
 
 				newMsg.save( function (err, savedMsg) {
 					if (err) { console.log('Error saving private message' + err); }
-					console.log(savedMsg);
 					//update msg Object
 					msg.username = socket.username;
 					//emit to my partner
@@ -91,8 +90,7 @@ module.exports = {
 	* 	Create a private room for chatting 
 	*/
 	privatechat: function (sio, socket, socketss, ChatMessage, users) {
-		socket.on('privatechat', function (connect) {		
-			console.log(connect);	
+		socket.on('privatechat', function (connect) {
 			var query = ChatMessage
 							.find({})
 							.and([ 
@@ -133,6 +131,30 @@ module.exports = {
 				if (err) { console.log(err); return false; }
 
 				sio.sockets.to(socket.decoded_token._id).emit('receiveprivatemessages', messages);
+			});
+		});
+	},
+	/*
+	*	read private messages
+	*/
+	readPrivateMessages: function (sio, socket, ChatMessage) {
+		socket.on('pcreadmessages', function (id) {
+			console.log(id);
+			var conditions = {
+				read: false,
+				_user: id,
+				_to: socket.decoded_token._id
+			},
+			update = {
+				read: true
+			},
+			options = {
+				multi: true
+			};
+
+			ChatMessage.update(conditions, update, options, function (err, updated) {
+				if (err) { console.log(err); return false; }
+				console.log(updated);
 			});
 		});
 	}
