@@ -4,7 +4,22 @@
 
 	}
 
+	users.prototype.lastActive = function() {
+		idle = 0;
+
+		socket.on('updateactivity', function (time) {
+
+		});
+	}
+
 	users.prototype.load = function () {
+		userList.call(this);
+		userLeave.call(this);
+		userInfo.call(this);
+		status.call(this);
+	}
+
+	function userList() {
 		/*
 		* @param Object userList: contains a list of users that are Objects
 		*/
@@ -25,7 +40,7 @@
 						var offlineMsgs = offline.find('.messageCount').html();
 						offline.remove();
 
-						var html = '<div class="user"' +
+						var html = '<div class="user ' + user.online + '"' +
 										'data-admin="' + user.admin + '"' +
 										'data-_id="' + user._id + '"' +
 										'data-department="' + user.department + '"' +
@@ -36,6 +51,7 @@
 										'data-online="' + user.online + '"' +
 										'data-status="' + user.status + '"' +
 										'data-username="' + user.username + '"' +
+										'data-lastactive="' + user.lastActive + '"' +
 										'>' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);
 						$('.private-chat').each( function () {
@@ -47,6 +63,9 @@
 				}
 			}, 1000);
 		});
+	}
+
+	function userLeave() {
 		/*
 		* @param Object user: a user who has dc'd
 		* use this to cleanup app for a single user disconnect
@@ -60,6 +79,7 @@
 			var offline = $('.people-offline');
 			var html = '<div class="user"' +
 							'data-_id="' + otherUser._id + '"' +
+							'data-lastactive="' + user.lastActive + '"' +
 							'data-username=" ' + otherUser.username + '">' +
 								otherUser.username +
 							'<span class="badge messageCount" style="float:right;">' + onlineMsgs + '</span></div>';
@@ -71,6 +91,47 @@
 					$(this).find('.pc-hide').after('<div class="pc-user-status">' + otherUser.username + ' is now offline! Messages will be delivered when they login!</div>');
 				}
 			});
+		});	
+	}
+
+	function userInfo() {
+		$('.users').on('mouseenter mouseleave', '.user',
+			function (e) {
+				var info = $('.userinfo'),
+					$this = $(this),
+					data = $this.data(),
+					position = $this.offset();
+				if (e.type === 'mouseenter') {
+					info.html('');
+					var userinfo = '<div class="my-lastactive">Last Active: ' + data.lastactive + '</div>' +
+								   '<div class="my-status">Status: ' + data.status + '</div>' +
+								   '<div class="my-email">Email: ' + data.email + '</div>';
+					info.append(userinfo);
+					info.show();
+					info.css({
+						'top': position.top + 20,
+						'left': position.left
+					});
+				} else {
+					info.hide();
+				}
+
+			}
+		);
+	}
+
+	function status() {
+		$('#header').on('click', '.onlinestatus', function() {
+			var status = $(this).html();
+			var info = {
+				_id: user._id,
+				status: status
+			};
+			socket.emit('onlinestatus', info);
+		});
+
+		socket.on('updatestatus', function (status) {
+			$('[data-_id="' + status.user._id + '"]').removeClass(status.old).addClass(status.user.online);
 		});
 	}
 })(jQuery);

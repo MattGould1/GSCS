@@ -6,18 +6,22 @@ div#my-profile.modal.fade(tabindex="-1" role="dialog")
 			div.modal-body.my-profile-content
 				form.form-horizontal
 					div.form-group
-						label.col-xs-2.control-label(for="username") 
-						div.col-xs-10
+						label.col-xs-3.control-label(for="username") 
+						div.col-xs-9
 							p (Sorry but usernames cannot be updated!)
 							input.form-control.my-profile-username(type="text" disabled)
 					div.form-group
-						label.col-xs-2.control-label(for="First Name") First Name
-						div.col-xs-10
+						label.col-xs-3.control-label(for="First Name") First Name
+						div.col-xs-9
 							input.form-control.my-profile-firstname(type="text")
 					div.form-group
-						label.col-xs-2.control-label(for="Last Name") Last Name
-						div.col-xs-10
+						label.col-xs-3.control-label(for="Last Name") Last Name
+						div.col-xs-9
 							input.form-control.my-profile-lastname(type="text")
+					div.form-group
+						label.col-xs-3.control-label(for="moodmessage") Let people know what's up!
+						div.col-xs-9
+							textarea.form-control.my-profile-status
 			div.modal-footer
 				button.btn.btn-primary(data-dismiss="modal") Close
 				button.btn.btn-primary.save-profile(data-dismiss="modal") Save

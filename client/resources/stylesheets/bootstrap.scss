@@ -51,10 +51,6 @@
 @import "bootstrap/popovers";
 @import "bootstrap/carousel";
 
-// Utility classes
-@import "bootstrap/utilities";
-@import "bootstrap/responsive-utilities";
-
 // Client
 @import "client/ui";
 @import "client/silly-classes";
@@ -63,4 +59,7 @@
 @import "admin/admin";
 @import "admin/_type";
 
+// Utility classes
+@import "bootstrap/utilities";
+@import "bootstrap/responsive-utilities";
 

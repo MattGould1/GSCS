@@ -166,11 +166,11 @@ function socketIOInit() {
 		$('.user-offline').remove();
 		data.users.forEach ( function (name, i) {
 			var offline = $('.people-offline');
-
-			
-
 			var html = '<div class="user user-offline"' +
 							'data-_id="' + name._id + '"' +
+							'data-email="' + name.email + '"' +
+							'data-status="' + name.status + '"' +
+							'data-lastactive="' + user.lastActive + '"' +
 							'data-username=" ' + name.username + '">' +
 								name.username + 
 							'<span class="badge messageCount" style="float:right;"></span></div>';

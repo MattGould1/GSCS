@@ -124,7 +124,7 @@ sio.on('connection', function (socket) {
                         .exec ( function (err, unreadMessages) {
                             if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
                             User.find()
-                                .select('username')
+                                .select('username status email online')
                                 .exec( function (err, names) {
                                     //emit data
                                     var data = {
@@ -158,8 +158,12 @@ sio.on('connection', function (socket) {
     chat.privatechat(sio, socket, socketss, ChatMessage, users);
     chat.getPrivateMessages(sio, socket, ChatMessage);
     chat.readPrivateMessages(sio, socket, ChatMessage);
+
     //user handler
     user.update(sio, socket, User);
+    user.lastActive(sio, socket, User);
+    user.onlinestatus(sio, socket, User);
+
     //handle edit request
     excel.edit(sio, socket, Excel);
     excel.update(sio, socket, Excel, Revision);

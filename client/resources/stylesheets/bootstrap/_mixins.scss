@@ -38,3 +38,12 @@
 @import "mixins/nav-vertical-align";
 @import "mixins/grid-framework";
 @import "mixins/grid";
+
+@mixin circle($size) {
+	content: '';
+	display: inline-block;
+	width: $size;
+	height: $size;
+	border-radius: $size;
+	margin: -3px 2px;
+}
