@@ -167,3 +167,53 @@
 .moodmessage {
 	display: inline-block;
 }
+#chat {
+	li {
+		display: flex;
+		min-height: 30px;
+		&:nth-child(odd) {
+			background: $brand-primary;
+		}
+		&:nth-child(even) {
+			background: $brand-info;
+		}
+		div {
+			display: inline-block;
+			min-height: 30px;
+			line-height: 30px;
+			height: auto;
+			padding: 5px 0px;
+		}
+		.message-name {
+			width: 10%;
+			background: $gray-lighter;
+			text-align: right;
+			padding-right: 10px;
+			font-weight: bold;
+		}
+		.message-body {
+			width: 70%;
+			padding-left: 10px;
+			.message-file {
+				img {
+					max-height: 300px;
+				}
+			}
+		}
+		.message-time {
+			width: 20%;
+		}
+	}
+}
+#content, #chat, #excel, .chat-messages {
+	padding: 0px;
+	margin: 0px;
+}
+.chat-messages {
+	ul {
+		margin-bottom: 0px;
+	}
+}
+.chat-form {
+	margin-top: 10px;
+}

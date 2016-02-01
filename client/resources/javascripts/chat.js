@@ -37,68 +37,104 @@
 	* use socketio to emit chat-message to server
 	*/
 	function send(form) {
+		$('#chat').on('click', '.image-upload', function (e) {
+			e.preventDefault();
+			console.log('click');
+			var $this = $(this);
+			var file = $this.parent().parent().siblings('.message-info').find('.file').click();
+		});
+		$('#chat').on('change', '.file', function (e) {
+			var $this = $(this);
+			var file = $this.context.files[0];
+			$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+		});
 		$('#app').off().on('submit', form, function (e) {
 			e.preventDefault();
-
 			var $this = $(this);
 			var pc = false;
 			var to = false;
 			var me = false;
 			var unique = false;
+			function uploadImage(callback) {
+				if ($this.find('.file')[0].files.length != 0) {
 
-			if ($this.find('.message').val() == '') {
-				return false;
-			}
-
-			if ($this.find('.private').val() == 'private') {
-				console.log('hmm');
-				var data = $this.parent().parent('.private-chat');
-				pc = true;
-				to = data.attr('data-to');
-				toName = data.attr('data-to-name');
-				unique = data.attr('id');
-				me = user;
-			}
-
-			//message object to send to server
-			msg = {
-				_id: $this.find('.name').val(),
-				type: $this.find('input[name="msgType"]:checked').val(),
-				message: $this.find('.message').val(),
-				pc: pc,
-				me: me,
-				to: {
-					to: to,
-					unique: unique
+					var ufile = $this.find('.file')[0].files[0];
+					var reader = new FileReader();
+					var hmm = reader.readAsDataURL(ufile);
+					reader.onload = function() {
+						var dataURL = reader.result;
+				      	console.log(ufile);
+				      	file = {
+				      		name: ufile.name,
+				      		type: ufile.type,
+				      		size: ufile.size,
+				      		data: dataURL
+				      	};
+				      	callback(file);
+					};
+				} else {
+					callback();
 				}
-			};
-
-			if ( $this.find('.private').val() == 'private' ) {
-				var message = $this.find('.message').val();
-				var chatroom = $this.parent().parent('.private-chat');
-				message = message.replace(/<(?:.|\s)*?>/g, "");
-				message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
-				//allow colors
-				message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
-				//wrap message in its type
-				message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
-				message = '<li>' + user.username + ': ' + message + '</li>';
-				chatroom.find('.chat-messages ul').append(message);
-				chatroom.find('.message').val('');
-				chatroom.find('.reset-radio').prop('checked', true);
-				chatToBottom.call(this, data.find('.chat-messages'));
 			}
 
-			//send to server, emits to all if public if private chat only emits to partner
-			logger('sending message');
-			socket.emit('chat-message', msg);
+			function prepareMessage(file) {
+				console.log(file);
+				if ($this.find('.message').val() == '') {
+					return false;
+				}
 
-			//regardless of success disable message for half a second
-			$this.find('button').prop('disabled', true);
+				if ($this.find('.private').val() == 'private') {
+					console.log('hmm');
+					var data = $this.parent().parent('.private-chat');
+					pc = true;
+					to = data.attr('data-to');
+					toName = data.attr('data-to-name');
+					unique = data.attr('id');
+					me = user;
+				}
 
-			setTimeout(function() {
-				$this.find('button').prop('disabled', false);
-			}, 1000);
+				//message object to send to server
+				msg = {
+					_id: $this.find('.name').val(),
+					type: $this.find('input[name="msgType"]:checked').val(),
+					message: $this.find('.message').val(),
+					pc: pc,
+					me: me,
+					to: {
+						to: to,
+						unique: unique
+					},
+					file: file
+				};
+
+				if ( $this.find('.private').val() == 'private' ) {
+					var message = $this.find('.message').val();
+					var chatroom = $this.parent().parent('.private-chat');
+					message = message.replace(/<(?:.|\s)*?>/g, "");
+					message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
+					//allow colors
+					message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
+					//wrap message in its type
+					message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
+					message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
+					chatroom.find('.chat-messages ul').append(message);
+					chatroom.find('.message').val('');
+					chatroom.find('.reset-radio').prop('checked', true);
+					chatToBottom.call(this, data.find('.chat-messages'));
+				}
+
+				//send to server, emits to all if public if private chat only emits to partner
+				logger('sending message');
+				socket.emit('chat-message', msg);
+
+				//regardless of success disable message for half a second
+				$this.find('button').prop('disabled', true);
+
+				setTimeout(function() {
+					$this.find('button').prop('disabled', false);
+				}, 1000);
+			}
+			uploadImage(prepareMessage);
 		});
 	}
 
@@ -112,7 +148,8 @@
 		socket.on('chat-message', function (message) {
 			console.log(message);
 			//build message, include na
-			msg = '<li>' + message.username + ': ' + message.message + '</li>';
+	msg = '<li><div class="message-name">' + message.username + ':</div><div class="message-body">' + message.message + '</div><div class="message-time">' + Date.now() + '</div></li>';
+				
 
 			//private chat?
 			if ( message.pc === true ) {
@@ -183,6 +220,8 @@
 			}
 			//empty chat message + reset type
 			chatroom.find('.message').val('');
+			chatroom.find('.file').val('');
+			chatroom.find('.filestoupload').text('');
 			chatroom.find('.reset-radio').prop('checked', true);
 			
 		});

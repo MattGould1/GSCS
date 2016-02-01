@@ -21,6 +21,7 @@ var chatSchema = new mongoose.Schema({
 	_to: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
 	username: { type: String, required: true },
 	message: { type: String, required: true },
+	file: [{ type: String }],
 	read: Boolean
 
 });

@@ -9,6 +9,7 @@ var path = require('path'),
     users = {},
     socketss = {},
     cUser,
+    fs = require('fs'),
     socketioJwt = require('socketio-jwt');
 
 //models
@@ -34,6 +35,8 @@ var User = mongoose.model('User');
 //express
 var app = express();
 
+//helpers
+var imageupload = require('./modules/imageupload');
 //enable cors
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -49,7 +52,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 //read cookies
 app.use(cookieParser());
-
+app.use("/public", express.static(__dirname + '/public'));
 //use routes
 app.use('/', index);
 //admin check for jwt, end response if no
@@ -69,7 +72,6 @@ app.use('/admin', function (req, res, next) {
     }
 });
 app.use('/admin', admin);
-
 
 //connect to db
 mongoose.connect(db.database);
@@ -154,14 +156,14 @@ sio.on('connection', function (socket) {
     });
 
     //handle messages
-    chat.message(sio, socket, ChatRoom, ChatMessage, users, socketss);
-    chat.privatechat(sio, socket, socketss, ChatMessage, users);
+    chat.message(sio, socket, ChatRoom, ChatMessage, users, imageupload.saveImage, fs, path);
+    chat.privatechat(sio, socket, ChatMessage, users);
     chat.getPrivateMessages(sio, socket, ChatMessage);
     chat.readPrivateMessages(sio, socket, ChatMessage);
 
     //user handler
     user.update(sio, socket, User);
-    user.lastActive(sio, socket, User);
+    user.lastactive(sio, socket, User);
     user.onlinestatus(sio, socket, User);
 
     //handle edit request

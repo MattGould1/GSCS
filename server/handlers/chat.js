@@ -3,7 +3,7 @@ module.exports = {
 	* @param Model ChatRoom
 	* @param Model ChatMessage
 	*/
-	message: function(sio, socket, ChatRoom, ChatMessage, users, socketss) {
+	message: function(sio, socket, ChatRoom, ChatMessage, users, saveImage, fs, path) {
 		/*
 		* @param Object msg: _id: ChatRoom._id, type: type of message, message: client message
 		*/
@@ -28,12 +28,25 @@ module.exports = {
 				//find chatroom, and create chatmessage and save both, emit back to clients (including sender)
 				ChatRoom.findOne({ _id: msg._id }, function (err, chatroom) {
 					if (err) { console.log ('error finding chatroom ' + msg._id + 'error: ' + err); }
+					var filepath = '';
+					if (msg.file) {
+						var buffer = saveImage(msg.file.data);
+			
+						var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + msg.file.name);
+						var filepath = '/public/' + Math.floor(new Date() / 1000) + msg.file.name;
 
+						fs.writeFile(filename, buffer.data, function (err) {
+							console.log(err);
+							console.log('success');
+						});
+					}
+					
 					var newMsg = new ChatMessage({
 						_room: msg._id,
 						_user: socket.decoded_token._id,
 						username: socket.username,
-						message: message
+						message: message,
+						file: filepath
 					});
 
 					newMsg.save(function (err, savedMsg) {
@@ -45,6 +58,8 @@ module.exports = {
 							if (err) { console.log ('Error saving chatroom after message push' + err); }
 
 							//update msg object and send back to client
+							msg.file = ''; //remove the file
+							msg.filepath = filepath;
 							msg.room = chatroom.name;
 							msg.username = socket.username;
 
@@ -89,7 +104,7 @@ module.exports = {
 	/*
 	* 	Create a private room for chatting 
 	*/
-	privatechat: function (sio, socket, socketss, ChatMessage, users) {
+	privatechat: function (sio, socket, ChatMessage, users) {
 		socket.on('privatechat', function (connect) {
 			var query = ChatMessage
 							.find({})

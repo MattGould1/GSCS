@@ -130,7 +130,7 @@
 	ui.prototype.containers = function (room, container, link, type, typeContainer, typeLink) {
 
 		//create jquery objects with the html
-		var chatHTML = '<div class="container chat room">' +
+		var chatHTML = '<div class="chat room">' +
 								'<div class="row">' +
 									'<div class="col-xs-12 chat-messages">' +
 										'<ul class="list-unstyled">' +
@@ -139,9 +139,16 @@
 								'<div class="col-xs-12 chat-form">' +
 									'<form>' +
 										'<div class="row">' +
-											'<div class="col-xs-10" style="padding: 0px;">' +
+											'<div class="col-xs-9 message-info" style="padding: 0px;">' +
 												'<div class="form-group">' +
 													'<input type="text" class="message form-control"/>' +
+													'<input style="display: none;"" type="file" class="file form-control"/>' +
+												'</div>' +
+											'</div>' +
+											'<div class="col-xs-1">' +
+												'<div class="form-group">' +
+													'<input type="hidden" class="name">' +
+													'<button class="image-upload btn btn-info form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
 												'</div>' +
 											'</div>' +
 											'<div class="col-xs-2">' +
@@ -151,7 +158,7 @@
 												'</div>' +
 											'</div>' +
 										'</div>' +
-										'<div class="row">' +
+										'<div class="radios-meta row">' +
 											'<div class="col-xs-12">' +
 												'<div class="radio-inline">' +
 													'<label>' +
@@ -177,13 +184,17 @@
 														'Subs' +
 													'</label>' +
 												'</div>' +
+												'<div class="radio-inline">' +
+													'<span class="filestoupload"></span>' +
+												'</div>' +
+
 											'</div>' +
 										'</div>' +
 									'</form>' +
 								'</div>' +
 							'</div>';
 
-		var excelHTML = '<div class="container excel room">' +
+		var excelHTML = '<div class="excel room">' +
 							'<div class="row">' +
 								'<div class="col-xs-12">' +
 									'<div class="excel-options">' +
@@ -226,7 +237,17 @@
 		newContainer.find('.title').text(room.name);
 		if (room._messages != undefined) {
 			room._messages.forEach( function (message, i) {
-				msg = '<li>' + message.username + ': ' + message.message;
+				if (message.file != '') {
+					console.log(message);
+				}
+				msg =	'<li>' +
+							'<div class="message-name">' + message.username + ':</div>' +
+							'<div class="message-body">' +
+								'<div class="message-file img-responsive img-rounded">' +
+									'<img src="' + url  + message.file[0] + '">' +
+								'</div>' + message.message + '</div>' +
+							'<div class="message-time">' + message.created + '</div>' +
+						'</li>';
 				newContainer.find('.chat-messages ul').append(msg);
 			});
 		}

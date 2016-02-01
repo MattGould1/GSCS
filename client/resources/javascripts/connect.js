@@ -14,6 +14,7 @@ notAuth = jQuery('#isNotAuth');
 
 //check for token, once document has loaded
 jQuery(document).ready(function() {
+	$("img").lazyload().trigger("appear");
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
@@ -46,6 +47,7 @@ function init(token) {
 	//socketio connect event, this means we've succesfully connected so we can safely (fully) init app
 	socket.once('connect', function (data) {
 		console.log('connect');
+
 		//set ui
 		setTimeout(function() {
 			//show app
@@ -160,7 +162,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 2
+			defaultActive: 0
 		}).init();
 
 		$('.user-offline').remove();
@@ -191,5 +193,6 @@ function socketIOInit() {
 	//only load once
 	if (appInit === undefined) {
 		new users().load();
+		new users().lastActive();
 	}
 }

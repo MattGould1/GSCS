@@ -5,7 +5,31 @@
 	}
 
 	users.prototype.lastActive = function() {
+		//measured in seconds
 		idle = 0;
+
+		//events that reset the idle timer
+		window.onmousemove = resetTimer;
+	    window.onmousedown = resetTimer; // catches touchscreen presses
+	    window.onclick = resetTimer;     // catches touchpad clicks
+	    window.onkeypress = resetTimer;
+
+	    setInterval(setTimer, 1000);
+	    
+	    //increment idle time, and send update to server if necessary
+	    function setTimer() {
+	    	idle++;
+	    	//send server update for every 5 mins of inactivity
+	    	mins = idle / 5;
+
+	    	if (mins % 1 === 0) {
+	    		socket.emit('inactive', { id: user._id, idle: idle });
+	    	}
+	    }
+		//reset idle var
+	    function resetTimer() {
+	    	idle = 0;
+	    }
 
 		socket.on('updateactivity', function (time) {
 
@@ -115,7 +139,6 @@
 				} else {
 					info.hide();
 				}
-
 			}
 		);
 	}

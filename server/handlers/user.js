@@ -27,14 +27,6 @@ module.exports = {
 			});
 		});
 	},
-	online: function (sio, socket, User, user) {
-		/*
-		*
-		*/
-		socket.on('update-online', function (status) {
-
-		});
-	},
 	onlinestatus: function (sio, socket, User) {
 		socket.on('onlinestatus', function (status) {
 			User.findOne({ _id: status._id }, function (err, user) {
@@ -48,7 +40,9 @@ module.exports = {
 			});
 		});
 	},
-	lastActive: function (sio, socket, User) {
-
+	lastactive: function (sio, socket, User) {
+		socket.on('inactive', function (time) {
+			
+		});
 	}
 };
