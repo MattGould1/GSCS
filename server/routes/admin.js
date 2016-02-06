@@ -10,6 +10,7 @@ var express = require('express'),
 	Locations = mongoose.model('Locations'),
 	Departments = mongoose.model('Departments'),
 	login = require('./../modules/login'),
+	os = require('os'),
     //socketio jwt
     socketioJwt = require('socketio-jwt');
 
@@ -39,7 +40,17 @@ router.post('/', function (req, res) {
 				 console.log(excels);
 				 Locations.find({}).exec( function (err, locations) {
 				 	Departments.find({}).exec( function (err, departments) {
-						res.json({ chat: rooms, users: users, excels: excels, locations: locations, departments: departments });
+				 		var stats = {
+				 			cpu: os.cpus(),
+				 			freemem: os.freemem(),
+				 			hostname: os.hostname(),
+				 			loadavg: os.loadavg(),
+				 			network: os.networkInterfaces(),
+				 			totalmem: os.totalmem(),
+				 			uptime: os.uptime()
+				 		};
+
+						res.json({ chat: rooms, users: users, excels: excels, locations: locations, departments: departments, stats: stats });
 				 	});
 				 });
 			});
@@ -53,10 +64,8 @@ router.post('/locdep', function (req, res) {
 			locations: location
 		});
 		loc.save( function (err, saved) {
-
 		});
 	});
-
 	req.body.departments.forEach( function (department, i) {
 		var dep = new Departments({
 			departments: department
@@ -65,9 +74,21 @@ router.post('/locdep', function (req, res) {
 
 		});
 	});
+	Locations.find({}).exec( function (err, locations) {
+ 		Departments.find({}).exec( function (err, departments) {
+ 			console.log('sending back');
+ 			res.json( {
+ 				locations: locations,
+ 				departments: departments
+ 			});
+ 		});
+	});
 });
 
 router.post('/locdep/delete', function (req, res) {
+	if (req.body.data.value == '') {
+		return false;
+	}
 	if (req.body.data.type === 'locations') {
 		Locations.findOneAndRemove({ locations: req.body.data.value }, function (err, location) {
 			location.remove();

@@ -56,8 +56,8 @@
 			if (entry.name == name) {
 				//id
 				excel_form.find('#edit-excel-id').val(entry._id);
-				excel_form.find('#edit-chat-departments').html('');
-				excel_form.find('#edit-chat-locations').html('');
+				excel_form.find('#edit-excel-departments').html('');
+				excel_form.find('#edit-excel-locations').html('');
 				locations.forEach(function (location, i) {
 					
 					excel_form.find('#edit-excel-locations').append('<input type="checkbox" class="excel-locations" value="' + location._id + '"/>' + location.locations);
@@ -81,7 +81,7 @@
 	//delete
 	container.on('click', '.delete', function () {
 		$this = $(this);
-
+		console.log('clicked settings delete');
 		//get username
 		var name = $this.parents().closest('tr').attr('class');
 
@@ -158,7 +158,7 @@
 
 				createList(list, excels, tableStructure);
 
-				excelsave.find('p').html('Successfully excelsaved!');
+				$('#editexcel').find('p').html('Successfully excelsaved!');
 			},
 			error: function (xhr, status, error) {
 				console.log(error)

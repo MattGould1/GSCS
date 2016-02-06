@@ -1,5 +1,5 @@
 excelStrings = {
-	currentEdit: 'You are now editting this marketsheet!',
+	currentEdit: 'You are now editting this marketsheet! You can right click the excelsheet for formatting options!',
 	edittedBy: 'This marketsheet is being editted by ',
 };
 

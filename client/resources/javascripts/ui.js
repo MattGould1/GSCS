@@ -42,8 +42,8 @@
 
 				$(compartment).css('height', contentHeight);
 			});
+			//@todo implement resize in a more friendly manner
 			jQuery(window).resize(function () {
-				console.log('hmm');
 				//get heights
 				var headerHeight = $('#header').outerHeight();
 				var footerHeight = $('#footer').height();
@@ -255,7 +255,7 @@
 												'<a class="btn btn-warning excel-cancel">Cancel</a>' +
 											'</div>' +
 										'</div>' +
-										'<div class="message soft-hide" style="max-width: 300px;"></div>' +
+										'<div class="message soft-hide"></div>' +
 									'</div>' +
 									'<div class="hot"></div>' +
 								'</div>' +

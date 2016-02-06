@@ -1,4 +1,4 @@
-var admin, token, users, chatrooms, excels, locations, departments;
+var admin, token, users, chatrooms, excels, locations, departments, systeminfo;
 
 var url = 'http://localhost:8080';
 admin = $('#admin');
@@ -10,3 +10,5 @@ function findWithAttr(array, attr, value) {
         }
     }
 }
+$('.savesuccess').hide();
+$('.createexcel-fail').hide();

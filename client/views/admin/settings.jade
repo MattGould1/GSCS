@@ -1,9 +1,7 @@
 div#settings
 	div#locdep
-		div.row
-			div.col-xs-12
-				h3 After updating settings please 
-					a(href="") refresh the page!
+		div.savesuccess.alert.alert-success
+		h3 Be careful deleting Locations/Deparments. This will affect users and you will need to reassign user locations and departments!
 		form.form-horizontal
 			div.form-group.for-location
 			div.form-group
@@ -13,5 +11,5 @@ div#settings
 			div.form-group
 				div.col-xs-10
 					button.btn.btn-primary.add-department Add Department
-				div.col-xs-6
+				div.col-xs-6(style="padding-top: 20px;")
 					a.btn.btn-success.locdep-save Save

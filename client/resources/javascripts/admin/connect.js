@@ -19,6 +19,8 @@
 				excels = data.excels;
 				locations = data.locations;
 				departments = data.departments;
+				systeminfo = data.stats;
+				window.dashboardLoad();
 				window.setLocDep();
 				window.userLoad();
 				window.chatLoad();

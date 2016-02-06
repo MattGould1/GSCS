@@ -6,7 +6,13 @@
 // 						<input class="form-control locations" type="text" name="locations"/>
 // 					</div>
 // 				</div>';
-var location = '<div class="form-group"><label class="col-xs-2 control-label" for="location">Location<a class="delete btn btn-primary">Delete</a></label><div class="col-xs-10"><input class="form-control locations" type="text" name="locations"/></div></div>';
+	var location = '<div class="form-group">' +
+						'<label class="col-xs-2 control-label" for="location">Location</label>' +
+						'<div class="col-xs-10">' +
+							'<input style="width: 70%; float:left"  class="form-control locations" type="text" name="locations"/>' +
+							'<a style="width: 25%; float:left" class="delete btn btn-primary">Delete</a>' +
+						'</div>' +
+					'</div>';
 // var department = '<div class="form-group">
 // 					<label class="col-xs-2 control-label" for="department">Department</label>
 // 					<div class="col-xs-10">
@@ -14,15 +20,38 @@ var location = '<div class="form-group"><label class="col-xs-2 control-label" fo
 // 					</div>
 // 				</div>';
 
-var department = '<div class="form-group"><label class="col-xs-2 control-label" for="department">Department<a class="delete btn btn-primary">Delete</a></label><div class="col-xs-10"><input class="form-control departments" type="text" name="departments"/></div></div>';
+	var department = '<div class="form-group">' +
+						'<label class="col-xs-2 control-label" for="department">Department' +
+						
+						'</label>' + 
+						'<div class="col-xs-10">' +
+							'<input style="width: 70%; float:left" class="form-control departments" type="text" name="departments"/>' +
+							'<a style="width: 25%; float:left" class="delete btn btn-primary">Delete</a>' +
+						'</div>' + 
 
+					'</div>';
 function makeLoc(value) {
-	var location = '<div class="form-group"><label class="col-xs-2 control-label" for="location">Location<a class="delete btn btn-primary">Delete</a></label><div class="col-xs-10"><input value="' + value + '" class="form-control locations" type="text" name="locations"/></div></div>';
+	var location = '<div class="form-group">' +
+						'<label class="col-xs-2 control-label" for="location">Location</label>' +
+						'<div class="col-xs-10">' +
+							'<input style="width: 70%; float:left" value="' + value + '" class="form-control locations" type="text" name="locations"/>' +
+							'<a style="width: 25%; float:left" class="delete btn btn-primary">Delete</a>' +
+						'</div>' +
+					'</div>';
 	return location;
 }
 
 function makeDep(value) {
-	var department = '<div class="form-group"><label class="col-xs-2 control-label" for="department">Department<a class="delete btn btn-primary">Delete</a></label><div class="col-xs-10"><input value="' + value + '" class="form-control departments" type="text" name="departments"/></div></div>';
+	var department = '<div class="form-group">' +
+						'<label class="col-xs-2 control-label" for="department">Department' +
+						
+						'</label>' + 
+						'<div class="col-xs-10">' +
+							'<input style="width: 70%; float:left" value="' + value + '" class="form-control departments" type="text" name="departments"/>' +
+							'<a style="width: 25%; float:left" class="delete btn btn-primary">Delete</a>' +
+						'</div>' + 
+
+					'</div>';
 	return department;
 }
 
@@ -47,10 +76,10 @@ function setLocDep() {
 window.setLocDep = setLocDep;
 $('#locdep').on('click', '.delete', function (e) {
 	e.preventDefault();
-
+	console.log('delete');
 	$(this).parent().parent().remove();
-	var input = $(this).parent().siblings('div').find('input');
-
+	var input = $(this).siblings('input');
+console.log(input.val());
 	$.ajax({
 		url: url + '/admin/locdep/delete',
 		type: 'POST',
@@ -67,7 +96,11 @@ $('#locdep').on('click', '.delete', function (e) {
 			
 		},
 		success: function (data, status, xhr) {
-			console.log(data);
+			$('#settings').find('.savesuccess').show().html('').append('Successfully deleted!');
+			setTimeout( function () {
+				$('#settings').find('.savesuccess').hide();
+			}, 5000);
+
 		},
 		error: function (xhr, status, error) {
 
@@ -119,7 +152,12 @@ $('#locdep').on('click', '.locdep-save', function (e) {
 			
 		},
 		success: function (data, status, xhr) {
-			console.log(data);
+			$('#settings').find('.savesuccess').show().append('Successfully updated!');
+			setTimeout( function () {
+				$('#settings').find('.savesuccess').hide();
+			}, 5000);
+			locations = data.locations;
+			departments = data.departments;
 		},
 		error: function (xhr, status, error) {
 
