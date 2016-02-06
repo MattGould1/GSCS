@@ -3,7 +3,7 @@
 # Install meanstack #
 
 # Run the app #
-To keep the app running we use [Link Text](https://github.com/foreverjs/forever)
+To keep the app running we use [foreverjs](https://github.com/foreverjs/forever)
 To start the app head into /opt/ewb directory. From here use -
 forever start client/client.js
 forever start server/server.js
