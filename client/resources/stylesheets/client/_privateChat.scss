@@ -2,13 +2,14 @@
 	position: fixed;
 	bottom: 0px;
 	right: 0px;
-	width: 600px;
+	width: 100%;
+	max-width: 600px;
 	background: #f5f5f5;
 	z-index: 1000;
 	height: auto;
 	overflow:hidden;
 	border-top: 1px solid #ccc;
-	border-left: 1p solid #ccc;
+	border-left: 1px solid #ccc;
 	border-radius: 5px 0px 0px 0px;
 	.pc-header {
 		height: 30px;
@@ -24,11 +25,27 @@
 		overflow-x: hidden;
 		display: flex;
 		min-height: 30px;
-		&:nth-child(odd) {
-			background: lighten($brand-primary, 50%);
-		}
-		&:nth-child(even) {
-			background: lighten($brand-info, 50%);
+		ul {
+			width: 100%;
+			&:nth-child(odd) {
+				background: lighten($brand-primary, 50%);
+			}
+			&:nth-child(even) {
+				background: lighten($brand-info, 50%);
+			}
+			.message-name {
+				width: 20%;
+				max-width: 100px;
+			}
+			.message-body {
+				width: 60%;
+				max-width: 400px;
+			}
+			.message-time {
+				width: 20%;
+				max-width: 100px;
+				overflow: hidden;
+			}
 		}
 	}
 	.private-chat-footer {

@@ -88,44 +88,47 @@
 		var headerHeight = $('#header').outerHeight();
 		var footerHeight = $('#footer').outerHeight();
 		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
+		setTimeout(function() {
+			console.log($('#content').outerWidth());
+			//see @server Model excel for details on data
+			$('.' + excelsheet._id).handsontable({
+				//set handsontable data
+				data: excelsheet.data,
+				//readonly true, so it cannot be editted
+				readOnly: true,
+				minRows: 30,
+				minCols: 30,
+				// @param Array of Numers colWidths + rowHeights, handsontable uses to render table
+				colWidths: excelsheet.metaData.colWidths,
+				rowHeights: excelsheet.metaData.rowHeights,
+				//handsontable contextmenu hidden by default so cannot edit
+				contextMenu: false,
+				//create cellmeta per cell
+				cell: cellsMeta.call(this, excelsheet),
+				//comments always true
+				comments: true,
+				//81 for button/message height
+				height: contentHeight - 61,
+				width: $('#content').outerWidth(),
+				//manual resize false until edit is allowed
+				manualColumnResize: false,
+				manualRowResize: false,
+				//add more details for headers later @TODO
+				rowHeaders: true,
+				colHeaders: true,
+				cells: function (row, col, prop) {
+					var cellProperties = {};
+					cellProperties.renderer = statusRenderer;
 
-		//see @server Model excel for details on data
-		$('.' + excelsheet._id).handsontable({
-			//set handsontable data
-			data: excelsheet.data,
-			//readonly true, so it cannot be editted
-			readOnly: true,
-			minRows: 30,
-			minCols: 30,
-			// @param Array of Numers colWidths + rowHeights, handsontable uses to render table
-			colWidths: excelsheet.metaData.colWidths,
-			rowHeights: excelsheet.metaData.rowHeights,
-			//handsontable contextmenu hidden by default so cannot edit
-			contextMenu: false,
-			//create cellmeta per cell
-			cell: cellsMeta.call(this, excelsheet),
-			//comments always true
-			comments: true,
-			//81 for button/message height
-			height: contentHeight - 70,
-			//manual resize false until edit is allowed
-			manualColumnResize: false,
-			manualRowResize: false,
-			//add more details for headers later @TODO
-			rowHeaders: true,
-			colHeaders: true,
-			cells: function (row, col, prop) {
-				var cellProperties = {};
-				cellProperties.renderer = statusRenderer;
+					return cellProperties;
+				}
+			});
 
-				return cellProperties;
-			}
-		});
-
-		//get current instance, this will be used to set handsontable hooks @todo
-		var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
-		setHooks.call(this, hotInstance, excelsheet._id);
-		// change ui State if the sheet is active, if the excelsheet is active it is being editted
+			//get current instance, this will be used to set handsontable hooks @todo
+			var hotInstance = $('.' + excelsheet._id).handsontable('getInstance');
+			setHooks.call(this, hotInstance, excelsheet._id);
+			// change ui State if the sheet is active, if the excelsheet is active it is being editted
+		}, 1000);
 		if ( excelsheet.active === true ) {
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
 		}

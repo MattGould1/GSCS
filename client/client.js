@@ -19,6 +19,7 @@ var admin = require('./routes/admin');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use (function (req, res, next) {
 	var access_log = {
+		'time': Date.now(),
 		'url': req.url,
 		'x-forwarded-for': req.headers['x-forwarded-for'],
 		'connection remote address': req.connection.remoteAddress,
@@ -26,11 +27,12 @@ app.use (function (req, res, next) {
 		'client peername': req.client._peername,
 		'client user agent': req.headers
 	};
-	if (req.url.indexOf('/css/')) {
-		next();
-		return false;
-	}
-	fs.appendFile('access_log.txt', JSON.stringify(access_log, null, 2), (err) => {
+	var options = {
+		'encoding': 'utf8',
+		'mode': '0o666',
+	};
+	console.log(access_log);
+	fs.appendFile('access_log.txt', JSON.stringify(access_log, null, 2), function (err) {
 	  if (err) throw err;
 	  console.log('The "data to append" was appended to file!');
 	});

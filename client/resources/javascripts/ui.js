@@ -13,7 +13,7 @@
 
 	//public
 	ui.prototype.init = function () {
-			//get heights
+					//get heights
 			var headerHeight = $('#header').outerHeight();
 			var footerHeight = $('#footer').height();
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
@@ -37,11 +37,47 @@
 					cform.siblings('.chat-messages').css('height', contentHeight - 80);
 
 					//excel
-					// Compartment.find('#excel .excel-options').css('height', '60px');
+					Compartment.find('#excel .excel-options').css('height', '60px');
 				}
 
 				$(compartment).css('height', contentHeight);
 			});
+			jQuery(window).resize(function () {
+				console.log('hmm');
+				//get heights
+				var headerHeight = $('#header').outerHeight();
+				var footerHeight = $('#footer').height();
+				var contentHeight = $(window).height() - headerHeight - footerHeight;
+
+				//set app height based on header height and window height, use overflow hidden on rest
+			
+				/*
+				*	Three more compartments to handle, #sidebar #content and #users
+				*/
+				var compartments = ['#sidebar', '#content', '#users'];
+				compartments.forEach( function (compartment) {
+					var Compartment = $(compartment);
+
+					if (compartment === '#sidebar') {
+						Compartment.find('#links').css('overflow', 'auto');
+					}
+
+					if (compartment === '#content') {
+						//chatroom heights
+						var cform = $('.chat-form');
+						cform.siblings('.chat-messages').css('height', contentHeight - 80);
+
+						//excel
+						Compartment.find('#excel .excel-options').css('height', '60px');
+					}
+
+					$(compartment).css('height', contentHeight);
+				});
+			});
+	}
+
+	ui.prototype.resize = function () {
+
 	}
 	ui.prototype.gotoBottom = function ($el) {
 		$el.scrollTop($el[0].scrollHeight);
@@ -76,10 +112,6 @@
 
 			return messageOutput;
 		}
-
-	}
-
-	ui.prototype.resize = function () {
 
 	}
 
@@ -119,28 +151,10 @@
 										'</div>' +
 										'<div class="row">' +
 											'<div class="col-xs-12">' +
-												'<div class="radio-inline">' +
+												'<div class="radio-inline" style="display: none">' +
 													'<label>' +
 														'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
 														'Normal' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="pnc">' +
-														'Private and Confidential' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="fxd">' +
-														'Fixed' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="subs">' +
-														'Subs' +
 													'</label>' +
 												'</div>' +
 											'</div>' +
