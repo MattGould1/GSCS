@@ -26,7 +26,7 @@ app.use (function (req, res, next) {
 		'client peername': req.client._peername,
 		'client user agent': req.headers
 	};
-	if (req.url.indexOf('/css/') {
+	if (req.url.indexOf('/css/')) {
 		next();
 		return false;
 	}
