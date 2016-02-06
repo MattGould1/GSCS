@@ -1,0 +1,39 @@
+.private-chat {
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	width: 600px;
+	background: #f5f5f5;
+	z-index: 1000;
+	height: auto;
+	overflow:hidden;
+	border-top: 1px solid #ccc;
+	border-left: 1p solid #ccc;
+	border-radius: 5px 0px 0px 0px;
+	.pc-header {
+		height: 30px;
+		background: #eeeeee;
+		border-bottom: 1px solid #ccc;
+	}
+	.private-chat-body {
+		height: 100%;
+	}
+	.chat-messages {
+		max-height: 250px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		display: flex;
+		min-height: 30px;
+		&:nth-child(odd) {
+			background: lighten($brand-primary, 50%);
+		}
+		&:nth-child(even) {
+			background: lighten($brand-info, 50%);
+		}
+	}
+	.private-chat-footer {
+		height: 80px;
+		background: #337AB7;
+	}
+
+}

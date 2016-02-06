@@ -1,4 +1,5 @@
 var express = require('express'),
+    fs = require('fs'),
     path = require('path');
 
 var app = express();
@@ -9,9 +10,28 @@ app.set('view engine', 'jade');
 var index = require('./routes/index');
 var admin = require('./routes/admin');
 
+// var ip = req.headers['x-forwarded-for'] || 
+//      req.connection.remoteAddress || 
+//      req.socket.remoteAddress ||
+//      req.connection.socket.remoteAddress;
+
 //static file path
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use (function (req, res, next) {
+	var access_log = {
+		'url': req.url,
+		'x-forwarded-for': req.headers['x-forwarded-for'],
+		'connection remote address': req.connection.remoteAddress,
+		'socket remore address': req.socket.remoteAddress,
+		'client peername': req.client._peername,
+		'client user agent': req.headers
+	};
+	fs.appendFile('access_log.txt', JSON.stringify(access_log, null, 2), (err) => {
+	  if (err) throw err;
+	  console.log('The "data to append" was appended to file!');
+	});
+	next();
+});
 //routes
 app.use('/', index);
 app.use('/admin', admin);
