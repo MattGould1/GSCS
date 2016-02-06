@@ -20,7 +20,7 @@
 				department.push( ' ' + dep.departments );
 			}
 		});
-		html = '<tr class="' + single.name + '">';
+		html = '<tr>';
 		html +=		'<td>' + single.name + '</td>';
 		html +=		'<td>' + department + '</td>';
 		html += 	'<td>' + location + '</td>';
