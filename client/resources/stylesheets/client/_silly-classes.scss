@@ -167,15 +167,15 @@
 .moodmessage {
 	display: inline-block;
 }
-#chat {
+#app {
 	li {
 		display: flex;
 		min-height: 30px;
 		&:nth-child(odd) {
-			background: $brand-primary;
+			background: lighten($brand-primary, 50%);
 		}
 		&:nth-child(even) {
-			background: $brand-info;
+			background: lighten($brand-info, 50%);
 		}
 		div {
 			display: inline-block;
@@ -209,7 +209,11 @@
 	padding: 0px;
 	margin: 0px;
 }
+.chat {
+	display: none;
+}
 .chat-messages {
+
 	ul {
 		margin-bottom: 0px;
 	}

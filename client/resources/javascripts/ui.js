@@ -42,6 +42,40 @@
 
 				$(compartment).css('height', contentHeight);
 			});
+	}
+	ui.prototype.gotoBottom = function ($el) {
+		$el.scrollTop($el[0].scrollHeight);
+	}
+	/*
+	*	@Boolean private
+	*	@String message
+	*	@String file (url)
+	*	@String username
+	*	@Date created
+	*	@String url is the global url
+	*/
+	ui.prototype.message = function (private, message, file, thumbnail, username, created) {
+		if (!private) {
+			if (file != undefined) {
+				var link = '<div class="message-file img-responsive img-rounded">' +
+								'<a href="' + url + file + '" target="_blank">' +
+									'<img class="message-image" src="' + url + thumbnail + '"/>' +
+								'</a>' +
+							'</div>';
+			} else {
+				var link = '';
+			}
+
+			messageOutput = '<li>' +
+								'<div class="message-name">' + username + '</div>' +
+								'<div class="message-body">' +
+									link + message +
+								'</div>' +
+								'<div class="message-time">' + created + '</div>' +
+							'</li>';
+
+			return messageOutput;
+		}
 
 	}
 
@@ -237,24 +271,14 @@
 		newContainer.find('.title').text(room.name);
 		if (room._messages != undefined) {
 			room._messages.forEach( function (message, i) {
-				if (message.file != '') {
-					console.log(message);
-				}
-				msg =	'<li>' +
-							'<div class="message-name">' + message.username + ':</div>' +
-							'<div class="message-body">' +
-								'<div class="message-file img-responsive img-rounded">' +
-									'<img src="' + url  + message.file[0] + '">' +
-								'</div>' + message.message + '</div>' +
-							'<div class="message-time">' + message.created + '</div>' +
-						'</li>';
+				var msg = this.ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);
+
 				newContainer.find('.chat-messages ul').append(msg);
 			});
 		}
 
 		//add container to typeContainer
 		$(typeContainer).append(newContainer);
-
 		//create handsontable
 		if (type === '-excel') {
 			excel = new eExcel();
@@ -273,6 +297,7 @@
 
 		//append link to list
 		$(typeLink).append($link);
+
 	}
 
 	//private

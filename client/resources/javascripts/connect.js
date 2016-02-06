@@ -14,7 +14,6 @@ notAuth = jQuery('#isNotAuth');
 
 //check for token, once document has loaded
 jQuery(document).ready(function() {
-	$("img").lazyload().trigger("appear");
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
@@ -47,7 +46,6 @@ function init(token) {
 	//socketio connect event, this means we've succesfully connected so we can safely (fully) init app
 	socket.once('connect', function (data) {
 		console.log('connect');
-
 		//set ui
 		setTimeout(function() {
 			//show app
@@ -145,7 +143,11 @@ function socketIOInit() {
 		chatrooms.forEach( function (room, i) {
 			ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 		});
-	
+		setTimeout( function () {
+			$('.chat-messages').each( function () {
+				ui.gotoBottom($(this));
+			});
+		}, 300);
 		//set excelsheets global var
 		excelsheets = data.excelsheets;
 
@@ -156,7 +158,6 @@ function socketIOInit() {
 		});
 		//init main UI
 		ui.init();
-		
 		//begin hideNshow, see hideNshow.js for usage explaination
 		new hideNshow({
 			body: jQuery('#isAuth'),

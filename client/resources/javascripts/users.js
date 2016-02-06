@@ -49,9 +49,9 @@
 		*/
 		socket.on('userList', function (userList) {
 			setTimeout( function() {
+				logger('updated user list');
 				//remove current list
 				$('.people-online').find('.user').remove();
-				console.log(userList);
 				//update global users var
 				users = userList;
 				//get username from each user

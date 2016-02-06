@@ -37,17 +37,21 @@
 	* use socketio to emit chat-message to server
 	*/
 	function send(form) {
+
 		$('#chat').on('click', '.image-upload', function (e) {
 			e.preventDefault();
-			console.log('click');
+			logger('uploading a file');
 			var $this = $(this);
 			var file = $this.parent().parent().siblings('.message-info').find('.file').click();
 		});
+
 		$('#chat').on('change', '.file', function (e) {
 			var $this = $(this);
 			var file = $this.context.files[0];
-			$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+			$this.parent(
+				).parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
 		});
+
 		$('#app').off().on('submit', form, function (e) {
 			e.preventDefault();
 			var $this = $(this);
@@ -56,21 +60,51 @@
 			var me = false;
 			var unique = false;
 			function uploadImage(callback) {
-				if ($this.find('.file')[0].files.length != 0) {
-
+				//check if there are any files @TODO fix privatechat
+				if ($this.find('.file')[0] == undefined) {
+					callback();
+					return false;
+				}
+				if ($this.find('.file')[0].files.length != 0 ) {
+					//read the first file @TODO multiple file uploads?
 					var ufile = $this.find('.file')[0].files[0];
+					//@TODO check for max file size
+					if (ufile.size) {
+
+					}
 					var reader = new FileReader();
-					var hmm = reader.readAsDataURL(ufile);
+					
+					reader.readAsDataURL(ufile);
+					//read the file sync, don't wanna fire the upload until the image has been read
 					reader.onload = function() {
-						var dataURL = reader.result;
-				      	console.log(ufile);
+
+						//@TODO validation for images, maybe pdf's etc?
 				      	file = {
 				      		name: ufile.name,
 				      		type: ufile.type,
 				      		size: ufile.size,
-				      		data: dataURL
+				      		data: reader.result
 				      	};
-				      	callback(file);
+
+				      	//resize the image, this is done async so the callback has to be put inside
+				      	ImageTools.resize(ufile, {
+					        width: 160, // maximum width
+					        height: 120 // maximum height
+					    }, function(blob, didItResize) {
+					    	//check s-lazy.js
+					    	if (didItResize) {
+					    		reader.readAsDataURL(blob);
+								reader.onload = function() {
+									file.thumbnail = reader.result;
+									logger('image successfully resized');
+									callback(file);
+								};
+					    	}  else {
+					    		logger('image didn\'t resize');
+					    		callback(file);
+					    	}
+					    });
+				      	
 					};
 				} else {
 					callback();
@@ -78,13 +112,13 @@
 			}
 
 			function prepareMessage(file) {
-				console.log(file);
-				if ($this.find('.message').val() == '') {
+				if ($this.find('.message').val() == '' && file == undefined) {
+					alert('Please enter a value or upload a file!');
 					return false;
 				}
 
 				if ($this.find('.private').val() == 'private') {
-					console.log('hmm');
+					logger('private message');
 					var data = $this.parent().parent('.private-chat');
 					pc = true;
 					to = data.attr('data-to');
@@ -147,9 +181,8 @@
 		*/
 		socket.on('chat-message', function (message) {
 			console.log(message);
-			//build message, include na
-	msg = '<li><div class="message-name">' + message.username + ':</div><div class="message-body">' + message.message + '</div><div class="message-time">' + Date.now() + '</div></li>';
-				
+
+			var msg = ui.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
 
 			//private chat?
 			if ( message.pc === true ) {
@@ -158,6 +191,7 @@
 				//make room if it doesn't exist
 				if (chatroom.length == 0) {
 					logger('room doesn\'t exist');
+					
 					//is chatroom visible?
 					if ( chatroom.is(':visible') ) {
 						console.log('not visible atm');
@@ -239,7 +273,6 @@
 			if ( $(this).find('.messageCount').html() > 0) {
 				//set it to zero
 				$(this).find('.messageCount').html('');
-
 				socket.emit('pcreadmessages', partner._id);
 			}
 
@@ -278,10 +311,11 @@
 
 			//add jquery object to the dom
 			app.append(room);
-
+			room.show();
 			chatToBottom.call(this, room.find('.chat-messages'));
 			//create a private room on server and invite your partner
 			socket.emit('privatechat', connect);
+			logger('complete');
 		});
 
 		/*
@@ -297,7 +331,8 @@
 
 			//this shouldn't be possible, but hey, lets make sure @SEE initPrivatechat() function
 			if ($('.' + user._id).length > 0) {
-				logger('alrdy open');
+				logger('already open');
+				console.log($('.' + user._id));
 				$('.' + user._id).find('.chat-messages ul').append(messages);
 			} else {
 				logger('creating room');
@@ -341,9 +376,11 @@
 		logger(container);
 		container.scrollTop(container[0].scrollHeight);
 	}
+
 	function getRoom() {
 
 	}
+
 	function validate() {
 
 	}
@@ -352,7 +389,7 @@
 		var msgs = '';
 
 		messages.reverse().forEach( function (message) {
-			msgs += '<li>' + message.username + ': ' + message.message + '</li>';
+			msgs += ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
 		});
 
 		return msgs;
