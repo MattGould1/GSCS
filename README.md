@@ -1,30 +1,15 @@
 # README #
 
-Once meanstack is installed with all required files:
+# Install meanstack #
 
-- navigate to ewb/server in your terminal and execute the following command:
+# Run the app #
+To keep the app running we use [Link Text](https://github.com/foreverjs/forever)
+To start the app head into /opt/ewb directory. From here use -
+forever start client/client.js
+forever start server/server.js
 
-nohup node server.js >/dev/null 2>&1 &
-
-If successful you will receive an interger and server up message.
-
-- now navigate to ewb/client and execute the following command:
-
-nohup node client.js >/dev/null 2>&1 &
-
-If successful you will receive a message listening on port 80.
-
-- Now close you're terminal the system is up and running.
-
-If for any reason you need to turn off the web app use the command:
-
-killall node
-
-
-Please note when booting you're server or rebooting the system the above commands will need to be executed. 
-
-### What is this repository for? ###
-
+forever stopall will kill the processes
+forever list will list the processes (view the link above for more information)
 
 ### How do I get set up? ###
 
