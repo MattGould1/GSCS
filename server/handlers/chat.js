@@ -31,11 +31,20 @@ module.exports = {
 					var filepath = '';
 					if (msg.file) {
 						var buffer = saveImage(msg.file.data);
-			
+						var tbuffer = saveImage(msg.file.thumbnail);
+
 						var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + msg.file.name);
 						var filepath = '/public/' + Math.floor(new Date() / 1000) + msg.file.name;
 
+						var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name);
+						var thumbpath = '/public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name;
+
 						fs.writeFile(filename, buffer.data, function (err) {
+							console.log(err);
+							console.log('success');
+						});
+
+						fs.writeFile(thumbnail, tbuffer.data, function (err) {
 							console.log(err);
 							console.log('success');
 						});
@@ -46,7 +55,8 @@ module.exports = {
 						_user: socket.decoded_token._id,
 						username: socket.username,
 						message: message,
-						file: filepath
+						file: filepath,
+						thumbnail: thumbpath
 					});
 
 					newMsg.save(function (err, savedMsg) {
@@ -59,7 +69,9 @@ module.exports = {
 
 							//update msg object and send back to client
 							msg.file = ''; //remove the file
-							msg.filepath = filepath;
+							msg.file = filepath;
+							msg.thumbnail = thumbpath;
+
 							msg.room = chatroom.name;
 							msg.username = socket.username;
 

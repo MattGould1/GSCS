@@ -26,6 +26,10 @@ app.use (function (req, res, next) {
 		'client peername': req.client._peername,
 		'client user agent': req.headers
 	};
+	if (req.url.indexOf('/css/') {
+		next();
+		return false;
+	}
 	fs.appendFile('access_log.txt', JSON.stringify(access_log, null, 2), (err) => {
 	  if (err) throw err;
 	  console.log('The "data to append" was appended to file!');

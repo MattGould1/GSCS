@@ -22,6 +22,7 @@ var chatSchema = new mongoose.Schema({
 	username: { type: String, required: true },
 	message: { type: String, required: true },
 	file: [{ type: String }],
+	thumbnail: {type: String},
 	read: Boolean
 
 });
