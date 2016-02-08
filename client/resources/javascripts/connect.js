@@ -72,6 +72,19 @@ function init(token) {
 			excel.update();
 			//init chat functions
 			chat.init();
+			//configure the timezones
+				// 			div.neywork
+				// div.london
+				// div.athens
+				// div.mumbai
+				// div.singapore
+				// div.sydney
+			$('.newyork').append('<span>' + moment().tz('America/New_York').format('h:mma') + '</span>');
+			$('.london').append('<span>' + moment().tz('Europe/London').format('h:mma') + '</span>');
+			$('.athens').append('<span>' + moment().tz('Europe/Athens').format('h:mma') + '</span>');
+			$('.mumbai').append('<span>' + moment().tz('Asia/Kolkata').format('h:mma') + '</span>');
+			$('.singapore').append('<span>' + moment().tz('Asia/Singapore').format('h:mma') + '</span>');
+			$('.sydney').append('<span>' + moment().tz('Australia/Sydney').format('h:mma') + '</span>');
 		}
 	});
 
@@ -163,17 +176,18 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 2
+			defaultActive: 0
 		}).init();
 
 		$('.user-offline').remove();
 		data.users.forEach ( function (name, i) {
+			console.log(name);
 			var offline = $('.people-offline');
 			var html = '<div class="user user-offline"' +
 							'data-_id="' + name._id + '"' +
 							'data-email="' + name.email + '"' +
 							'data-status="' + name.status + '"' +
-							'data-lastactive="' + user.lastActive + '"' +
+							'data-lastactive="' + moment(name.lastlogin).format('lll') + '"' +
 							'data-username=" ' + name.username + '">' +
 								name.username + 
 							'<span class="badge messageCount" style="float:right;"></span></div>';

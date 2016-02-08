@@ -40,9 +40,16 @@ module.exports = {
 			});
 		});
 	},
-	lastactive: function (sio, socket, User) {
+	lastactive: function (sio, socket) {
 		socket.on('inactive', function (time) {
-			
+			console.log(time);
+
+			sio.sockets.emit('inactive', {user: time._id, idle: time.idle});
+		});
+	},
+	nowactive: function (sio, socket) {
+		socket.on('active', function (id) {
+			sio.sockets.emit('active', id);
 		});
 	}
 };

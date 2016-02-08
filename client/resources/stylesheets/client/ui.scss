@@ -1,4 +1,9 @@
 #isAuth {
+	#app {
+		.link {
+			cursor: pointer;
+		}
+	}
 	#chat {
 		.active {
 			display: block !important;
@@ -51,8 +56,18 @@
 		background: #3572b0;
 		border-bottom: 1px solid #337ab7;
 		padding: 0px 15px;
+		height: 70px;
 		.edit-profile, .logout {
 			margin: 18px;
+		}
+		.timezones {
+			h4 {
+				display: inline-block;
+				span {
+					float: left;
+					width: 100%;
+				}
+			}
 		}
 	}
 	#footer {

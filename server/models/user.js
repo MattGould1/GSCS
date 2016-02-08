@@ -11,6 +11,7 @@ var userSchema = new mongoose.Schema({
 	status: { type: String, default: 'Hey, what\'s up?' },
 	online: { type: String, default: 'online' },
 	lastActivity: { type: Number },
+	lastlogin: { type: Date, default: Date.now() },
 	admin: Boolean,
 	created: { type: Date, default: Date.now() },
 	location: { type: mongoose.Schema.Types.ObjectId, ref: 'Locations' },

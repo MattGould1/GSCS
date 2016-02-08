@@ -17,6 +17,9 @@ router.post('/login', function (req, res, next) {
 	login.login(User, req, jwt, db, function (user) {
 		//if user true, send back token
 		if (user) {
+			User.update({_id: user.user._id}, { lastlogin: Date.now() }, false, function (err, hmm){
+				console.log(err); console.log(hmm);
+			});
 			res.json( user );
 		} else {
 		//else report failure to client

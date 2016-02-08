@@ -17,7 +17,6 @@
 			var headerHeight = $('#header').outerHeight();
 			var footerHeight = $('#footer').height();
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
-
 			//set app height based on header height and window height, use overflow hidden on rest
 		
 			/*
@@ -92,7 +91,9 @@
 	*/
 	ui.prototype.message = function (private, message, file, thumbnail, username, created) {
 		if (!private) {
-			if (file != undefined) {
+			if (file != undefined && file.length != 0) {
+				console.log(message);
+							console.log(file.length);
 				var link = '<div class="message-file img-responsive img-rounded">' +
 								'<a href="' + url + file + '" target="_blank">' +
 									'<img class="message-image" src="' + url + thumbnail + '"/>' +
@@ -107,7 +108,7 @@
 								'<div class="message-body">' +
 									link + message +
 								'</div>' +
-								'<div class="message-time">' + created + '</div>' +
+								'<div class="message-time">' + moment(created).format('lll') + '</div>' +
 							'</li>';
 
 			return messageOutput;

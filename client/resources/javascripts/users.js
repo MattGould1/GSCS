@@ -14,7 +14,7 @@
 	    window.onclick = resetTimer;     // catches touchpad clicks
 	    window.onkeypress = resetTimer;
 
-	    setInterval(setTimer, 1000);
+	    setInterval(setTimer, 60000);
 	    
 	    //increment idle time, and send update to server if necessary
 	    function setTimer() {
@@ -22,17 +22,38 @@
 	    	//send server update for every 5 mins of inactivity
 	    	mins = idle / 5;
 
-	    	if (mins % 1 === 0) {
-	    		socket.emit('inactive', { id: user._id, idle: idle });
+	    	if (mins % 1 === 0 && mins >=	 1) {
+	    		
+	    		socket.emit('inactive', { _id: user._id, idle: mins });
+	    	}
+	    	//each mins is 5, so 60 mins and force logout
+	    	if (mins > 12) {
+	    		$('.logout').trigger('click');
+
+	    		setTimeout(function () {
+	    			window.location.reload();
+	    		}, 1000);
 	    	}
 	    }
 		//reset idle var
 	    function resetTimer() {
+	    	if (idle != 0) {
+	    		socket.emit('active', user._id );
+	    	}
 	    	idle = 0;
 	    }
+	    /*
+	    *	Object time = user._id and idle time (5 mins per 1 idle)
+	    */
+		socket.on('inactive', function (time) {
+			//every 1 idle == 5 mins @TODO use momentjs later?
+			var idleTime = time.idle * 5;
 
-		socket.on('updateactivity', function (time) {
+			$('[data-_id="' + time.user + '"]').data('lastactive', idleTime + ' Mins Ago');
+		});
 
+		socket.on('active', function (_id) {
+			$('[data-_id="' + _id + '"]').data('lastactive', 'Now!');
 		});
 	}
 
@@ -75,7 +96,7 @@
 										'data-online="' + user.online + '"' +
 										'data-status="' + user.status + '"' +
 										'data-username="' + user.username + '"' +
-										'data-lastactive="' + user.lastActive + '"' +
+										'data-lastactive="Now!"' +
 										'>' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);
 						$('.private-chat').each( function () {
@@ -103,7 +124,7 @@
 			var offline = $('.people-offline');
 			var html = '<div class="user"' +
 							'data-_id="' + otherUser._id + '"' +
-							'data-lastactive="' + user.lastActive + '"' +
+							'data-lastactive="' + user.lastlogin + '"' +
 							'data-username=" ' + otherUser.username + '">' +
 								otherUser.username +
 							'<span class="badge messageCount" style="float:right;">' + onlineMsgs + '</span></div>';

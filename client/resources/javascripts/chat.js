@@ -69,8 +69,9 @@
 					//read the first file @TODO multiple file uploads?
 					var ufile = $this.find('.file')[0].files[0];
 					//@TODO check for max file size
-					if (ufile.size) {
-
+					if (ufile.size > 2000000) {
+						alert('Sorry but that image is massive! Could you please reduce the size?');
+						return false;
 					}
 					var reader = new FileReader();
 					
@@ -112,6 +113,7 @@
 			}
 
 			function prepareMessage(file) {
+				console.log(file);
 				if ($this.find('.message').val() == '' && file == undefined) {
 					alert('Please enter a value or upload a file!');
 					return false;

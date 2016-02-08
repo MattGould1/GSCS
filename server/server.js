@@ -126,7 +126,7 @@ sio.on('connection', function (socket) {
                         .exec ( function (err, unreadMessages) {
                             if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
                             User.find()
-                                .select('username status email online')
+                                .select('username status email online lastlogin')
                                 .exec( function (err, names) {
                                     //emit data
                                     var data = {
@@ -163,7 +163,8 @@ sio.on('connection', function (socket) {
 
     //user handler
     user.update(sio, socket, User);
-    user.lastactive(sio, socket, User);
+    user.lastactive(sio, socket);
+    user.nowactive(sio, socket);
     user.onlinestatus(sio, socket, User);
 
     //handle edit request

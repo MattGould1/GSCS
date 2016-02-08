@@ -21,8 +21,6 @@ module.exports = {
 			var message = '<span class="' + msg.type + '">' + message + '</span>';
 			//add message back to msg Object
 			msg.message = message;
-			console.log(msg);
-
 			//handle private chat msgs differently to normal
 			if (msg.pc === false) {
 				//find chatroom, and create chatmessage and save both, emit back to clients (including sender)
@@ -30,6 +28,7 @@ module.exports = {
 					if (err) { console.log ('error finding chatroom ' + msg._id + 'error: ' + err); }
 					var filepath = '';
 					if (msg.file) {
+						console.log(msg);
 						var buffer = saveImage(msg.file.data);
 						var tbuffer = saveImage(msg.file.thumbnail);
 
@@ -48,16 +47,24 @@ module.exports = {
 							console.log(err);
 							console.log('success');
 						});
+						var newMsg = new ChatMessage({
+							_room: msg._id,
+							_user: socket.decoded_token._id,
+							username: socket.username,
+							message: message,
+							file: filepath,
+							thumbnail: thumbpath
+						});
+					} else {
+						var newMsg = new ChatMessage({
+							_room: msg._id,
+							_user: socket.decoded_token._id,
+							username: socket.username,
+							message: message
+						});
 					}
 					
-					var newMsg = new ChatMessage({
-						_room: msg._id,
-						_user: socket.decoded_token._id,
-						username: socket.username,
-						message: message,
-						file: filepath,
-						thumbnail: thumbpath
-					});
+
 
 					newMsg.save(function (err, savedMsg) {
 						if (err) { console.log('error saving message' + err); }

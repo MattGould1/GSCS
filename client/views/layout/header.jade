@@ -1,13 +1,19 @@
 header#header.container-fluid
 	div.row
-		div.status.col-xs-4.col-md-3.col-sm-3.col-lg-5
+		div.status.col-xs-12.col-lg-2
 			div.row
 				div.col-xs-12
 					span.onlinestatus.online online
 					span.onlinestatus.away away
 					span.onlinestatus.busy busy
-		div.text-center.col-xs-4.col-md-6.col-sm-6.col-lg-1
-			h1.header-title GSCS
-		div.profile.col-xs-4.col-md-3.col-sm-3.col-lg-6.flex-button-h-end
+		div.text-center.col-xs-12.col-lg-7
+			div.timezones.text-center
+				h4.newyork New York
+				h4.london London
+				h4.athens Athens
+				h4.mumbai Mumbai
+				h4.singapore Singapore
+				h4.sydney Syndey
+		div.profile.col-xs-12.col-lg-3.flex-button-h-end
 			button.btn.btn-info.edit-profile.pull-right(data-toggle="modal" data-target="#my-profile") Update Status
 			a(href="/").btn.btn-warning.logout.pull-right Logout
