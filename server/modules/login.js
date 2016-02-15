@@ -119,3 +119,28 @@ exports.createExcel = function(Excel, req, callback) {
 		}
 	});
 }
+
+exports.createWord = function(Word, req, callback) {
+	Word.findOne( { name: req.body.name }, function (err, findWord) {
+		if (err) { console.log('Error finding word: ' + err) ; }
+		console.log('finding word');
+		if ( findWord === null ) {
+			console.log('Word does not exist, creating word');
+
+			var word = new Word({
+				name: req.body.name,
+				location: req.body.location,
+				department: req.body.department,
+				user: req.decoded_token._id,
+			});
+			word.save( function (err, savedWord) {
+				if (err) { console.log('Error saving new word: ' + err); callback(false); }
+
+				callback(savedWord);
+			});
+		} else {
+			console.log('Word already exists');
+			callback(false);
+		}
+	});
+}

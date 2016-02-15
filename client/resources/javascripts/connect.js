@@ -6,12 +6,14 @@
 * @var Array excelsheets: array of all excelsheets
 * @var Array users: array of all users
 */
-var token, socket, chatrooms = [], user, excelsheets = [], users = [], appInit, changes = {};
+var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [], appInit, changes = {}, localWord = {};
 
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
-
+	var wordObj = new word();
+	console.log(new usersO().load);
+	var userObj = new usersO();
 //check for token, once document has loaded
 jQuery(document).ready(function() {
 	if ($.cookie('token')) {
@@ -52,10 +54,6 @@ function init(token) {
 			Auth.removeClass('trick-hide');
 			notAuth.hide();
 		}, 500);
-		//make socketio calls
-		socketIOInit();
-
-
 		//load modules, once
 		if (appInit === undefined) {
 			//set to true
@@ -66,19 +64,16 @@ function init(token) {
 			chat = new ewbChat({
 				form: '.chat-form'
 			});
+			setTimeout(function () {}, 2000);
 			//init excelsheet module, see excel.js
 			excel = new eExcel();
 			//listen for excelsheets socketio events
 			excel.update();
+
+			wordObj.update();
 			//init chat functions
 			chat.init();
 			//configure the timezones
-				// 			div.neywork
-				// div.london
-				// div.athens
-				// div.mumbai
-				// div.singapore
-				// div.sydney
 			$('.newyork').append('<span>' + moment().tz('America/New_York').format('h:mma') + '</span>');
 			$('.london').append('<span>' + moment().tz('Europe/London').format('h:mma') + '</span>');
 			$('.athens').append('<span>' + moment().tz('Europe/Athens').format('h:mma') + '</span>');
@@ -86,6 +81,8 @@ function init(token) {
 			$('.singapore').append('<span>' + moment().tz('Asia/Singapore').format('h:mma') + '</span>');
 			$('.sydney').append('<span>' + moment().tz('Australia/Sydney').format('h:mma') + '</span>');
 		}
+		//make socketio calls
+		socketIOInit();
 	});
 
 	//connection failed, lets stop the app
@@ -137,6 +134,7 @@ function socketIOInit() {
 	//vars to clone when creating containers
 	var chatContainer = $('.chat');
 	var excelContainer = $('.excel');
+	var wordContainer = $('.word');
 	var link = $('.link');
 
 	/*
@@ -169,6 +167,12 @@ function socketIOInit() {
 			ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			changes[room._id] = room.changes;
 		});
+
+		words = data.words;
+		words.forEach( function (word, i) {
+			ui.containers(word, wordContainer, link, '-word', '#word', '#wordLinks');
+		});
+
 		//init main UI
 		ui.init();
 		//begin hideNshow, see hideNshow.js for usage explaination
@@ -176,7 +180,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 0
+			defaultActive: 5
 		}).init();
 
 		$('.user-offline').remove();
@@ -205,9 +209,7 @@ function socketIOInit() {
 			logger(message);
 		});
 	});
-	//only load once
-	if (appInit === undefined) {
-		new users().load();
-		new users().lastActive();
-	}
+
+		userObj.load();
+		userObj.lastActive();
 }

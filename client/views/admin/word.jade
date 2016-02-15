@@ -1,0 +1,60 @@
+div#word
+	div#wordlist.row
+		div.col-xs-12
+			table.table.table-striped
+				tr
+					th Name
+					th Departments
+					th Locations
+					th Actions
+		div.col-xs-12
+			a.btn.btn-primary.create-word Create a new wordsheet
+	div#editword.row
+		div.col-xs-12
+			form.form-horizontal
+				div.form-group
+					label.col-xs-2.control-label(for="word-name") name
+					div.col-xs-10
+						input.form-control#edit-word-name(type="text" name="word-name")
+				div.form-group
+					label.col-xs-2.control-label(for="word-location") Locations
+					div.col-xs-10
+						div#edit-word-locations
+				div.form-group
+					label.col-xs-2.control-label(for="word-departments") Departments
+					div.col-xs-10
+						div#edit-word-departments
+				div.form-group.edit-save-word.hide
+					div.col-xs-4.text-center
+						p.bg-info Saving...
+						input.hide#edit-word-id(type="hidden" name="word-id")
+				div.form-group
+					div.col-xs-6
+						a.btn.btn-warning.word-goback Go Back
+					div.col-xs-6
+						a.btn.btn-success.wordsave Save
+	div#createword.row
+		div(style="display: none;").col-xs-12.createword-fail
+			div.alert.alert-warning.alert-dismissable(role="alert")
+				button.close(type="button" data-dismiss="alert")
+					span &times;
+				strong wordsheet could not be created, please check that the wordsheet is unique and all fields are filled out correctly!
+		div-col-xs-12
+			form.form-horizontal
+				div.form-group
+					label.col-xs-2.control-label(for="word-name") name
+					div.col-xs-10
+						input.form-control#create-word-name(type="text" name="word-name")
+				div.form-group
+					label.col-xs-2.control-label(for="word-location") Locations
+					div.col-xs-10
+						div#create-word-locations
+				div.form-group
+					label.col-xs-2.control-label(for="word-departments") Departments
+					div.col-xs-10
+						div#create-word-departments
+				div.form-group
+					div.col-xs-6
+						a.btn.btn-warning.word-goback Go Back
+					div.col-xs-6
+						a.btn.btn-success.createword Save New word

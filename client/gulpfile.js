@@ -25,9 +25,12 @@ gulp.task('build-js', function() {
       'resources/javascripts/env.js',
       'resources/javascripts/helpers.js',
       'resources/javascripts/bootstrap.js',
-      'resources/javascripts/connect.js',
       'resources/javascripts/strings.js',
-      'resources/javascripts/!(bootstrap, connect, strings, helpers, env)*.js'
+      'resources/javascripts/word.js',
+      'resources/javascripts/users.js',
+      'resources/javascripts/!(bootstrap, connect, strings, helpers, env, ui, word, users)*.js',
+      'resources/javascripts/ui.js',
+      'resources/javascripts/connect.js',
     ])
     .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));

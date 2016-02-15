@@ -7,7 +7,6 @@ var path = require('path'),
     bodyParser = require('body-parser'),
     http = require('http'),
     users = {},
-    socketss = {},
     cUser,
     fs = require('fs'),
     socketioJwt = require('socketio-jwt');
@@ -18,6 +17,7 @@ var user = require('./models/user');
 var chat = require('./models/chat');
 var excel = require('./models/excel');
 var locdep = require('./models/locdep');
+var word = require('./models/word');
 
 //routes
 var index = require('./routes/index');
@@ -31,6 +31,7 @@ var Revision = mongoose.model('Revision');
 var Locations = mongoose.model('Locations');
 var Departments = mongoose.model('Departments');
 var User = mongoose.model('User');
+var Word = mongoose.model('Word');
 
 //express
 var app = express();
@@ -90,7 +91,7 @@ sio.use(socketioJwt.authorize({
 var chat = require('./handlers/chat');
 var excel = require('./handlers/excel');
 var user = require('./handlers/user');
-
+var word = require('./handlers/word');
 //connect to default namespace
 sio.on('connection', function (socket) {
     //disconnect socket if no username, wtf?
@@ -109,12 +110,10 @@ sio.on('connection', function (socket) {
             //save user in global list
             users[socket.decoded_token._id] = cUser;
 
-            //save socket
-            socketss[socket.decoded_token._id] = socket;
-
             //join my own room
             socket.join(cUser._id);
 
+            //@TODO implement better method of sending data, atm chat should be prioritised look @FUTURE
             //connection data
             ChatRoom.find({ location: cUser.location, department: cUser.department }).populate('_messages').exec(function (err, chatrooms) {
                 if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
@@ -128,21 +127,28 @@ sio.on('connection', function (socket) {
                             User.find()
                                 .select('username status email online lastlogin')
                                 .exec( function (err, names) {
-                                    //emit data
-                                    var data = {
-                                        chatrooms: chatrooms,
-                                        excelsheets: excelsheets,
-                                        user: cUser,
-                                        users: names,
-                                        unread: unreadMessages
-                                    };
-                                    chatrooms.forEach(function (chatroom) {
-                                        socket.join(chatroom._id);
-                                    });
-                                    excelsheets.forEach(function (excelsheet) {
-                                        socket.join(excelsheet._id);
-                                    });
-                                    socket.emit('data', data);
+                                    Word.find({ location: cUser.location, department: cUser.department })
+                                        .exec( function (err, words) {
+                                            //emit data
+                                            var data = {
+                                                chatrooms: chatrooms,
+                                                excelsheets: excelsheets,
+                                                words: words,
+                                                user: cUser,
+                                                users: names,
+                                                unread: unreadMessages
+                                            };
+                                            chatrooms.forEach(function (chatroom) {
+                                                socket.join(chatroom._id);
+                                            });
+                                            excelsheets.forEach(function (excelsheet) {
+                                                socket.join(excelsheet._id);
+                                            });
+                                            words.forEach(function (word) {
+                                                socket.join(word._id);
+                                            })
+                                            socket.emit('data', data);
+                                        });
                                 });
                     });
                 });
@@ -172,6 +178,11 @@ sio.on('connection', function (socket) {
     excel.update(sio, socket, Excel, Revision);
     excel.cancel(sio, socket, Excel);
 
+    //handle word
+    word.edit(sio, socket, Word);
+    word.update(sio, socket, Word);
+    word.cancel(sio, socket, Word);
+
     //handle disconnect event
     socket.on('disconnect', function (data) {
         //make sure socket has username
@@ -196,12 +207,21 @@ sio.on('connection', function (socket) {
                 });
             });
         });
-
+        Word.find({}).select('active user').where('active', true).where('user', cUser._id).exec(function (err, words) {
+            if (err) { console.log('socketio error setting active to false on word documents' + err); return false}
+            words.forEach( function (word, i) {
+                word.active = false;
+                word.save(function (err, success) {
+                    if (err) { console.log('socketio error saving active on disconnect' + err); }
+                    sio.sockets.to(success._id).emit('cancelword', success);
+                });
+            });
+        });
         //broadcast the person who left
         sio.sockets.emit('leave', users[socket.decoded_token._id]);
         //delete user from global
+        users[socket.decoded_token._id] = null;
         delete users[socket.decoded_token._id];
-        delete socketss[socket.decoded_token._id];
         //broadcast new usernames
         chat.userList(sio, socket, users);
 
@@ -211,8 +231,8 @@ sio.on('connection', function (socket) {
 
 //function for testing
 setInterval(function () {
-  sio.emit('time', Date());
   console.log(process.memoryUsage());
+  console.log('MEMORY:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
 }, 5000);
 
 //start listening

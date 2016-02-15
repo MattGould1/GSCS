@@ -7,6 +7,7 @@ var express = require('express'),
     User = mongoose.model('User'),
     ChatRoom = mongoose.model('ChatRoom'),
     Excel = mongoose.model('Excel'),
+    Word = mongoose.model('Word'),
 	Locations = mongoose.model('Locations'),
 	Departments = mongoose.model('Departments'),
 	login = require('./../modules/login'),
@@ -37,20 +38,21 @@ router.post('/', function (req, res) {
 			Excel.find({})
 				 .exec( function (err, excels) {
 				 if(err) { console.log('Error finding excel sheets: ' + err); }
-				 console.log(excels);
 				 Locations.find({}).exec( function (err, locations) {
 				 	Departments.find({}).exec( function (err, departments) {
-				 		var stats = {
-				 			cpu: os.cpus(),
-				 			freemem: os.freemem(),
-				 			hostname: os.hostname(),
-				 			loadavg: os.loadavg(),
-				 			network: os.networkInterfaces(),
-				 			totalmem: os.totalmem(),
-				 			uptime: os.uptime()
-				 		};
+				 		Word.find({}).exec( function (err, words) {
+					 		var stats = {
+					 			cpu: os.cpus(),
+					 			freemem: os.freemem(),
+					 			hostname: os.hostname(),
+					 			loadavg: os.loadavg(),
+					 			network: os.networkInterfaces(),
+					 			totalmem: os.totalmem(),
+					 			uptime: os.uptime()
+					 		};
 
-						res.json({ chat: rooms, users: users, excels: excels, locations: locations, departments: departments, stats: stats });
+							res.json({ chat: rooms, users: users, excels: excels, words: words, locations: locations, departments: departments, stats: stats });
+				 		});
 				 	});
 				 });
 			});
@@ -195,6 +197,38 @@ router.post('/excel/delete', function (req, res) {
 
 router.post('/excel/create', function (req, res) {
 	login.createExcel(Excel, req, function (success) {
+		res.json(success);
+	});
+});
+
+router.post('/word/update', function (req, res) {
+	Word.findOne({ _id: req.body.id }, function (err, word) {
+		if (err) { console.log('Error finding word: ' + err); }
+		console.log(req.body);
+		console.log(word);
+		console.log('updating word');
+		word.name = req.body.name;
+		word.location = req.body.location;
+		word.department = req.body.department;
+
+		word.save( function (err, saved) {
+			if (err) { console.log('Error saving word: ' + err); }
+			console.log('word saved');
+			res.json(true);
+		});
+	});
+});
+
+router.post('/word/delete', function (req, res) {
+	Word.findOne({ name: req.body.name}).remove(function (err, deleted) {
+		if (err) { console.log('Error deleting word: ' + err) }
+		console.log('Word deleted');
+		res.json(true);
+	});
+});
+
+router.post('/word/create', function (req, res) {
+	login.createWord(Word, req, function (success) {
 		res.json(success);
 	});
 });

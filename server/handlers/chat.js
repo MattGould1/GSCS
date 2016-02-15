@@ -118,6 +118,7 @@ module.exports = {
 	*	@param Object users global list of users, holds all user information
 	*/
 	userList: function(sio, socket, users) {
+			console.log(users);
 			sio.sockets.emit('userList', users);
 	},
 	/*

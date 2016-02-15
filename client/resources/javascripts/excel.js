@@ -137,6 +137,7 @@
 	//check to see if we can edit, the button won't be visible if it is active, but who knows right?
 	function tryEditExcel() {
 		$(document).on('click', '.excel-edit', function () {
+			logger('Can I edit this excel?');
 			//get the id from clicked excelsheet, id is sent to server see @server handlers/excel
 			var hot = $(this).parent().parent('.excel-options').siblings('.hot');
 			var id = hot.attr('class').split(" ")[1];

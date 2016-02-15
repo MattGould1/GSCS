@@ -1,5 +1,4 @@
 (function ($) {
-
 	//connect
 	//url format ttp://127.0.0.1:8080/login'
 	if($.cookie('token')) {
@@ -20,6 +19,8 @@
 				locations = data.locations;
 				departments = data.departments;
 				systeminfo = data.stats;
+				words = data.words;
+				window.wordLoad();
 				window.dashboardLoad();
 				window.setLocDep();
 				window.userLoad();
@@ -31,5 +32,4 @@
 			}
 		});
 	}
-	
 })(jQuery);

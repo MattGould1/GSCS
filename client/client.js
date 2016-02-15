@@ -32,7 +32,7 @@ app.use (function (req, res, next) {
 		'mode': '0o666',
 	};
 	console.log(access_log);
-	fs.appendFile('access_log.txt', JSON.stringify(access_log, null, 2), function (err) {
+	fs.appendFile('access_log.txt', JSON.stringify(access_log, ',', 2), function (err) {
 	  if (err) throw err;
 	  console.log('The "data to append" was appended to file!');
 	});

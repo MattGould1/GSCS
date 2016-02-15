@@ -1,10 +1,10 @@
 (function ($) {
 
-	this.users = function () {
+	this.usersO = function () {
 
 	}
 
-	users.prototype.lastActive = function() {
+	usersO.prototype.lastActive = function() {
 		//measured in seconds
 		idle = 0;
 
@@ -57,7 +57,7 @@
 		});
 	}
 
-	users.prototype.load = function () {
+	usersO.prototype.load = function () {
 		userList.call(this);
 		userLeave.call(this);
 		userInfo.call(this);

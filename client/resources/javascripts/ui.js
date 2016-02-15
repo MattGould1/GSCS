@@ -92,8 +92,6 @@
 	ui.prototype.message = function (private, message, file, thumbnail, username, created) {
 		if (!private) {
 			if (file != undefined && file.length != 0) {
-				console.log(message);
-							console.log(file.length);
 				var link = '<div class="message-file img-responsive img-rounded">' +
 								'<a href="' + url + file + '" target="_blank">' +
 									'<img class="message-image" src="' + url + thumbnail + '"/>' +
@@ -185,61 +183,60 @@
 										'<ul class="list-unstyled">' +
 										'</ul>' +
 									'</div>' +
-								'<div class="col-xs-12 chat-form">' +
-									'<form>' +
-										'<div class="row">' +
-											'<div class="col-xs-9 message-info" style="padding: 0px;">' +
-												'<div class="form-group">' +
-													'<input type="text" class="message form-control"/>' +
-													'<input style="display: none;"" type="file" class="file form-control"/>' +
+									'<div class="col-xs-12 chat-form">' +
+										'<form>' +
+											'<div class="row">' +
+												'<div class="col-xs-9 message-info" style="padding: 0px;">' +
+													'<div class="form-group">' +
+														'<input type="text" class="message form-control"/>' +
+														'<input style="display: none;"" type="file" class="file form-control"/>' +
+													'</div>' +
+												'</div>' +
+												'<div class="col-xs-1">' +
+													'<div class="form-group">' +
+														'<input type="hidden" class="name">' +
+														'<button class="image-upload btn btn-info form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
+													'</div>' +
+												'</div>' +
+												'<div class="col-xs-2">' +
+													'<div class="form-group">' +
+														'<input type="hidden" class="name">' +
+														'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
+													'</div>' +
 												'</div>' +
 											'</div>' +
-											'<div class="col-xs-1">' +
-												'<div class="form-group">' +
-													'<input type="hidden" class="name">' +
-													'<button class="image-upload btn btn-info form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
+											'<div class="radios-meta row">' +
+												'<div class="col-xs-12">' +
+													'<div class="radio-inline">' +
+														'<label>' +
+															'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
+															'Normal' +
+														'</label>' +
+													'</div>' +
+													'<div class="radio-inline">' +
+														'<label>' +
+															'<input type="radio" name="msgType" value="pnc">' +
+															'Private and Confidential' +
+														'</label>' +
+													'</div>' +
+													'<div class="radio-inline">' +
+														'<label>' +
+															'<input type="radio" name="msgType" value="fxd">' +
+															'Fixed' +
+														'</label>' +
+													'</div>' +
+													'<div class="radio-inline">' +
+														'<label>' +
+															'<input type="radio" name="msgType" value="subs">' +
+															'Subs' +
+														'</label>' +
+													'</div>' +
+													'<div class="radio-inline">' +
+														'<span class="filestoupload"></span>' +
+													'</div>' +
 												'</div>' +
 											'</div>' +
-											'<div class="col-xs-2">' +
-												'<div class="form-group">' +
-													'<input type="hidden" class="name">' +
-													'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
-												'</div>' +
-											'</div>' +
-										'</div>' +
-										'<div class="radios-meta row">' +
-											'<div class="col-xs-12">' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
-														'Normal' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="pnc">' +
-														'Private and Confidential' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="fxd">' +
-														'Fixed' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<label>' +
-														'<input type="radio" name="msgType" value="subs">' +
-														'Subs' +
-													'</label>' +
-												'</div>' +
-												'<div class="radio-inline">' +
-													'<span class="filestoupload"></span>' +
-												'</div>' +
-
-											'</div>' +
-										'</div>' +
-									'</form>' +
+										'</form>' +
 								'</div>' +
 							'</div>';
 
@@ -262,26 +259,53 @@
 								'</div>' +
 							'</div>' +
 						'</div>';
+		var wordHTML = '<div class="word room">' +
+							'<div class="row">' +
+								'<div class="col-xs-12">' +
+									'<div class="word-options">' +
+										'<div class="btn-group options">' +
+											'<a class="btn btn-primary save-to-word pull-left">Download</a>' +
+											'<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
+											'<a class="btn btn-info word-edit pull-left">Edit</a>' +
+											'<div class="btn-group edit-options soft-hide">' +
+												'<a class="btn btn-primary word-update">Update</a>' +
+												'<a class="btn btn-warning word-cancel">Cancel</a>' +
+											'</div>' +
+										'</div>' +
+									'</div>' +
+									'<div class="message soft-hide"></div>' +
+								'</div>' +
+								'<div class="col-xs-12">' +
+									'<textarea></textarea>' +
+								'</div>' +
+							'</div>' +
+						'</div>';
 
 		var linkHTML = '<li class="link"><a><span class="badge messageCount" style="float:right;"></span></a></li>';
 
 		//turn html into jquery objects
 		$chat = $($.parseHTML(chatHTML));
 		$excel = $($.parseHTML(excelHTML));
+		$word = $($.parseHTML(wordHTML));
 		$link = $($.parseHTML(linkHTML));
 		
 		if (type === '-chat') {
 			newContainer = $chat;
 		} else if (type === '-excel') {
 			newContainer = $excel;
+		} else if (type === '-word') {
+			newContainer = $word;
+			newContainer.find('textarea').attr('id', room._id);
 		}
 
 		//add class to container
 		newContainer.addClass(room.name);
+		newContainer.attr('data-_id' + type, room._id);
 		//add attribute with type
 		newContainer.attr('data-filter', room.name + type);
 		//add hidden name attribute for sending data use _id as won't change
 		newContainer.find('.name').val(room._id);
+		newContainer.find('a').attr('data-link_id', room._id);
 		//change title
 		newContainer.find('.title').text(room.name);
 		if (room._messages != undefined) {
@@ -299,7 +323,15 @@
 			excel = new eExcel();
 			excel.init(room);
 		}
-
+		if (type === '-word') {
+		
+			console.log('hmm');
+			
+			
+			// word1 = new word();
+			// console.log(word1);
+			wordObj.init(room);
+		}
 		//do the same for link
 		$link.addClass(room.name);
 

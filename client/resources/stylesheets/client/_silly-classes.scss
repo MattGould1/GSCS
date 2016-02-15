@@ -6,7 +6,10 @@
 	left: -9999px !important;
 	overflow: hidden !important;
 }
-
+.mce-tinymce {
+	float: left !important;
+	width: 100% !important;
+}
 .pnc {
 	color: red;
 }

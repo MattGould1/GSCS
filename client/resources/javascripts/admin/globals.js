@@ -1,4 +1,4 @@
-var admin, token, users, chatrooms, excels, locations, departments, systeminfo;
+var admin, token, users, chatrooms, excels, locations, departments, systeminfo, words;
 
 var url = 'http://localhost:8080';
 admin = $('#admin');
