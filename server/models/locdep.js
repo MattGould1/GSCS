@@ -30,7 +30,13 @@ locationSchema.pre('remove', function (next){
     	{$pull: {location: this._id}},
     	{multi: true},
     	next
-    )
+    );
+    this.model('Word').update(
+        {location: this._id},
+        {$pull: {location: this._id}},
+        {multi: true},
+        next
+    );
 });
 departmentSchema.pre('remove', function (next){
     this.model('ChatRoom').update(
@@ -50,5 +56,11 @@ departmentSchema.pre('remove', function (next){
     	{$pull: {department: this._id}},
     	{multi: true},
     	next
+    );
+    this.model('Word').update(
+        {department: this._id},
+        {$pull: {department: this._id}},
+        {multi: true},
+        next
     );
 });

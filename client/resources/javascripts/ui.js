@@ -13,7 +13,17 @@
 
 	//public
 	ui.prototype.init = function () {
-					//get heights
+		// 		var offset = 1;
+		// setInterval(function () {
+		// 	var load = {
+		// 		offset: offset,
+		// 		id: '566f3a10e75906be36d74ebd',
+		// 	}
+		// 	socket.emit('moremessages', load);
+		// 	socket.emit()
+		// 	offset++;
+		// }, 3000);
+			//get heights
 			var headerHeight = $('#header').outerHeight();
 			var footerHeight = $('#footer').height();
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
@@ -80,6 +90,38 @@
 	}
 	ui.prototype.gotoBottom = function ($el) {
 		$el.scrollTop($el[0].scrollHeight);
+		$($el).scroll(function () {
+			var wait = 0;
+			console.log('hello ' + wait);
+			if (wait == 0) {
+				
+				position = $el.scrollTop();
+
+				if (position === 0) {
+					wait = 1;
+					//make a call to server to load more posts append them at top disable scrolling while this occurs
+					//TODO
+					var container = $(this).parent().parent();
+					var current = parseInt(container.attr('loaded'));
+					var load = {
+						offset: current,
+						id: container.attr('data-_id-chat')
+					};
+					var wait = 0;
+					if (wait != 0) {
+
+					}
+					socket.emit('moremessages', load);
+					current++;
+					container.attr('loaded', current);
+				setTimeout(function () {
+					console.log('hmmmmmmmm');
+					console.log(wait);
+					wait = 0;
+				}, 3000);
+				}
+			}
+		});
 	}
 	/*
 	*	@Boolean private
@@ -264,8 +306,8 @@
 								'<div class="col-xs-12">' +
 									'<div class="word-options">' +
 										'<div class="btn-group options">' +
-											'<a class="btn btn-primary save-to-word pull-left">Download</a>' +
-											'<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
+											// '<a class="btn btn-primary save-to-word pull-left">Download</a>' +
+											// '<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
 											'<a class="btn btn-info word-edit pull-left">Edit</a>' +
 											'<div class="btn-group edit-options soft-hide">' +
 												'<a class="btn btn-primary word-update">Update</a>' +
@@ -301,6 +343,7 @@
 		//add class to container
 		newContainer.addClass(room.name);
 		newContainer.attr('data-_id' + type, room._id);
+		newContainer.attr('loaded', 1);
 		//add attribute with type
 		newContainer.attr('data-filter', room.name + type);
 		//add hidden name attribute for sending data use _id as won't change
@@ -309,9 +352,10 @@
 		//change title
 		newContainer.find('.title').text(room.name);
 		if (room._messages != undefined) {
-			room._messages.forEach( function (message, i) {
+			count = 0;
+			room._messages.reverse().forEach( function (message, i) {
 				var msg = this.ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);
-
+				console.log(count++);
 				newContainer.find('.chat-messages ul').append(msg);
 			});
 		}
@@ -323,15 +367,6 @@
 			excel = new eExcel();
 			excel.init(room);
 		}
-		if (type === '-word') {
-		
-			console.log('hmm');
-			
-			
-			// word1 = new word();
-			// console.log(word1);
-			wordObj.init(room);
-		}
 		//do the same for link
 		$link.addClass(room.name);
 
@@ -342,6 +377,16 @@
 		var badge = $link.find('a').html();
 		$link.find('a').html(room.name + badge);
 
+		if (type === '-word') {
+		
+			console.log('hmm');
+			
+			
+			// word1 = new word();
+			// console.log(word1);
+			wordObj.init(room);
+		}
+		
 		//append link to list
 		$(typeLink).append($link);
 

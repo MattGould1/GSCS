@@ -1,19 +1,17 @@
 header#header.container-fluid
 	div.row
-		div.status.col-xs-12.col-lg-2
-			div.row
-				div.col-xs-12
-					span.onlinestatus.online online
-					span.onlinestatus.away away
-					span.onlinestatus.busy busy
-		div.text-center.col-xs-12.col-lg-7
+		div.status.hidden-xs.hidden-sm.col-md-2.col-lg-2.pull-left
+			span.onlinestatus.online online
+			span.onlinestatus.away away
+			span.onlinestatus.busy busy
+		div.text-center.hidden-xs.hidden-sm.col-md-7.col-lg-7.pull-left
 			div.timezones.text-center
-				h4.newyork New York
-				h4.london London
-				h4.athens Athens
-				h4.mumbai Mumbai
-				h4.singapore Singapore
-				h4.sydney Syndey
-		div.profile.col-xs-12.col-lg-3.flex-button-h-end
+				p.newyork New York
+				p.london London
+				p.athens Athens
+				p.mumbai Mumbai
+				p.singapore Singapore
+				p.sydney Syndey
+		div.profile.col-xs-12.col-md-3.col-lg-3.flex-button-h-end.pull-left
 			button.btn.btn-info.edit-profile.pull-right(data-toggle="modal" data-target="#my-profile") Update Status
 			a(href="/").btn.btn-warning.logout.pull-right Logout

@@ -61,6 +61,9 @@ exports.login = function (User, req, jwt, db, callback) {
 
 				//send data back to client
 				callback(data);
+			} else {
+				//password incorrect
+				callback(false);
 			}
 		} else {
 			//username or password incorrect, don't offer more information * security

@@ -3,16 +3,15 @@ div.row.display-cell
 		h1.title.text-center GSCS
 		h3.subtitle.text-center Global Shipping Communication Services
 		form(role='form')#login.form-horizontal
+			div.alert.alert-danger.hide
+				strong Opps! Your username or password is incorrect! Please try again or contact the IT department! Multiple login attempts will cause a temporary ban!
 			div.form-group.input-group-lg
 				input(type='text' name='username' placeholder="Username")#username.form-control
 			div.form-group.input-group-lg
 				input(type='password' name='password' placeholder="Password")#password.form-control
 			div.form-group
-				input(type='checkbox' name='agreement' checked)#checkbox 
+				button(type='submit').btn.btn-primary Log in
+			div.form-group
+				input(type='checkbox' name='agreement')#checkbox
 				p Keep me signed in
 			div.form-group
-				button(type='submit').btn.btn-primary Log in
-				a(href='#') Forgot your password?
-		div.text-center
-			p Copyright 
-				a(href="http://www.saowapan.com" target="_blank") Saowapan

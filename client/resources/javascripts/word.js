@@ -5,14 +5,17 @@
 
 	//public methods
 	word.prototype.init = function (word) {
+				var headerHeight = $('#header').outerHeight();
+		var footerHeight = $('#footer').outerHeight();
+		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
 		//grab the container and attach tinymce to it, set the required tinymce theme urls
-		var container = $('[data-filter="' + word.name + '-excel"]');
+		var container = $('[data-filter="' + word.name + '-word"]');
 		tinymce.baseURL = window.location + 'js/themes/modern.js';
 		tinymce.init({
 			theme_url: window.location + 'js/themes/modern.js',
 			skin_url: window.location + 'css/',
 			selector: '#' + word._id,
-			height: 300,
+			height: contentHeight - 100,
 			theme: 'modern',
 			init_instance_callback: function(editor) {
 				editor.getBody().setAttribute('contenteditable',false);
@@ -22,6 +25,7 @@
 				} else {
 					editor.setContent('');
 				}
+				menu.call(this, word, word.active, container, false, true, user);
 			}
 		});
 	}
@@ -30,26 +34,65 @@
 		isActive.call(this);
 		cancel.call(this);
 		update.call(this);
+		$(document).on('click', '.locked', function () {
+			e.preventDefault();
+			return false;
+		});
 	}
 
 
 	//private methods
 	//handle the menu, hide/show when appropriate @TODO IMPLEMENT FOR EXCELS
-	function menu (Word, edit, word, cancel) {
-		console.log('hello');
+	function menu (Word, active, word, cancel, init, cuser) {
 
 		var options = word.find('.word-options');
+		if (init) {
+			if (active === true) {
+				if (Word.user._id === cuser._id) {
+					options.find('.word-edit').hide();
+					options.find('.edit-options').show();
+					options.find('.message').show();
+					options.find('.message').html('You are currently editting this word document');
+					word.find('.mce-toolbar-grp').show();
+					word.find('.mce-toolbar').show();
+				} else {
+					//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
+					for (var key in users) {
+						if(users.hasOwnProperty(key)) {
+							var user = users[key];
+							if (user._id === Word) {
+								name = user.username;
+							}
+						}
+					}
+					options.find('.message').show();
+					options.find('.word-edit').hide();
+					options.find('.message').html('This word document is being editted by: ' + name);
+					word.find('.mce-toolbar-grp').hide();
+					word.find('.mce-toolbar').hide();
+				}
+			} else {
+				word.find('.mce-toolbar-grp').hide();
+				word.find('.mce-toolbar').hide();
+				options.find('.word-edit').show();
+			}
+			return false;
+		}
 
 		if (cancel) {
 			options.find('.message').hide();
 			options.find('.edit-options').hide();
 			options.find('.word-edit').show();
+			word.find('.mce-toolbar-grp').hide();
+			word.find('.mce-toolbar').hide();
 		} else {
-			if (edit === true) {
+			if (active === true) {
 				options.find('.word-edit').hide();
 				options.find('.edit-options').show();
 				options.find('.message').show();
 				options.find('.message').html('You are currently editting this word document');
+				word.find('.mce-toolbar-grp').show();
+				word.find('.mce-toolbar').show();
 			} else {
 				console.log('hmmmmm');
 				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
@@ -63,7 +106,9 @@
 				}
 				options.find('.message').show();
 				options.find('.word-edit').hide();
-				options.find('.message').html('This word document is being editted by: ' + name)
+				options.find('.message').html('This word document is being editted by: ' + name);
+				word.find('.mce-toolbar-grp').hide();
+				word.find('.mce-toolbar').hide();
 			}
 		}
 	}

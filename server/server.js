@@ -59,12 +59,13 @@ app.use('/', index);
 //admin check for jwt, end response if no
 app.use('/admin', function (req, res, next) {
     if(!req.body.token) {
-        res.json(false);
+        console.log('hmm');
+        res.redirect('/hello');
     } else {
         jwt.verify(req.body.token, db.secret, function (err, decoded) {
             if (err) { 
                 console.log('Invalid token: ' + err);
-                res.json(false);
+                res.redirect('/');
             } else {
                 req.decoded_token = decoded;
                 next();
@@ -115,14 +116,14 @@ sio.on('connection', function (socket) {
 
             //@TODO implement better method of sending data, atm chat should be prioritised look @FUTURE
             //connection data
-            ChatRoom.find({ location: cUser.location, department: cUser.department }).populate('_messages').exec(function (err, chatrooms) {
+            ChatRoom.find({ location: cUser.location, department: cUser.department }).populate({ path: '_messages', options: { limit: 20, sort: { 'created': -1 } }}).exec(function (err, chatrooms) {
                 if (err) { console.log('socketio error finding chatrooms' + err); socket.emit('data', false); return false; }
                 Excel.find({ location: cUser.location, department: cUser.department }).populate('user').exec(function (err, excelsheets) {
                     if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
                     ChatMessage.find()
                         .where('_to').equals(socket.decoded_token._id)
                         .where('read').equals(false)
-                        .exec ( function (err, unreadMessages) {
+                        .exec(function (err, unreadMessages) {
                             if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
                             User.find()
                                 .select('username status email online lastlogin')
@@ -146,10 +147,10 @@ sio.on('connection', function (socket) {
                                             });
                                             words.forEach(function (word) {
                                                 socket.join(word._id);
-                                            })
+                                            });
                                             socket.emit('data', data);
                                         });
-                                });
+                            });
                     });
                 });
             });
@@ -166,7 +167,8 @@ sio.on('connection', function (socket) {
     chat.privatechat(sio, socket, ChatMessage, users);
     chat.getPrivateMessages(sio, socket, ChatMessage);
     chat.readPrivateMessages(sio, socket, ChatMessage);
-
+    chat.loadmoremessages(sio, socket, ChatRoom, ChatMessage);
+    
     //user handler
     user.update(sio, socket, User);
     user.lastactive(sio, socket);
@@ -192,7 +194,6 @@ sio.on('connection', function (socket) {
 
         console.log('dc');
         if (!cUser) {
-            console.log(cUser);
             return;
         }
 
@@ -231,7 +232,6 @@ sio.on('connection', function (socket) {
 
 //function for testing
 setInterval(function () {
-  console.log(process.memoryUsage());
   console.log('MEMORY:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
 }, 5000);
 

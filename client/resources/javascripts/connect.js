@@ -11,9 +11,9 @@ var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
-	var wordObj = new word();
-	console.log(new usersO().load);
-	var userObj = new usersO();
+var wordObj = new word();
+var userObj = new usersO();
+
 //check for token, once document has loaded
 jQuery(document).ready(function() {
 	if ($.cookie('token')) {
@@ -35,6 +35,21 @@ jQuery(document).ready(function() {
 	});
 });
 
+function times() {
+	var ny = $('.newyork'),
+		london = $('.london'),
+		athens = $('.athens'),
+		mumbai = $('.mumbai'),
+		singapore = $('.singapore'),
+		sydney = $('.sydney');
+
+		ny.html('New York <span>' + moment().tz('America/New_York').format('h:mma') + '</span>');
+		london.html('London <span>' + moment().tz('Europe/London').format('h:mma') + '</span>');
+		athens.html('Athens <span>' + moment().tz('Europe/Athens').format('h:mma') + '</span>');
+		mumbai.html('Mumbai <span>' + moment().tz('Asia/Singapore').format('h:mma') + '</span>');
+		singapore.html('Singapore <span>' + moment().tz('Asia/Kolkata').format('h:mma') + '</span>');
+		sydney.html('Syndey <span>' + moment().tz('Australia/Sydney').format('h:mma') + '</span>');
+}
 /*
 * @param String token: authorization token
 */
@@ -73,13 +88,11 @@ function init(token) {
 			wordObj.update();
 			//init chat functions
 			chat.init();
+			times();
 			//configure the timezones
-			$('.newyork').append('<span>' + moment().tz('America/New_York').format('h:mma') + '</span>');
-			$('.london').append('<span>' + moment().tz('Europe/London').format('h:mma') + '</span>');
-			$('.athens').append('<span>' + moment().tz('Europe/Athens').format('h:mma') + '</span>');
-			$('.mumbai').append('<span>' + moment().tz('Asia/Kolkata').format('h:mma') + '</span>');
-			$('.singapore').append('<span>' + moment().tz('Asia/Singapore').format('h:mma') + '</span>');
-			$('.sydney').append('<span>' + moment().tz('Australia/Sydney').format('h:mma') + '</span>');
+			setInterval(function () {
+				times();
+			}, 5000);
 		}
 		//make socketio calls
 		socketIOInit();
@@ -107,6 +120,7 @@ function init(token) {
 		$('.chat').remove();
 		$('.excel').remove();
 		$('.link').remove();
+		$('.word').remove();
 		$('.private-chat').remove();
 
 		$time = 0;
@@ -146,7 +160,7 @@ function socketIOInit() {
 	socket.on('data', function (data) {
 		//set current user global var
 		user = data.user;
-
+		users = data.users;
 		//set chatrooms global var
 		chatrooms = data.chatrooms;
 
@@ -180,7 +194,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 5
+			defaultActive: 6
 		}).init();
 
 		$('.user-offline').remove();

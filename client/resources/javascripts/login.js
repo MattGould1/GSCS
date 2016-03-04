@@ -7,7 +7,6 @@ $('.row').on('submit', '#login', function (e) {
 	//credentials
 	var username = $this.find('#username').val();
 	var password = $this.find('#password').val();
-
 	$.ajax({
 		url: url + '/login',
 		type: 'POST',
@@ -18,13 +17,16 @@ $('.row').on('submit', '#login', function (e) {
 			password: password
 		}),
 		success: function (user, status, xhr) {
+			
 			if (user.token) {
 				//set token as cookie to be sent with requests
-				$.cookie('token', user.token, { expires: 7, path: '/' });
+				if ($this.find('#checkbox').is(':checked') === true) {
+					$.cookie('token', user.token, { expires: 7, path: '/' });
+				}
 				//see connect.js, init will connect to socketio and display app if successfully init will also set the global token var
 				init(user.token);
 			} else {
-				console.log('No token given, do not login!');
+				$this.find('.alert-danger').removeClass('hide');
 			}
 		},
 		error: function (xhr, status, error) {

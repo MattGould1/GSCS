@@ -12,6 +12,7 @@
 				token: token
 			}),
 			success: function (data, status, xhr) {
+				$('#admin-content').show();
 				console.log(data);
 				users = data.users;
 				chatrooms = data.chat;
@@ -31,5 +32,7 @@
 				console.log(error)
 			}
 		});
+	} else {
+		window.location="/";
 	}
 })(jQuery);

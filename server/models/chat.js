@@ -13,7 +13,7 @@ var roomSchema = new mongoose.Schema({
 });
 
 //chat message
-var chatSchema = new mongoose.Schema({
+var messageSchema = new mongoose.Schema({
 
 	created: { type: Date, default: Date.now() },
 	_room: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatRoom' }],
@@ -27,5 +27,10 @@ var chatSchema = new mongoose.Schema({
 
 });
 
+messageSchema.pre('save', function (next) {
+	this.created = new Date();
+	next();
+});
+
 var ChatRoom = mongoose.model('ChatRoom', roomSchema);
-var ChatMessage = mongoose.model('ChatMessage', chatSchema);
+var ChatMessage = mongoose.model('ChatMessage', messageSchema);

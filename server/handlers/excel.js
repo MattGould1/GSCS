@@ -82,6 +82,7 @@ module.exports = {
 				if (excel.active === true) {
 					excel.active = false;
 					excel.save(function (err, saveExcel) {
+						console.log('save excel');
 						sio.sockets.to(excel._id).emit('cancel-excel', excel);
 					});
 				}

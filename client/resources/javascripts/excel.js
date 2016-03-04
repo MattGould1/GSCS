@@ -26,6 +26,7 @@
 		updateExcel.call(this);
 		socketExcel.call(this);
 		viewEdits.call(this);
+		cancelEdit.call(this);
 	}
 
 	//private methods
@@ -131,6 +132,12 @@
 		}, 1000);
 		if ( excelsheet.active === true ) {
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
+							var options = hot.siblings('.excel-options');
+				options.find('.excel-edit').hide();
+				options.find('.message').show();
+				console.log('checking for users var');
+				console.log(excelsheet.user.username);
+				options.find('.message').html(excelStrings.edittedBy + excelsheet.user.username);
 		}
 	}
 
@@ -148,15 +155,20 @@
 	/*
 	*	@param Object excel @model
 	*/
-	function cancelEdit(excel) {
+	function cancelEdit() {
 
 		$(document).on('click', '.excel-cancel', function () {
 			//get the id from clicked excelsheet
 			var hot = $(this).parent().parent().parent('.excel-options').siblings('.hot');
-
+			var id = hot.attr('class').split(" ")[1];
+			excelsheets.forEach( function (sheet, index) {
+				if (sheet._id == id) {
+					excel = sheet;
+				}
+			});
 			var hotInstance = hot.handsontable('getInstance');
 			//clearup the changes
-			delete changes[excel._id];
+			delete changes[id];
 
 			hotInstance.updateSettings({
 				//update data
@@ -177,7 +189,7 @@
 				manualRowResize: false,
 			});
 
-			socket.emit('cancel-excel', excel._id);
+			socket.emit('cancel-excel', id);
 		});
 	}
 	/*
@@ -425,7 +437,6 @@
 		socket.on('edit-excel', function (data) {
 			//get jQuery object for excelsheet
 			if (data.edit === true) {
-				cancelEdit.call(this, data.excel);
 				//get hot instance
 				var hot = $('.' + data.excel._id);
 				var hotInstance = hot.handsontable('getInstance');
@@ -592,7 +603,8 @@
 		});
 		//reset ui back to edit
 		socket.on('cancel-excel', function (excel) {
-			console.log(excel);
+			logger('cancelling excelsheet');
+			logger(excel);
 			var hot = $('.' + excel._id);
 			var options = hot.siblings('.excel-options');
 			options.find('.message').hide();

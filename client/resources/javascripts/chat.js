@@ -19,6 +19,7 @@
 		send.call(this, form);
 		receive.call(this);
 		initPrivateChat.call(this);
+		loadMoreMessages.call(this);
 	}
 
 	//private methods
@@ -48,8 +49,15 @@
 		$('#chat').on('change', '.file', function (e) {
 			var $this = $(this);
 			var file = $this.context.files[0];
-			$this.parent(
-				).parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+			console.log(file);
+
+			if (file.type === 'image/png' || file.type === 'image/jpeg') {
+				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+			} else {
+				alert('This file type is not allowed!');
+				$this.val('');
+				return false;
+			}
 		});
 
 		$('#app').off().on('submit', form, function (e) {
@@ -72,6 +80,9 @@
 					if (ufile.size > 2000000) {
 						alert('Sorry but that image is massive! Could you please reduce the size?');
 						return false;
+					}
+					if (ufile.type === 'image/png' || ufile.type === 'image/jpeg') {
+
 					}
 					var reader = new FileReader();
 					
@@ -156,7 +167,7 @@
 					chatroom.find('.chat-messages ul').append(message);
 					chatroom.find('.message').val('');
 					chatroom.find('.reset-radio').prop('checked', true);
-					chatToBottom.call(this, data.find('.chat-messages'));
+					// chatToBottom.call(this, data.find('.chat-messages'));
 				}
 
 				//send to server, emits to all if public if private chat only emits to partner
@@ -171,6 +182,12 @@
 				}, 1000);
 			}
 			uploadImage(prepareMessage);
+			//empty chat message + reset type
+			var chatroom = $this;
+			chatroom.find('.message').val('');
+			chatroom.find('.file').val('');
+			chatroom.find('.filestoupload').text('');
+			chatroom.find('.reset-radio').prop('checked', true);
 		});
 	}
 
@@ -251,14 +268,14 @@
 					var count = +badge.html();
 					badge.html(count + 1);				
 				}
-
-				container.scrollTop(container[0].scrollHeight);
+				if (message.file) {
+					setTimeout(function () {
+						container.scrollTop(container[0].scrollHeight);
+					}, 200);
+				} else {
+					container.scrollTop(container[0].scrollHeight);
+				}
 			}
-			//empty chat message + reset type
-			chatroom.find('.message').val('');
-			chatroom.find('.file').val('');
-			chatroom.find('.filestoupload').text('');
-			chatroom.find('.reset-radio').prop('checked', true);
 			
 		});
 	}
@@ -314,6 +331,8 @@
 			//add jquery object to the dom
 			app.append(room);
 			room.show();
+			console.log('finding pc room');
+			console.log(room.find('.chat-messages'));
 			chatToBottom.call(this, room.find('.chat-messages'));
 			//create a private room on server and invite your partner
 			socket.emit('privatechat', connect);
@@ -330,12 +349,16 @@
 
 			//
 			var messages = appendMessages.call(this, join.messages);
-
+			var user_room = $('[data-to="' + join.partner._id + '"]');
+			console.log(user_room);
 			//this shouldn't be possible, but hey, lets make sure @SEE initPrivatechat() function
-			if ($('.' + user._id).length > 0) {
-				logger('already open');
-				console.log($('.' + user._id));
-				$('.' + user._id).find('.chat-messages ul').append(messages);
+			if (user_room.length > 0) {
+				logger('Private chat already opening, appending messages if none exist');
+				if (user_room.find('.chat-messages ul').length < 2) {
+					console.log('more than 2 impossible');
+					user_room.find('.chat-messages ul').append(messages);
+				}
+				chatToBottom.call(this, user_room.find('.chat-messages'));
 			} else {
 				logger('creating room');
 				//my partner, is actually the user who clicked .user
@@ -360,7 +383,7 @@
 				//finally hide the room, no messages yet so don't popup
 				room.hide();
 
-				chatToBottom.call(this, room.find('.chat-messages ul'));
+				chatToBottom.call(this, room.find('.chat-messages'));
 			}
 		});
 
@@ -375,10 +398,25 @@
 	}
 
 	function chatToBottom(container) {
-		logger(container);
+		logger('setting chatroom to bottom');
 		container.scrollTop(container[0].scrollHeight);
 	}
 
+	function loadMoreMessages() {
+		/*
+		* Data Object
+		* data.room = chatroom._id
+		* data.messages = array of chatmessages
+		*/
+		socket.on('moremessages', function (data) {
+			var chatroom = $('[data-_id-chat="' + data.room + '"]');
+			var container = chatroom.find('.chat-messages');
+			var oldHeight = container[0].scrollHeight;
+			var messages = appendMessages.call(this, data.messages);
+			chatroom.find('.chat-messages ul').prepend(messages);
+			container.scrollTop(oldHeight);
+		});
+	}
 	function getRoom() {
 
 	}
@@ -389,7 +427,7 @@
 
 	function appendMessages(messages) {
 		var msgs = '';
-
+		console.log('hello');
 		messages.reverse().forEach( function (message) {
 			msgs += ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
 		});

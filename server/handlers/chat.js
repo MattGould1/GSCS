@@ -28,33 +28,36 @@ module.exports = {
 					if (err) { console.log ('error finding chatroom ' + msg._id + 'error: ' + err); }
 					var filepath = '';
 					if (msg.file) {
-						console.log(msg);
-						var buffer = saveImage(msg.file.data);
-						var tbuffer = saveImage(msg.file.thumbnail);
+						if (msg.file.type === 'image/png' || msg.file.type === 'image/jpeg') {
+							var buffer = saveImage(msg.file.data);
+							var tbuffer = saveImage(msg.file.thumbnail);
 
-						var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + msg.file.name);
-						var filepath = '/public/' + Math.floor(new Date() / 1000) + msg.file.name;
+							var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + msg.file.name);
+							var filepath = '/public/' + Math.floor(new Date() / 1000) + msg.file.name;
 
-						var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name);
-						var thumbpath = '/public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name;
+							var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name);
+							var thumbpath = '/public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name;
 
-						fs.writeFile(filename, buffer.data, function (err) {
-							console.log(err);
-							console.log('success');
-						});
+							fs.writeFile(filename, buffer.data, function (err) {
+								console.log(err);
+								console.log('success');
+							});
 
-						fs.writeFile(thumbnail, tbuffer.data, function (err) {
-							console.log(err);
-							console.log('success');
-						});
-						var newMsg = new ChatMessage({
-							_room: msg._id,
-							_user: socket.decoded_token._id,
-							username: socket.username,
-							message: message,
-							file: filepath,
-							thumbnail: thumbpath
-						});
+							fs.writeFile(thumbnail, tbuffer.data, function (err) {
+								console.log(err);
+								console.log('success');
+							});
+							var newMsg = new ChatMessage({
+								_room: msg._id,
+								_user: socket.decoded_token._id,
+								username: socket.username,
+								message: message,
+								file: filepath,
+								thumbnail: thumbpath
+							});
+						} else {
+							return false;
+						}
 					} else {
 						var newMsg = new ChatMessage({
 							_room: msg._id,
@@ -64,8 +67,6 @@ module.exports = {
 						});
 					}
 					
-
-
 					newMsg.save(function (err, savedMsg) {
 						if (err) { console.log('error saving message' + err); }
 						//push ChatMessage id into chatroom _messages array
@@ -160,7 +161,7 @@ module.exports = {
 							.and([ 
 								{ $or: [{'_to': data.partner}, {'_to': socket.decoded_token._id}] },
 								{ $or: [{'_user': data.partner}, {'_user': socket.decoded_token._id}] }])
-							.sort({_id: -1})
+							.sort({created: -1})
 							.limit(30);
 			query.exec( function (err, messages) {
 				if (err) { console.log(err); return false; }
@@ -190,6 +191,21 @@ module.exports = {
 			ChatMessage.update(conditions, update, options, function (err, updated) {
 				if (err) { console.log(err); return false; }
 				console.log(updated);
+			});
+		});
+	},
+	loadmoremessages: function (sio, socket, ChatRoom, ChatMessage) {
+		//data Object with chatroom id and current offset
+		socket.on('moremessages', function (data) {
+			var skip = data.offset * 20; //load 20 each time
+			console.log(skip);
+			ChatMessage.find({_room: data.id}).skip(skip).limit(20).sort('-created').exec(function (err, messages) {
+				if (err) { console.log('Error finding new messages' + err); return false; }
+				var sendback = {
+					messages: messages,
+					room: data.id
+				};
+				socket.emit('moremessages', sendback);
 			});
 		});
 	}
