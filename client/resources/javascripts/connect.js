@@ -223,7 +223,6 @@ function socketIOInit() {
 			logger(message);
 		});
 	});
-
-		userObj.load();
-		userObj.lastActive();
+	userObj.load();
+	userObj.lastActive();
 }

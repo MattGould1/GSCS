@@ -22,9 +22,11 @@
 		socket.emit('update-profile', profile);
 
 		socket.on('update-profile', function (profile) {
+			users[profile._id] = profile;
 			var user = profile;
+			console.log(profile);
+			$('[data-_id="' + profile._id + '"]').data('status', profile.status);
 		});
 	});
-
 
 })(jQuery);

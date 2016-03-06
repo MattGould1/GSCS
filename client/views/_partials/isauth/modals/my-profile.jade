@@ -2,14 +2,14 @@ div#my-profile.modal.fade(tabindex="-1" role="dialog")
 	div.modal-dialog(role="document")
 		div.modal-content
 			div.modal-header
-				h4.modal-title Update your profile!
+				h4.modal-title Update your status!
 			div.modal-body.my-profile-content
 				form.form-horizontal
-					div.form-group
+					div.form-group(style="display: none;")
 						label.col-xs-3.control-label(for="First Name") First Name
 						div.col-xs-9
 							input.form-control.my-profile-firstname(type="text")
-					div.form-group
+					div.form-group(style="display: none;")
 						label.col-xs-3.control-label(for="Last Name") Last Name
 						div.col-xs-9
 							input.form-control.my-profile-lastname(type="text")

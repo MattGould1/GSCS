@@ -21,8 +21,8 @@ module.exports = {
 				user.status = profile.status;
 				user.save(function (err, saved) {
 					if (err) { console.log(err); }
-					console.log(saved);
-					socket.emit('update-profile', saved);
+					console.log('twice?');
+					sio.sockets.emit('update-profile', saved);
 				});
 			});
 		});
