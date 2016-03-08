@@ -74,6 +74,19 @@
 	  	}
 	}
 
+	function excelHeight() {
+		var header = $('#header').outerHeight();
+		var footer = $('#footer').outerHeight();
+
+		var _window = $(window).outerHeight();
+
+		//61 is the height of the bar above the excel
+		return _window - footer - header - 61;
+	}
+
+	function excelWidth() {
+		return $('#content').outerWidth();
+	}
 	function initExcel (excelsheet) {
 		//handsontable requires an Array of Arrays as its data, by default room.data could be null or 0 in length, if this is the case make it [[]]
 		if (excelsheet.data === null || excelsheet.data.length === 0) {
@@ -85,10 +98,6 @@
 		//add excelsheet _id to make each handsontable identifiable
 		var hot = container.find('.hot').addClass(excelsheet._id);
 
-		//workout initial height
-		var headerHeight = $('#header').outerHeight();
-		var footerHeight = $('#footer').outerHeight();
-		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
 		setTimeout(function() {
 			console.log($('#content').outerWidth());
 			//see @server Model excel for details on data
@@ -109,8 +118,8 @@
 				//comments always true
 				comments: true,
 				//81 for button/message height
-				height: contentHeight - 61,
-				width: $('#content').outerWidth(),
+				height: excelHeight(),
+				width: excelWidth(),
 				//manual resize false until edit is allowed
 				manualColumnResize: false,
 				manualRowResize: false,
@@ -132,7 +141,7 @@
 		}, 1000);
 		if ( excelsheet.active === true ) {
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
-							var options = hot.siblings('.excel-options');
+				var options = hot.siblings('.excel-options');
 				options.find('.excel-edit').hide();
 				options.find('.message').show();
 				console.log('checking for users var');

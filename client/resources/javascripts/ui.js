@@ -88,6 +88,11 @@
 	ui.prototype.resize = function () {
 
 	}
+
+	ui.prototype.emotes = function () {
+		emotes.call(this);
+	}
+
 	ui.prototype.gotoBottom = function ($el) {
 		$el.scrollTop($el[0].scrollHeight);
 		$($el).scroll(function () {
@@ -354,6 +359,13 @@
 		if (room._messages != undefined) {
 			count = 0;
 			room._messages.reverse().forEach( function (message, i) {
+				//look for emotes and replace them
+				var emoticons = emotes.call(this);
+				for (var key in emoticons) {
+					var emote = emoticons[key];
+					console.log(emote.icon);
+					message.message.replace(emote.icon, '<img src="' + emote.link + '"/>');
+				}
 				var msg = this.ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);
 				console.log(count++);
 				newContainer.find('.chat-messages ul').append(msg);
@@ -390,6 +402,83 @@
 		//append link to list
 		$(typeLink).append($link);
 
+	}
+
+	function emotes() {
+		var path = url + '/public/images/';
+
+		var emotes = {
+			smile: {
+				link: path + 'smile.png',
+				icon: ':)'
+			},
+			big_smile: {
+				link: path + 'big_smile.png',
+				icon: ':D'
+			},
+			sad: {
+				link: path + 'sad.png',
+				icon: ':('
+			},
+			cry: {
+				link: path + 'cry.png',
+				icon: ':\'('
+			},
+			Tongue: {
+				link: path + 'tongue.png',
+				icon: ':P'
+			},
+			tongue: {
+				link: path + 'tongue.png',
+				icon: ':p'
+			},
+			angel: {
+				link: path + 'angel.png',
+				icon: 'O:)'
+			},
+			devil: {
+				link: path + 'devil.png',
+				icon: '3:)'
+			},
+			confused: {
+				link: path + 'confused.png',
+				icon: 'o.O'
+			},
+			wink: {
+				link: path + 'wink.png',
+				icon: ';)'
+			},
+			surprise: {
+				link: path + 'surprise.png',
+				icon: ':O'
+			},
+			squint: {
+				link: path + 'squint.png',
+				icon: '-_-'
+			},
+			angry: {
+				link: path + 'angry.png',
+				icon: '>:O'
+			},
+			kiss: {
+				link: path + 'kiss.png',
+				icon: ':*',
+			},
+			love: {
+				link: path + 'love.png',
+				icon: '<3'
+			},
+			cheerful: {
+				link: path + 'cheerful.png',
+				icon: '^_^'
+			},
+			shark: {
+				link: path + 'shark.png',
+				icon: '(^^^)'
+			}
+		}
+
+		return emotes;
 	}
 
 	//private

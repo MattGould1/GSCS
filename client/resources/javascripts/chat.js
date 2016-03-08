@@ -191,6 +191,16 @@
 		});
 	}
 
+	//beep the user @mention
+	function beep() {
+		logger('beep');
+	}
+
+	//change smileys into real ones
+	function emoticons() {
+		logger('emoticon');
+	}
+	
 	/*
 	* receive chat message and append it to the chatroom
 	*/
@@ -199,7 +209,6 @@
 		* @param Object message: _id = chatroom._id, message, chatroom.room, user.username
 		*/
 		socket.on('chat-message', function (message) {
-			console.log(message);
 
 			var msg = ui.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
 
@@ -243,9 +252,9 @@
 				} else {
 					//add the message
 					chatroom.find('.chat-messages ul').append(msg);
-						var container = chatroom.find('.chat-messages');
+					var container = chatroom.find('.chat-messages');
 
-						container.scrollTop(container[0].scrollHeight);
+					container.scrollTop(container[0].scrollHeight);
 				}
 
 				if ( !chatroom.is(':visible')) {
@@ -256,12 +265,14 @@
 				}
 
 			} else {
-				//jquery append
+
 				var chatroom = $('[data-filter="' + message.room + '-chat"]');
 				chatroom.find('.chat-messages ul').append(msg);
-				//scroll to bottom
 				var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
 
+				if (message.message.indexOf('@' + user.username) != -1) {
+					beep();
+				}
 				//add message count to chatroom if not visible (not looking @ it)
 				if (!container.is(':visible')) {
 					var badge = chatroom.find('.messageCount');
@@ -427,8 +438,8 @@
 
 	function appendMessages(messages) {
 		var msgs = '';
-		console.log('hello');
 		messages.reverse().forEach( function (message) {
+			logger('message received');
 			msgs += ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
 		});
 

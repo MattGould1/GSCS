@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+  imagemin = require('gulp-imagemin'),
 	concat = require('gulp-concat'),
 	sass = require('gulp-sass');
 
@@ -34,6 +35,14 @@ gulp.task('build-js', function() {
     ])
     .pipe(concat('bundle.js'))
     .pipe(gulp.dest('public/js'));
+});
+
+gulp.task('imagemin', function () {
+    return gulp.src('resources/images/*')
+        .pipe(imagemin({
+            progressive: true
+        }))
+        .pipe(gulp.dest('public/img'));
 });
 
 gulp.task('build-css', function() {
