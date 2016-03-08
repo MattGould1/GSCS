@@ -5,9 +5,8 @@
 
 		//the form to attach events to
 		var options = {
-			form: null,
+			form: null
 		};
-
 		if ( arguments[0] && typeof arguments[0] === "object" ) {
 			this.options = extendDefaults(options, arguments[0]);
 		}
@@ -210,8 +209,10 @@
 		*/
 		socket.on('chat-message', function (message) {
 
-			var msg = ui.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
-
+			var msg = uiObj.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
+			msg = uiObj.emotes(msg);
+			console.log(msg);
+			console.log('below');
 			//private chat?
 			if ( message.pc === true ) {
 				var chatroom = $('#' + message.me._id);
@@ -228,7 +229,7 @@
 					var app = $('#app');
 
 					//html
-					var chatroom = $($.parseHTML(ui.privateChatRoom()));
+					var chatroom = $($.parseHTML(uiOBj.privateChatRoom()));
 					
 					//give some information for socketio
 					chatroom.addClass('.' + user._id);
@@ -330,7 +331,7 @@
 			var app = $('#app');
 
 			//create jQuery object @SEE ui.js
-			var room = $($.parseHTML(ui.privateChatRoom()));
+			var room = $($.parseHTML(uiObj.privateChatRoom()));
 
 			//add a class to the chatroom, this is used by us on the client side
 			room.addClass(user._id);
@@ -379,7 +380,7 @@
 				var app = $('#app');
 
 				//html
-				var room = $($.parseHTML(ui.privateChatRoom()));
+				var room = $($.parseHTML(uiObj.privateChatRoom()));
 
 				//give some information for socketio
 				room.addClass(user._id);
@@ -439,8 +440,8 @@
 	function appendMessages(messages) {
 		var msgs = '';
 		messages.reverse().forEach( function (message) {
-			logger('message received');
-			msgs += ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
+
+			msgs += uiObj.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
 		});
 
 		return msgs;

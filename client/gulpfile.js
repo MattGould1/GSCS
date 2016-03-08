@@ -27,9 +27,10 @@ gulp.task('build-js', function() {
       'resources/javascripts/helpers.js',
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/strings.js',
+      'resources/javascripts/ui.js',
       'resources/javascripts/word.js',
       'resources/javascripts/users.js',
-      'resources/javascripts/!(bootstrap, connect, strings, helpers, env, ui, word, users)*.js',
+      'resources/javascripts/!(bootstrap, connect, strings, helpers, env, word, users)*.js',
       'resources/javascripts/ui.js',
       'resources/javascripts/connect.js',
     ])

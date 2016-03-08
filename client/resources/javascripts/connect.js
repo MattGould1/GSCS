@@ -7,12 +7,12 @@
 * @var Array users: array of all users
 */
 var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [], appInit, changes = {}, localWord = {};
-
+var wordObj = new word();
+var userObj = new usersO();
+var uiObj = new ui();
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
-var wordObj = new word();
-var userObj = new usersO();
 
 //check for token, once document has loaded
 jQuery(document).ready(function() {
@@ -73,8 +73,6 @@ function init(token) {
 		if (appInit === undefined) {
 			//set to true
 			appInit = true;
-			//modules
-			ui = new ui();
 			//init chatroom module, see chat.js
 			chat = new ewbChat({
 				form: '.chat-form'
@@ -166,11 +164,11 @@ function socketIOInit() {
 
 		//create rooms
 		chatrooms.forEach( function (room, i) {
-			ui.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
+			uiObj.containers(room, chatContainer, link, '-chat', '#chat', '#chatLinks');
 		});
 		setTimeout( function () {
 			$('.chat-messages').each( function () {
-				ui.gotoBottom($(this));
+				uiObj.gotoBottom($(this));
 			});
 		}, 300);
 		//set excelsheets global var
@@ -178,17 +176,17 @@ function socketIOInit() {
 
 		//create excelsheets
 		excelsheets.forEach( function (room, i) {
-			ui.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
+			uiObj.containers(room, excelContainer, link, '-excel', '#excel', '#excelLinks');
 			changes[room._id] = room.changes;
 		});
 
 		words = data.words;
 		words.forEach( function (word, i) {
-			ui.containers(word, wordContainer, link, '-word', '#word', '#wordLinks');
+			uiObj.containers(word, wordContainer, link, '-word', '#word', '#wordLinks');
 		});
 
 		//init main UI
-		ui.init();
+		uiObj.init();
 		//begin hideNshow, see hideNshow.js for usage explaination
 		new hideNshow({
 			body: jQuery('#isAuth'),

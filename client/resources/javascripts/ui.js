@@ -1,28 +1,20 @@
 (function ($) {
 
 	this.ui = function () {
-		var options = {
-			Null: null		
-		};
-
-
-		if ( arguments[0] && typeof arguments[0] === "object" ) {
-			this.options = extendDefaults(options, arguments[0]);
-		}
 	}
 
 	//public
 	ui.prototype.init = function () {
-		// 		var offset = 1;
-		// setInterval(function () {
-		// 	var load = {
-		// 		offset: offset,
-		// 		id: '566f3a10e75906be36d74ebd',
-		// 	}
-		// 	socket.emit('moremessages', load);
-		// 	socket.emit()
-		// 	offset++;
-		// }, 3000);
+			// 		var offset = 1;
+			// setInterval(function () {
+			// 	var load = {
+			// 		offset: offset,
+			// 		id: '566f3a10e75906be36d74ebd',
+			// 	}
+			// 	socket.emit('moremessages', load);
+			// 	socket.emit()
+			// 	offset++;
+			// }, 3000);
 			//get heights
 			var headerHeight = $('#header').outerHeight();
 			var footerHeight = $('#footer').height();
@@ -89,15 +81,92 @@
 
 	}
 
-	ui.prototype.emotes = function () {
-		emotes.call(this);
+	ui.prototype.emotes = function (message) {
+		var path = cURL + '/img/';
+
+		var emotes = {
+			angel: {
+				link: path + 'angel.png',
+				icon: 'O:)'
+			},
+			devil: {
+				link: path + 'devil.png',
+				icon: '3:)'
+			},
+			smile: {
+				link: path + 'smile.png',
+				icon: ':)'
+			},
+			big_smile: {
+				link: path + 'big_smile.png',
+				icon: ':D'
+			},
+			cry: {
+				link: path + 'cry.png',
+				icon: ':\'('
+			},
+			sad: {
+				link: path + 'sad.png',
+				icon: ':('
+			},
+			Tongue: {
+				link: path + 'tongue.png',
+				icon: ':P'
+			},
+			tongue: {
+				link: path + 'tongue.png',
+				icon: ':p'
+			},
+			confused: {
+				link: path + 'confused.png',
+				icon: 'o.O'
+			},
+			wink: {
+				link: path + 'wink.png',
+				icon: ';)'
+			},
+			surprise: {
+				link: path + 'surprise.png',
+				icon: ':O'
+			},
+			squint: {
+				link: path + 'squint.png',
+				icon: '-_-'
+			},
+			angry: {
+				link: path + 'angry.png',
+				icon: '>:O'
+			},
+			kiss: {
+				link: path + 'kiss.png',
+				icon: ':*',
+			},
+			love: {
+				link: path + 'love.png',
+				icon: '<3'
+			},
+			cheerful: {
+				link: path + 'cheerful.png',
+				icon: '^_^'
+			},
+			shark: {
+				link: path + 'shark.png',
+				icon: '(^^^)'
+			}
+		}
+		var Message = message;
+
+		for (var key in emotes) {
+			var emote = emotes[key];
+			var Message = Message.replace(emote.icon, '<img src="' + emote.link + '"/>');
+		}
+		return Message;
 	}
 
 	ui.prototype.gotoBottom = function ($el) {
 		$el.scrollTop($el[0].scrollHeight);
 		$($el).scroll(function () {
 			var wait = 0;
-			console.log('hello ' + wait);
 			if (wait == 0) {
 				
 				position = $el.scrollTop();
@@ -120,8 +189,6 @@
 					current++;
 					container.attr('loaded', current);
 				setTimeout(function () {
-					console.log('hmmmmmmmm');
-					console.log(wait);
 					wait = 0;
 				}, 3000);
 				}
@@ -360,14 +427,9 @@
 			count = 0;
 			room._messages.reverse().forEach( function (message, i) {
 				//look for emotes and replace them
-				var emoticons = emotes.call(this);
-				for (var key in emoticons) {
-					var emote = emoticons[key];
-					console.log(emote.icon);
-					message.message.replace(emote.icon, '<img src="' + emote.link + '"/>');
-				}
-				var msg = this.ui.message(false, message.message, message.file, message.thumbnail, message.username, message.created);
-				console.log(count++);
+				var messageBody = this.ui.prototype.emotes.call(this, message.message);
+
+				var msg = this.ui.prototype.message.call(this, false, messageBody, message.file, message.thumbnail, message.username, message.created);
 				newContainer.find('.chat-messages ul').append(msg);
 			});
 		}
@@ -390,12 +452,6 @@
 		$link.find('a').html(room.name + badge);
 
 		if (type === '-word') {
-		
-			console.log('hmm');
-			
-			
-			// word1 = new word();
-			// console.log(word1);
 			wordObj.init(room);
 		}
 		
@@ -404,81 +460,8 @@
 
 	}
 
-	function emotes() {
-		var path = url + '/public/images/';
+	function emotes(message) {
 
-		var emotes = {
-			smile: {
-				link: path + 'smile.png',
-				icon: ':)'
-			},
-			big_smile: {
-				link: path + 'big_smile.png',
-				icon: ':D'
-			},
-			sad: {
-				link: path + 'sad.png',
-				icon: ':('
-			},
-			cry: {
-				link: path + 'cry.png',
-				icon: ':\'('
-			},
-			Tongue: {
-				link: path + 'tongue.png',
-				icon: ':P'
-			},
-			tongue: {
-				link: path + 'tongue.png',
-				icon: ':p'
-			},
-			angel: {
-				link: path + 'angel.png',
-				icon: 'O:)'
-			},
-			devil: {
-				link: path + 'devil.png',
-				icon: '3:)'
-			},
-			confused: {
-				link: path + 'confused.png',
-				icon: 'o.O'
-			},
-			wink: {
-				link: path + 'wink.png',
-				icon: ';)'
-			},
-			surprise: {
-				link: path + 'surprise.png',
-				icon: ':O'
-			},
-			squint: {
-				link: path + 'squint.png',
-				icon: '-_-'
-			},
-			angry: {
-				link: path + 'angry.png',
-				icon: '>:O'
-			},
-			kiss: {
-				link: path + 'kiss.png',
-				icon: ':*',
-			},
-			love: {
-				link: path + 'love.png',
-				icon: '<3'
-			},
-			cheerful: {
-				link: path + 'cheerful.png',
-				icon: '^_^'
-			},
-			shark: {
-				link: path + 'shark.png',
-				icon: '(^^^)'
-			}
-		}
-
-		return emotes;
 	}
 
 	//private
