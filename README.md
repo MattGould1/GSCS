@@ -1,31 +1,59 @@
-# README #
+# GSCS #
 
-# Install meanstack #
+## Requirements ##
 
-# Run the app #
-* To keep the app running we use [foreverjs](https://github.com/foreverjs/forever)
-* To start the app head into /opt/ewb directory. From here use -
-* forever start client/client.js
-* forever start server/server.js
-* 
-* forever stopall will kill the processes
-* forever list will list the processes (view the link above for more information)
+Before installing the app check that you have -
 
-### How do I get set up? ###
+* Node.js and Mongodb
+* Gulp
+* Nodemon or Foreverjs
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Running the app ##
 
-### Contribution guidelines ###
+Once downloaded please head into the client folder and run
 
-* Writing tests
-* Code review
-* Other guidelines
+```
+#!cli
 
-### Who do I talk to? ###
+sudo npm install
+```
 
-* Repo owner or admin
+
+```
+#!cli
+
+sudo gulp default
+```
+Now enter the server folder and run
+
+```
+#!cli
+
+sudo npm install
+```
+
+The app should now have all of it dependencies and be ready to use.
+
+Head into the / folder and run the following commands
+
+
+```
+#!cli
+
+node client/client.js
+node server/server.js
+```
+## Running the app forever ##
+
+Install [foreverjs](https://github.com/foreverjs/forever)
+
+Enter the / directory and run -
+
+```
+#!cli
+
+forever start client/client.js
+forever start server/server.js
+```
+
+The app will now run forever and run on startup
