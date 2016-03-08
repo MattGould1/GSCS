@@ -62,125 +62,8 @@
 		$('#app').off().on('submit', form, function (e) {
 			e.preventDefault();
 			var $this = $(this);
-			var pc = false;
-			var to = false;
-			var me = false;
-			var unique = false;
-			function uploadImage(callback) {
-				//check if there are any files @TODO fix privatechat
-				if ($this.find('.file')[0] == undefined) {
-					callback();
-					return false;
-				}
-				if ($this.find('.file')[0].files.length != 0 ) {
-					//read the first file @TODO multiple file uploads?
-					var ufile = $this.find('.file')[0].files[0];
-					//@TODO check for max file size
-					if (ufile.size > 2000000) {
-						alert('Sorry but that image is massive! Could you please reduce the size?');
-						return false;
-					}
-					if (ufile.type === 'image/png' || ufile.type === 'image/jpeg') {
+			uploadImage.call(this, prepareMessage, $this);
 
-					}
-					var reader = new FileReader();
-					
-					reader.readAsDataURL(ufile);
-					//read the file sync, don't wanna fire the upload until the image has been read
-					reader.onload = function() {
-
-						//@TODO validation for images, maybe pdf's etc?
-				      	file = {
-				      		name: ufile.name,
-				      		type: ufile.type,
-				      		size: ufile.size,
-				      		data: reader.result
-				      	};
-
-				      	//resize the image, this is done async so the callback has to be put inside
-				      	ImageTools.resize(ufile, {
-					        width: 160, // maximum width
-					        height: 120 // maximum height
-					    }, function(blob, didItResize) {
-					    	//check s-lazy.js
-					    	if (didItResize) {
-					    		reader.readAsDataURL(blob);
-								reader.onload = function() {
-									file.thumbnail = reader.result;
-									logger('image successfully resized');
-									callback(file);
-								};
-					    	}  else {
-					    		logger('image didn\'t resize');
-					    		callback(file);
-					    	}
-					    });
-				      	
-					};
-				} else {
-					callback();
-				}
-			}
-
-			function prepareMessage(file) {
-				console.log(file);
-				if ($this.find('.message').val() == '' && file == undefined) {
-					alert('Please enter a value or upload a file!');
-					return false;
-				}
-
-				if ($this.find('.private').val() == 'private') {
-					logger('private message');
-					var data = $this.parent().parent('.private-chat');
-					pc = true;
-					to = data.attr('data-to');
-					toName = data.attr('data-to-name');
-					unique = data.attr('id');
-					me = user;
-				}
-
-				//message object to send to server
-				msg = {
-					_id: $this.find('.name').val(),
-					type: $this.find('input[name="msgType"]:checked').val(),
-					message: $this.find('.message').val(),
-					pc: pc,
-					me: me,
-					to: {
-						to: to,
-						unique: unique
-					},
-					file: file
-				};
-
-				if ( $this.find('.private').val() == 'private' ) {
-					var message = $this.find('.message').val();
-					var chatroom = $this.parent().parent('.private-chat');
-					message = message.replace(/<(?:.|\s)*?>/g, "");
-					message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
-					//allow colors
-					message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
-					//wrap message in its type
-					message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
-					message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
-					chatroom.find('.chat-messages ul').append(message);
-					chatroom.find('.message').val('');
-					chatroom.find('.reset-radio').prop('checked', true);
-					// chatToBottom.call(this, data.find('.chat-messages'));
-				}
-
-				//send to server, emits to all if public if private chat only emits to partner
-				logger('sending message');
-				socket.emit('chat-message', msg);
-
-				//regardless of success disable message for half a second
-				$this.find('button').prop('disabled', true);
-
-				setTimeout(function() {
-					$this.find('button').prop('disabled', false);
-				}, 1000);
-			}
-			uploadImage(prepareMessage);
 			//empty chat message + reset type
 			var chatroom = $this;
 			chatroom.find('.message').val('');
@@ -188,6 +71,135 @@
 			chatroom.find('.filestoupload').text('');
 			chatroom.find('.reset-radio').prop('checked', true);
 		});
+	}
+
+	/*
+	*	@Function callback: prepares the message to be updated with a file
+	* 	@jQuery $this: form's $(this);
+	*/
+	function uploadImage(callback, $this) {
+		//check if there are any files @TODO fix privatechat
+		if ($this.find('.file')[0] == undefined) {
+			callback();
+			return false;
+		}
+		if ($this.find('.file')[0].files.length != 0 ) {
+			//read the first file @TODO multiple file uploads?
+			var ufile = $this.find('.file')[0].files[0];
+			//@TODO check for max file size
+			if (ufile.size > 2000000) {
+				alert('Sorry but that image is massive! Could you please reduce the size?');
+				return false;
+			}
+			if (ufile.type === 'image/png' || ufile.type === 'image/jpeg') {
+
+			}
+			var reader = new FileReader();
+			
+			reader.readAsDataURL(ufile);
+			//read the file sync, don't wanna fire the upload until the image has been read
+			reader.onload = function() {
+
+				//@TODO validation for images, maybe pdf's etc?
+		      	file = {
+		      		name: ufile.name,
+		      		type: ufile.type,
+		      		size: ufile.size,
+		      		data: reader.result
+		      	};
+
+		      	//resize the image, this is done async so the callback has to be put inside
+		      	ImageTools.resize(ufile, {
+			        width: 160, // maximum width
+			        height: 120 // maximum height
+			    }, function(blob, didItResize) {
+			    	//check s-lazy.js
+			    	if (didItResize) {
+			    		reader.readAsDataURL(blob);
+						reader.onload = function() {
+							file.thumbnail = reader.result;
+							logger('image successfully resized');
+							callback($this, file);
+						};
+			    	}  else {
+			    		logger('image didn\'t resize');
+			    		callback($this, file);
+			    	}
+			    });
+		      	
+			};
+		} else {
+			callback($this);
+		}
+	}
+
+	/*
+	*	@file blob Object with thumbnail property
+	* 	$this jQuery's form $(this)
+	*/
+	function prepareMessage($this, file) {
+		console.log(file);
+
+		var pc = false;
+		var to = false;
+		var me = false;
+		var unique = false;
+
+		if ($this.find('.message').val() == '' && file == undefined) {
+			alert('Please enter a value or upload a file!');
+			return false;
+		}
+
+		if ($this.find('.private').val() == 'private') {
+			logger('private message');
+			var data = $this.parent().parent('.private-chat');
+			pc = true;
+			to = data.attr('data-to');
+			toName = data.attr('data-to-name');
+			unique = data.attr('id');
+			me = user;
+		}
+
+		//message object to send to server
+		msg = {
+			_id: $this.find('.name').val(),
+			type: $this.find('input[name="msgType"]:checked').val(),
+			message: $this.find('.message').val(),
+			pc: pc,
+			me: me,
+			to: {
+				to: to,
+				unique: unique
+			},
+			file: file
+		};
+
+		if ( $this.find('.private').val() == 'private' ) {
+			var message = $this.find('.message').val();
+			var chatroom = $this.parent().parent('.private-chat');
+			message = message.replace(/<(?:.|\s)*?>/g, "");
+			message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
+			//allow colors
+			message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
+			//wrap message in its type
+			message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
+			message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
+			chatroom.find('.chat-messages ul').append(message);
+			chatroom.find('.message').val('');
+			chatroom.find('.reset-radio').prop('checked', true);
+			// chatToBottom.call(this, data.find('.chat-messages'));
+		}
+
+		//send to server, emits to all if public if private chat only emits to partner
+		logger('sending message');
+		socket.emit('chat-message', msg);
+
+		//regardless of success disable message for half a second
+		$this.find('button').prop('disabled', true);
+
+		setTimeout(function() {
+			$this.find('button').prop('disabled', false);
+		}, 1000);
 	}
 
 	//beep the user @mention
@@ -211,8 +223,6 @@
 
 			var msg = uiObj.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
 			msg = uiObj.emotes(msg);
-			console.log(msg);
-			console.log('below');
 			//private chat?
 			if ( message.pc === true ) {
 				var chatroom = $('#' + message.me._id);
@@ -223,7 +233,7 @@
 					
 					//is chatroom visible?
 					if ( chatroom.is(':visible') ) {
-						console.log('not visible atm');
+						logger('private chat is not visible atm');
 					}
 
 					var app = $('#app');
@@ -343,8 +353,7 @@
 			//add jquery object to the dom
 			app.append(room);
 			room.show();
-			console.log('finding pc room');
-			console.log(room.find('.chat-messages'));
+
 			chatToBottom.call(this, room.find('.chat-messages'));
 			//create a private room on server and invite your partner
 			socket.emit('privatechat', connect);
@@ -362,12 +371,10 @@
 			//
 			var messages = appendMessages.call(this, join.messages);
 			var user_room = $('[data-to="' + join.partner._id + '"]');
-			console.log(user_room);
 			//this shouldn't be possible, but hey, lets make sure @SEE initPrivatechat() function
 			if (user_room.length > 0) {
 				logger('Private chat already opening, appending messages if none exist');
 				if (user_room.find('.chat-messages ul').length < 2) {
-					console.log('more than 2 impossible');
 					user_room.find('.chat-messages ul').append(messages);
 				}
 				chatToBottom.call(this, user_room.find('.chat-messages'));
@@ -400,7 +407,8 @@
 		});
 
 		socket.on('getprivatemessages', function (messages) {
-			console.log(messages);
+			logger('get private messages');
+			logger(messages);
 		});
 
 		$('#app').on('click', '.glyphicon-remove', function () {
@@ -424,9 +432,12 @@
 			var chatroom = $('[data-_id-chat="' + data.room + '"]');
 			var container = chatroom.find('.chat-messages');
 			var oldHeight = container[0].scrollHeight;
+			logger(oldHeight);
+
 			var messages = appendMessages.call(this, data.messages);
 			chatroom.find('.chat-messages ul').prepend(messages);
 			container.scrollTop(oldHeight);
+			console.log(container[0].scrollHeight);
 		});
 	}
 	function getRoom() {

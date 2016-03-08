@@ -163,15 +163,18 @@
 		return Message;
 	}
 
+	/*
+	*	loads more messages
+	*/
 	ui.prototype.gotoBottom = function ($el) {
 		$el.scrollTop($el[0].scrollHeight);
+		var wait = 0;
 		$($el).scroll(function () {
-			var wait = 0;
+			
 			if (wait == 0) {
-				
 				position = $el.scrollTop();
 
-				if (position === 0) {
+				if (position < 100) {
 					wait = 1;
 					//make a call to server to load more posts append them at top disable scrolling while this occurs
 					//TODO
@@ -181,16 +184,13 @@
 						offset: current,
 						id: container.attr('data-_id-chat')
 					};
-					var wait = 0;
-					if (wait != 0) {
 
-					}
 					socket.emit('moremessages', load);
 					current++;
 					container.attr('loaded', current);
-				setTimeout(function () {
-					wait = 0;
-				}, 3000);
+					setTimeout(function () {
+						wait = 0;
+					}, 1000);
 				}
 			}
 		});

@@ -192,12 +192,11 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 6
+			defaultActive: 1
 		}).init();
 
 		$('.user-offline').remove();
 		data.users.forEach ( function (name, i) {
-			console.log(name);
 			var offline = $('.people-offline');
 			var html = '<div class="user user-offline"' +
 							'data-_id="' + name._id + '"' +
