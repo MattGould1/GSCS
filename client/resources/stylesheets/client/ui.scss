@@ -76,7 +76,7 @@
 }
 
 #isNotAuth {
-	background: #f5f5f5;
+	/*background: #f5f5f5;*/background: #2A5B8C;    color: #fff;
 	height: 100vh;
     display: table;
     table-layout: fixed;
@@ -87,19 +87,21 @@
 	    float: none;
 	}
 	h1 {
-		font-family: roboto-slab;
+		/*font-family: roboto-slab;*/ font-family: Arial, Helvetica, sans-serif;
 		font-weight: 700;
-		color: #3572b0;
+		/*color: #3572b0;*/    
 	}
 	h3 {
-		font-family: roboto-slab;
-		color: #3572b0;
+		/*font-family: roboto-slab;*/font-family: Arial, Helvetica, sans-serif;
+		/*color: #3572b0;*/    
 		font-weight:300;
 	}
 	button {
-		font-size: 16px;
+		font-size: 16px;     background-color: #3A86C7;
 		font-weight: 700;
+		box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.3), inset 0px 4px 1px 1px rgba(255, 255, 255, 0.63), inset 0px -3px 1px 1px rgba(204, 198, 197, 0.24);
 	}
+	button:hover{    background-color: #2C7BBF;}
 }
 
 #disconnect {
@@ -143,6 +145,10 @@ header .flex-button-h-end{ @extend  .flex-wrap-end; }
 header .row{ @extend .flex-wrap-center; }
 header button{margin: 18px 0 !important;}
 header button.edit-profile{margin-right: 10px !important;}
+.online:before,.away:before,.busy:before {box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.3), inset 0px 3px 1px 1px rgba(255, 255, 255, 0.63), inset 0px -4px 1px 1px rgba(204, 198, 197, 0.24);}
+.online:before {background-color: #35D635}
+
+
 /* sidebar */
 #sidebar h1{@extend .text-title-new;}
 /* users */
