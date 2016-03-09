@@ -3,7 +3,8 @@ $('.row').on('submit', '#login', function (e) {
 	e.preventDefault();
 
 	var $this = $(this);
-
+	var button = $this.find('button[type="submit"]');
+	button.attr('disabled', true);
 	//credentials
 	var username = $this.find('#username').val();
 	var password = $this.find('#password').val();
@@ -17,7 +18,6 @@ $('.row').on('submit', '#login', function (e) {
 			password: password
 		}),
 		success: function (user, status, xhr) {
-			
 			if (user.token) {
 				//set token as cookie to be sent with requests
 				if ($this.find('#checkbox').is(':checked') === true) {
@@ -26,6 +26,7 @@ $('.row').on('submit', '#login', function (e) {
 				//see connect.js, init will connect to socketio and display app if successfully init will also set the global token var
 				init(user.token);
 			} else {
+				button.attr('disabled', false);
 				$this.find('.alert-danger').removeClass('hide');
 			}
 		},
