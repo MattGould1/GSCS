@@ -1,3 +1,6 @@
+jQuery(window).bind('beforeunload', function(){
+  return 'Are you sure you want to leave?';
+});
 /*
 * @var String token: authorization token
 * @var Object socket: client/server connection

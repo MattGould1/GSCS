@@ -223,6 +223,30 @@
 .moodmessage {
 	display: inline-block;
 }
+.allLoaded {
+	div {
+		margin: 0 auto;
+	}
+}
+.radios-meta {
+	.radio-inline, label, input {
+		cursor: pointer;
+	}
+}
+.preview {
+	width: 32px;
+	height: 32px;
+	float: right;
+	display: inline;
+}
+.image-added {
+	width: 80% !important;
+	display: inline;
+	float: left;
+}
+.filestoupload {
+	float: right;
+}
 #chat, .private-chat {
 	.chat-form {
 		.form-group {

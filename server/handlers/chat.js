@@ -8,6 +8,7 @@ module.exports = {
 		* @param Object msg: _id: ChatRoom._id, type: type of message, message: client message
 		*/
 		socket.on('chat-message', function (msg) {
+			console.log(msg);
 			//remove html/script tags
 			var message = msg.message;
 

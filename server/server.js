@@ -40,15 +40,20 @@ var app = express();
 var imageupload = require('./modules/imageupload');
 //enable cors
 app.all('*', function(req, res, next) {
+// header('Content-Type: application/json;charset=UTF-8');
+// header('Access-Control-Allow-Origin': '*');
+// header('Access-Control-Allow-Methods: DELETE, HEAD, GET, OPTIONS, POST, PUT');
+// header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+// header('Access-Control-Max-Age: 1728000');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+    extended: true
 }));
 
 //read cookies
@@ -59,13 +64,12 @@ app.use('/', index);
 //admin check for jwt, end response if no
 app.use('/admin', function (req, res, next) {
     if(!req.body.token) {
-        console.log('hmm');
-        res.redirect('/hello');
+        res.json(false);
     } else {
         jwt.verify(req.body.token, db.secret, function (err, decoded) {
             if (err) { 
                 console.log('Invalid token: ' + err);
-                res.redirect('/');
+                res.json(false);
             } else {
                 req.decoded_token = decoded;
                 next();

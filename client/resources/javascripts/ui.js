@@ -309,13 +309,14 @@
 												'<div class="col-xs-9 message-info" style="padding: 0px;">' +
 													'<div class="form-group">' +
 														'<input type="text" class="message form-control"/>' +
+														'<img src="#" style="display: none;" class="preview"/>' +
 														'<input style="display: none;"" type="file" class="file form-control"/>' +
 													'</div>' +
 												'</div>' +
 												'<div class="col-xs-1">' +
 													'<div class="form-group">' +
 														'<input type="hidden" class="name">' +
-														'<button class="image-upload btn btn-info form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
+														'<button class="image-upload btn btn-primary form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
 													'</div>' +
 												'</div>' +
 												'<div class="col-xs-2">' +
@@ -328,25 +329,25 @@
 											'<div class="radios-meta row">' +
 												'<div class="col-xs-12">' +
 													'<div class="radio-inline">' +
-														'<label>' +
+														'<label for="msgType">' +
 															'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
 															'Normal' +
 														'</label>' +
 													'</div>' +
 													'<div class="radio-inline">' +
-														'<label>' +
+														'<label for="msgType">' +
 															'<input type="radio" name="msgType" value="pnc">' +
 															'Private and Confidential' +
 														'</label>' +
 													'</div>' +
 													'<div class="radio-inline">' +
-														'<label>' +
+														'<label for="msgType">' +
 															'<input type="radio" name="msgType" value="fxd">' +
 															'Fixed' +
 														'</label>' +
 													'</div>' +
 													'<div class="radio-inline">' +
-														'<label>' +
+														'<label for="msgType">' +
 															'<input type="radio" name="msgType" value="subs">' +
 															'Subs' +
 														'</label>' +

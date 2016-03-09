@@ -31,6 +31,23 @@
 		}
 		return source;
 	}
+	/*
+	* read an input and add a preview image
+	*/
+	function readURL(input, container) {
+
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+
+			reader.onload = function (e) {
+				var preview = container.find('.preview');
+				preview.attr('src', e.target.result);
+				preview.show();
+			}
+
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
 
 	/*
 	* @param form: jQuery form for submit event
@@ -52,6 +69,10 @@
 
 			if (file.type === 'image/png' || file.type === 'image/jpeg') {
 				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+				var container = $this.parent().parent();
+				container.find('.message').addClass('image-added');
+				container.find('.preview').show();
+				readURL.call(this, this, container);
 			} else {
 				alert('This file type is not allowed!');
 				$this.val('');
@@ -62,15 +83,8 @@
 		$('#app').off().on('submit', form, function (e) {
 			e.preventDefault();
 			var $this = $(this);
-
+			//prepare an image for uploading, callback send the message
 			prepareImage.call(this, sendMessage, $this);
-
-			//empty chat message + reset type
-			var chatroom = $this;
-			chatroom.find('.message').val('');
-			chatroom.find('.file').val('');
-			chatroom.find('.filestoupload').text('');
-			chatroom.find('.reset-radio').prop('checked', true);
 		});
 	}
 
@@ -142,8 +156,8 @@
 		var to = false;
 		var me = false;
 		var unique = false;
-
-		if ($this.find('.message').val() == '' && file == undefined) {
+		var chatroom = $this;
+		if (chatroom.find('.message').val() == '' && file == undefined) {
 			alert('Please enter a value or upload a file!');
 			return false;
 		}
@@ -160,9 +174,9 @@
 
 		//message object to send to server
 		msg = {
-			_id: $this.find('.name').val(),
-			type: $this.find('input[name="msgType"]:checked').val(),
-			message: $this.find('.message').val(),
+			_id: chatroom.find('.name').val(),
+			type: chatroom.find('input[name="msgType"]:checked').val(),
+			message: chatroom.find('.message').val(),
 			pc: pc,
 			me: me,
 			to: {
@@ -174,7 +188,7 @@
 
 		if ( $this.find('.private').val() == 'private' ) {
 			var message = $this.find('.message').val();
-			var chatroom = $this.parent().parent('.private-chat');
+			var privatechatroom = $this.parent().parent('.private-chat');
 
 			message = message.replace(/<(?:.|\s)*?>/g, "");
 			message = message.replace(/(?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)/gi, "<a href='//$1' target='_blank'>$1</a>")
@@ -193,11 +207,10 @@
 
 			message = appendMessages.call(this, messageObj);
 			message = uiObj.emotes(message);
-			// message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
-			// message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
-			chatroom.find('.chat-messages ul').append(message);
-			chatroom.find('.message').val('');
-			chatroom.find('.reset-radio').prop('checked', true);
+			
+			privatechatroom.find('.chat-messages ul').append(message);
+			privatechatroom.find('.message').val('');
+			privatechatroom.find('.reset-radio').prop('checked', true);
 			// chatToBottom.call(this, data.find('.chat-messages'));
 		}
 
@@ -206,10 +219,13 @@
 		socket.emit('chat-message', msg);
 
 		//regardless of success disable message for half a second
-		$this.find('button').prop('disabled', true);
-
+		chatroom.find('button').prop('disabled', true);
+		chatroom.find('.message').val('');
+		chatroom.find('.file').val('');
+		chatroom.find('.filestoupload').text('');
+		chatroom.find('.reset-radio').prop('checked', true);
 		setTimeout(function() {
-			$this.find('button').prop('disabled', false);
+			chatroom.find('button').prop('disabled', false);
 		}, 1000);
 	}
 
@@ -445,7 +461,7 @@
 			var chatroom = $('[data-_id-chat="' + data.room + '"]');
 			var container = chatroom.find('.chat-messages');
 			if (data.allLoaded == true) {
-				if ($('.allLoaded').length == 0) {
+				if (chatroom.find('.allLoaded').length == 0) {
 					var html = '<li class="allLoaded"><div>All of the chat messages have been loaded!</div></li>';
 					container.prepend(html);
 				}
