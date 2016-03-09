@@ -203,8 +203,12 @@ module.exports = {
 				if (err) { console.log('Error finding new messages' + err); return false; }
 				var sendback = {
 					messages: messages,
-					room: data.id
+					room: data.id,
+					allLoaded: false
 				};
+				if (messages.length == 0) {
+					sendback.allLoaded = true;
+				}
 				socket.emit('moremessages', sendback);
 			});
 		});

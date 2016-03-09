@@ -204,7 +204,13 @@
 	*	@String url is the global url
 	*/
 	ui.prototype.message = function (private, message, file, thumbnail, username, created) {
+		var Class = '';
 		if (!private) {
+			if (isUser.call(this, username)) {
+				Class = 'my-message';
+			} else {
+				Class = 'not-my-message';
+			}
 			if (file != undefined && file.length != 0) {
 				var link = '<div class="message-file img-responsive img-rounded">' +
 								'<a href="' + url + file + '" target="_blank">' +
@@ -215,7 +221,7 @@
 				var link = '';
 			}
 
-			messageOutput = '<li>' +
+			messageOutput = '<li class="' + Class + '">' +
 								'<div class="message-name">' + username + '</div>' +
 								'<div class="message-body">' +
 									link + message +
@@ -460,10 +466,12 @@
 
 	}
 
-	function emotes(message) {
-
+	function isUser(username) {
+		if (username == user.username) {
+			return true;
+		}
+		return false;
 	}
-
 	//private
 	function extendDefaults(source, properties) {
 		var property;

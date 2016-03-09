@@ -62,7 +62,8 @@
 		$('#app').off().on('submit', form, function (e) {
 			e.preventDefault();
 			var $this = $(this);
-			uploadImage.call(this, prepareMessage, $this);
+
+			prepareImage.call(this, sendMessage, $this);
 
 			//empty chat message + reset type
 			var chatroom = $this;
@@ -77,10 +78,10 @@
 	*	@Function callback: prepares the message to be updated with a file
 	* 	@jQuery $this: form's $(this);
 	*/
-	function uploadImage(callback, $this) {
+	function prepareImage(callback, $this) {
 		//check if there are any files @TODO fix privatechat
 		if ($this.find('.file')[0] == undefined) {
-			callback();
+			callback.call(this, $this);
 			return false;
 		}
 		if ($this.find('.file')[0].files.length != 0 ) {
@@ -119,27 +120,27 @@
 						reader.onload = function() {
 							file.thumbnail = reader.result;
 							logger('image successfully resized');
-							callback($this, file);
+							callback.call(this, $this, file);
 						};
 			    	}  else {
 			    		logger('image didn\'t resize');
-			    		callback($this, file);
+			    		callback.call(this, $this, file);
 			    	}
 			    });
 		      	
 			};
 		} else {
-			callback($this);
+			callback.call(this, $this);
 		}
 	}
-
+	jQuery('#loading').show();
+	jQuery('#isAuth').addClass('load');
+	jQuery('#isNotAuth').addClass('load');
 	/*
 	*	@file blob Object with thumbnail property
 	* 	$this jQuery's form $(this)
 	*/
-	function prepareMessage($this, file) {
-		console.log(file);
-
+	function sendMessage($this, file) {
 		var pc = false;
 		var to = false;
 		var me = false;
@@ -177,13 +178,26 @@
 		if ( $this.find('.private').val() == 'private' ) {
 			var message = $this.find('.message').val();
 			var chatroom = $this.parent().parent('.private-chat');
+
 			message = message.replace(/<(?:.|\s)*?>/g, "");
-			message = message.replace(/\[url\](?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)\[\/url\]/gi, "<a href='//$1' target='_blank'>$1</a>")
+			message = message.replace(/(?:.*\/\/||www\.)(.*(?:\.com|\.co|\.uk|\.us|\.io|\.is).*)/gi, "<a href='//$1' target='_blank'>$1</a>")
 			//allow colors
 			message = message.replace(/\[c\=\"(.*)\"\](.*)\[\/c\]/gi, '<span style="color: $1">$2</span>');
-			//wrap message in its type
-			message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
-			message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
+
+			var messageObj = {
+				private: false,
+				message: message,
+				file: false,
+				thumbnail: false,
+				username: user.username,
+				created: Date.now(),
+				single: true
+			};
+
+			message = appendMessages.call(this, messageObj);
+			message = uiObj.emotes(message);
+			// message = '<span class="' + $this.find('input[name="msgType"]:checked') + '">' + message + '</span>';
+			// message = '<li><div class="message-name">' + user.username + ':</div><div class="message-body">' + message + '</div><div class="message-time">' + Date.now() + '</div></li>';
 			chatroom.find('.chat-messages ul').append(message);
 			chatroom.find('.message').val('');
 			chatroom.find('.reset-radio').prop('checked', true);
@@ -220,8 +234,9 @@
 		* @param Object message: _id = chatroom._id, message, chatroom.room, user.username
 		*/
 		socket.on('chat-message', function (message) {
-
-			var msg = uiObj.message(false, message.message, message.file, message.thumbnail, message.username, Date.now());		
+			message.created = Date.now();
+			message.single = true;
+			var msg = appendMessages.call(this, message);		
 			msg = uiObj.emotes(msg);
 			//private chat?
 			if ( message.pc === true ) {
@@ -427,10 +442,18 @@
 		* Data Object
 		* data.room = chatroom._id
 		* data.messages = array of chatmessages
+		* data.allLoaded = boolean depending on whether there are more messages to load
 		*/
 		socket.on('moremessages', function (data) {
 			var chatroom = $('[data-_id-chat="' + data.room + '"]');
 			var container = chatroom.find('.chat-messages');
+			if (data.allLoaded == true) {
+				if ($('.allLoaded').length == 0) {
+					var html = '<li class="allLoaded"><div>All of the chat messages have been loaded!</div></li>';
+					container.prepend(html);
+				}
+				return false;
+			}
 			var oldHeight = container[0].scrollHeight;
 			logger(oldHeight);
 
@@ -450,11 +473,13 @@
 
 	function appendMessages(messages) {
 		var msgs = '';
-		messages.reverse().forEach( function (message) {
-
-			msgs += uiObj.message(false, message.message, message.file, message.thumbnail, message.username, message.created);		
-		});
-
+		if (messages.single == true) {
+			msgs = uiObj.message(false, messages.message, messages.file, messages.thumbnail, messages.username, messages.created);
+		} else {
+			messages.reverse().forEach( function (message) {
+				msgs += uiObj.message(false, message.message, message.file, message.thumbnail, message.username, message.created);
+			});
+		}
 		return msgs;
 	}
 
