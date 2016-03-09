@@ -76,7 +76,10 @@
 }
 
 #isNotAuth {
-	/*background: #f5f5f5;*/background: #2A5B8C;    color: #fff;
+	/*background: #f5f5f5;*/
+	background: #0c4ca3;    
+	color: #fff;
+	font-family: Arial, Helvetica, sans-serif;
 	height: 100vh;
     display: table;
     table-layout: fixed;
@@ -87,22 +90,41 @@
 	    float: none;
 	}
 	h1 {
-		/*font-family: roboto-slab;*/ font-family: Arial, Helvetica, sans-serif;
+		/*font-family: roboto-slab;*/
 		font-weight: 700;
 		/*color: #3572b0;*/    
 	}
 	h3 {
-		/*font-family: roboto-slab;*/font-family: Arial, Helvetica, sans-serif;
+		/*font-family: roboto-slab;*/
 		/*color: #3572b0;*/    
 		font-weight:300;
 	}
 	button {
-		font-size: 16px;     background-color: #3A86C7;
+		font-size: 16px;    
 		font-weight: 700;
-		box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.3), inset 0px 4px 1px 1px rgba(255, 255, 255, 0.63), inset 0px -3px 1px 1px rgba(204, 198, 197, 0.24);
+		    background: rgb(44, 145, 252);
+    		border-color:transparent;
 	}
-	button:hover{    background-color: #2C7BBF;}
+	button:hover{
+		    background: rgba(58,147,243,0.9);
+	}
+	input{
+			height: 35px;    font-size: 14px
+	}
+	.alert.alert-danger{
+			background: transparent;
+    		border: transparent;
+    		color: #fff;
+	}
 }
+
+body #loading {
+	.display-cell{background:  #0c4ca3;}
+	h1{font-size: 35px;}
+	h1,h3{font-family: Arial, Helvetica, sans-serif; color: #fff;}
+
+}
+
 
 #disconnect {
 	position: fixed;
@@ -125,6 +147,7 @@
 $full-width: 100%;
 $size-ten: 10px;
 
+
 .flex-wrap-end{
 	display: -webkit-flex;		-webkit-justify-content: flex-end;		-webkit-align-items: center;
 	display: -moz-flex;			-moz-justify-content: flex-end;			-moz-align-items: center;
@@ -145,14 +168,34 @@ header .flex-button-h-end{ @extend  .flex-wrap-end; }
 header .row{ @extend .flex-wrap-center; }
 header button{margin: 18px 0 !important;}
 header button.edit-profile{margin-right: 10px !important;}
-.online:before,.away:before,.busy:before {box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.3), inset 0px 3px 1px 1px rgba(255, 255, 255, 0.63), inset 0px -4px 1px 1px rgba(204, 198, 197, 0.24);}
-.online:before {background-color: #35D635}
+.online:before 	{background: #33C748 !important;}
+.away:before 	{background: #FDBF3F !important;}
+.busy:before 	{background: #FC605B !important;}
+.status,.profile{padding: 0 !important}
+
+
 
 
 /* sidebar */
 #sidebar h1{@extend .text-title-new;}
+#sidebar ul:first-child{border-top:none; }
+#sidebar .link:hover{background-color: #337ab7}
+#sidebar .link:hover a{color: #fff;}
+#sidebar ul .title h1 {text-transform: uppercase; font-size: 20px !important;}
 /* users */
 #users h3 {@extend .text-title-new;}
+#users .user-offline .badge {
+	float: left !important;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 2px;
+    background-color: transparent;
+    border: 2px solid rgba(204,204,204,0.6);
+    width: 15px;
+    height: 15px;
+    padding: 0;
+}
+
 /* login page */ 
 .size-center-login {
 	width:450px;
@@ -172,6 +215,33 @@ header button.edit-profile{margin-right: 10px !important;}
 	padding-right: $size-ten;
 	padding-left: $size-ten;
 }
+.form-horizontal#login div:nth-child(4).form-group {float: left;}
+.form-horizontal#login div:nth-child(5).form-group { @extend .flex-wrap-end; }
+.form-horizontal#login div:nth-child(5).form-group{    height: 36px;   padding-left: 20px;}
+.form-horizontal#login div:nth-child(5).form-group p {margin-bottom: 0;}
+
+
+/* room chat */
+#app #chat li .message-name,#app .private-chat li .message-name{        
+	background: transparent;
+    border: none;
+    padding-right: 20px;
+    color: #aaa;
+}
+#app #chat li:nth-child(odd),#app .private-chat li:nth-child(odd) {background:#fff;}
+/*#chat li.my-message), .private-chat li.my-message{background: #eff5fb;}*/
+/* chat-messages --> right bottom */
+.private-chat.chat.room .pc-header{    background: #337ab7;   color: #fff;}
+.private-chat.chat.room .chat-messages ul .message-time{
+	width: 100%;
+    max-width: 150px;
+    font-size: 12px;
+    color: #bbb;
+    text-align: right;
+    padding-right: 20px;
+}
+
+footer h6.text-center {color: #fff;}
 
 @media (max-width: 500px) {
   .size-center-login {width: $full-width;}
