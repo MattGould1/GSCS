@@ -133,9 +133,6 @@
 			callback.call(this, $this);
 		}
 	}
-	jQuery('#loading').show();
-	jQuery('#isAuth').addClass('load');
-	jQuery('#isNotAuth').addClass('load');
 	/*
 	*	@file blob Object with thumbnail property
 	* 	$this jQuery's form $(this)
