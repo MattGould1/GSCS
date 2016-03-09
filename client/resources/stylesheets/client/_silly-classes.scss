@@ -233,11 +233,28 @@
 		cursor: pointer;
 	}
 }
-.preview {
+.image-container {
+
 	width: 32px;
 	height: 32px;
 	float: right;
-	display: inline;
+	display: inline-block;
+	position: relative;
+	.preview {
+		width: 32px;
+		height: 32px;
+		float: right;
+		display: inline-block;
+	}
+	.image-preview {
+		height: 32px;
+		&:hover {
+			position: absolute;
+			top: 0; right: 0;
+			height: 32px;
+			background: url('../img/remove-image.png') no-repeat;
+		}
+	}
 }
 .image-added {
 	width: 80% !important;

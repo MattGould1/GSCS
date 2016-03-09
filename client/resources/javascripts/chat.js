@@ -70,7 +70,14 @@
 			if (file.type === 'image/png' || file.type === 'image/jpeg') {
 				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
 				var container = $this.parent().parent();
-				container.find('.message').addClass('image-added');
+				var messageBox = container.find('.message');
+				var width = messageBox.width() - 40;
+				var cssWidth = width + 'px';
+				container.find('.message').css({
+					'width': cssWidth,
+					'display': 'inline',
+					'float': 'left'
+				});
 				container.find('.preview').show();
 				readURL.call(this, this, container);
 			} else {
