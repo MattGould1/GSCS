@@ -47,3 +47,12 @@
 	border-radius: $size;
 	margin: -3px 2px;
 }
+
+@mixin circlestatus($size) {
+	content: '';
+	display: inline-block;
+	width: $size;
+	height: $size;
+	border-radius: $size;
+	margin: -1px 4px -1px 0;
+}

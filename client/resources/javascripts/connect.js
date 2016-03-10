@@ -46,12 +46,12 @@ function times() {
 		singapore = $('.singapore'),
 		sydney = $('.sydney');
 
-		ny.html('New York <span>' + moment().tz('America/New_York').format('h:mma') + '</span>');
-		london.html('London <span>' + moment().tz('Europe/London').format('h:mma') + '</span>');
-		athens.html('Athens <span>' + moment().tz('Europe/Athens').format('h:mma') + '</span>');
-		mumbai.html('Mumbai <span>' + moment().tz('Asia/Singapore').format('h:mma') + '</span>');
-		singapore.html('Singapore <span>' + moment().tz('Asia/Kolkata').format('h:mma') + '</span>');
-		sydney.html('Syndey <span>' + moment().tz('Australia/Sydney').format('h:mma') + '</span>');
+		ny.html('New York <span>' + moment().tz('America/New_York').format('LT') + '</span>');
+		london.html('London <span>' + moment().tz('Europe/London').format('LT') + '</span>');
+		athens.html('Athens <span>' + moment().tz('Europe/Athens').format('LT') + '</span>');
+		mumbai.html('Mumbai <span>' + moment().tz('Asia/Singapore').format('LT') + '</span>');
+		singapore.html('Singapore <span>' + moment().tz('Asia/Kolkata').format('LT') + '</span>');
+		sydney.html('Syndey <span>' + moment().tz('Australia/Sydney').format('LT') + '</span>');
 }
 /*
 * @param String token: authorization token

@@ -144,6 +144,16 @@ body #loading {
 	    font-size: 2em;
 	}
 }
+
+
+.allLoaded {
+	div{
+		margin: 0 auto;
+	}
+}
+
+
+
 $full-width: 100%;
 $size-ten: 10px;
 
@@ -165,37 +175,54 @@ $size-ten: 10px;
 header {color: white;}
 header div h1,header div p{margin: 0;}
 header .flex-button-h-end{ @extend  .flex-wrap-end; }
-header .row{ @extend .flex-wrap-center; }
+#header .row{ @extend .flex-wrap-center; }
 header button{margin: 18px 0 !important;}
 header button.edit-profile{margin-right: 10px !important;}
 .online:before 	{background: #33C748 !important;}
 .away:before 	{background: #FDBF3F !important;}
 .busy:before 	{background: #FC605B !important;}
 .status,.profile{padding: 0 !important}
-
-
-
+#header .btn-warning{background-color: red ;   border-color: red; margin-right: 0 !important;}  
+#isAuth #header .timezones p{    width: 16%; }
 
 /* sidebar */
 #sidebar h1{@extend .text-title-new;}
 #sidebar ul:first-child{border-top:none; }
-#sidebar .link:hover{background-color: #337ab7}
+#sidebar .link:hover,
+#sidebar .badge{background-color: #0c4ca3;}
 #sidebar .link:hover a{color: #fff;}
-#sidebar ul .title h1 {text-transform: uppercase; font-size: 20px !important;}
+#sidebar ul .title h1 {
+	text-transform: uppercase; 
+	font-size: 20px !important;
+	height: 39px;
+    padding: 0 10px !important;
+    line-height: 39px;
+}
+#sidebar li:last-child{margin-bottom: 0 !important;}
+#sidebar ul {margin-top: 0 !important;}
+
+.user ,
+.private-chat.chat.room .chat-messages ul .message-time,
+#app #chat li .message-name,
+#app .private-chat li .message-name,
+#app #chat li .message-time{
+	color: #0C4CAF;
+}
+
 /* users */
 #users h3 {@extend .text-title-new;}
+#users h3 {font-size: 20px;}
 #users .user-offline .badge {
 	float: left !important;
     border-radius: 50%;
     display: inline-block;
-    margin: 2px;
+    margin:5px 4px 0 0;
     background-color: transparent;
     border: 2px solid rgba(204,204,204,0.6);
-    width: 15px;
-    height: 15px;
+    width: 11px;
+    height: 11px;
     padding: 0;
 }
-
 /* login page */ 
 .size-center-login {
 	width:450px;
@@ -221,27 +248,114 @@ header button.edit-profile{margin-right: 10px !important;}
 .form-horizontal#login div:nth-child(5).form-group p {margin-bottom: 0;}
 
 
-/* room chat */
+
+#app #sidebar #chatLinks .link { background-image:  url('http://178.62.100.159:8088/img/mfglabs-users_256_0_000000_none.png');}
+#app #sidebar #chatLinks li.active,#app #sidebar #chatLinks li:hover{background-image:url('http://178.62.100.159:8088/img/mfglabs-users_256_0_ffffff_none.png'); }
+#app #sidebar #excelLinks .link{ background-image:  url('http://178.62.100.159:8088/img/octicon-checklist_256_0_000000_none.png');}
+#app #sidebar #excelLinks li.active,#app #sidebar #excelLinks li:hover{ background-image:  url('http://178.62.100.159:8088/img/octicon-checklist_256_0_ffffff_none.png');}
+#app #sidebar #wordLinks .link{background-image:  url('http://178.62.100.159:8088/img/9-03-1.png');}
+#app #sidebar #wordLinks li.active,#app #sidebar #wordLinks li:hover{background-image:  url('http://178.62.100.159:8088/img/09-03-2.png');}
+
 #app #chat li .message-name,#app .private-chat li .message-name{        
 	background: transparent;
     border: none;
     padding-right: 20px;
-    color: #aaa;
 }
-#app #chat li:nth-child(odd),#app .private-chat li:nth-child(odd) {background:#fff;}
-/*#chat li.my-message), .private-chat li.my-message{background: #eff5fb;}*/
+#app #chat li:nth-child(odd),#app .private-chat li:nth-child(odd) {background:#f5f5f5;}
+
+
+#chat .chat-form .image-container{display: none;}
+.radio-inline:first-child{margin-right: 20px;}
+.radio-inline label {text-transform: uppercase;    font-size: 12px;   margin-bottom: 0;}
+.radio-inline input[type="radio"]{    margin-top: 2px;}
+#app #chat .chat-form .form-group, #app .private-chat .chat-form .form-group {margin-bottom: 5px;}
 /* chat-messages --> right bottom */
-.private-chat.chat.room .pc-header{    background: #337ab7;   color: #fff;}
+.private-chat.chat.room .pc-header{    background: #0C4CAF;   color: #fff;}
 .private-chat.chat.room .chat-messages ul .message-time{
 	width: 100%;
     max-width: 150px;
     font-size: 12px;
-    color: #bbb;
     text-align: right;
     padding-right: 20px;
 }
 
 footer h6.text-center {color: #fff;}
+
+@media (max-width: 1050px)  {
+	#sidebar ul .title h1,#users h3 {font-size: 16px !important;}
+	.chat-form{padding: 10px;}
+    .chat-form form  div:first-child div:last-child,.chat-form form  div:first-child div:nth-child(2) {padding: 0;}
+    #chat .chat-form .form-group {text-align: right;}
+    .chat-form form .btn-primary{width: 90%;padding: 0;}
+}
+
+@media (max-width: 900px)  {
+	/* header */
+	#isAuth #header {height: 95px;}
+	#header .row {display: block; position: relative; height: 100%;}
+	#header .status {margin: 12px 0; width: 100%;}
+	#header .time-wrap {width: 100%;}
+	#header .timezones {text-align: left;}
+	#isAuth #header .timezones p {width: 10%; font-size: 11px;}
+	#header .profile {    position: absolute;   right:0 ;}
+	
+	#sidebar{width: 15%;}
+	#sidebar ul .title h1,#users h3{font-size: 15px !important;}
+	#users h3{    margin: 0;    line-height: 39px;}
+	#sidebar ul#excelLinks .title h1{    width: 50%;    border: none;    line-height: 20px;}
+	#sidebar ul#excelLinks .title {    
+	background: #eeeeee;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    height: 60px;
+	display: -webkit-flex;	display: -moz-flex;	display: -ms-flex;	display: flex;
+    align-items: center;	-webkit-align-items: center;	-moz-align-items: center;	-ms-align-items: center;
+	}
+	#sidebar .link a{padding-bottom: 3px; padding-top: 3px;}
+
+	#users {    width: 15%; float: right;     padding: 0 5px;}
+	#app #sidebar .link,#app #sidebar li.active,#app #sidebar li:hover {    background-image: none !important;    padding: 0;}
+	#users .user,#sidebar .link a,#content  .chat-messages ul li .message-name,#content  .chat-messages ul li .message-body{font-size: 13px; }
+
+
+	#content {width: 70%;}
+	#content  .chat-messages ul li {    display: block;    position: relative;}
+	#content  .chat-messages ul li .message-name{    width: 100%;    text-align: left;    padding-left: 10px;} 
+	#content  .chat-messages ul li .message-body{    width: 100%;    padding: 0 10px;     padding-right: 90px;}
+	#content  .chat-messages ul li .message-time{    
+		width: 100%;
+    	text-align: right;
+    	position: absolute;
+    	top: 0;
+    	right: 0;
+    	padding-right: 10px;
+    }
+    #content .chat-messages ul li .message-time,
+    #content  .chat-messages ul li .message-name,
+    #content  .chat-messages ul li .message-body{
+    	line-height: 20px;
+    	min-height: 20px;
+    	padding-top: 0;
+    	padding-bottom: 0;}
+    .chat-form form .btn-primary{font-size: 10px;}
+
+ 
+}
+
+@media (max-width: 767px){
+#header .btn-warning{margin-left: 0 !important;}
+#isAuth #header .timezones p{width: 12%;}
+#sidebar ul .title h1, #users h3,#users .user, #sidebar .link a, #content .chat-messages ul li .message-name, #content .chat-messages ul li .message-body{font-size: 12px !important;}
+}
+
+
+
+@media (max-width: 600px){
+#sidebar ,#content ,#users{width: 100%;}
+#sidebar ul#excelLinks .title {height: auto;}
+#sidebar ul#excelLinks .title h1 {line-height: 39px;width: 100%;}
+}
+
 
 @media (max-width: 500px) {
   .size-center-login {width: $full-width;}

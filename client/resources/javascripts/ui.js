@@ -226,7 +226,7 @@
 								'<div class="message-body">' +
 									link + message +
 								'</div>' +
-								'<div class="message-time">' + moment(created).format('lll') + '</div>' +
+								'<div class="message-time">' + moment(created).format('MMM-D LT') + '</div>' +
 							'</li>';
 
 			return messageOutput;
