@@ -23,8 +23,6 @@
 			float: right;
 			width: 100%;
 			height: 40px;
-			background: #ccc;
-			border-bottom: 1px solid #eee;
 			a {
 				height: 40px;
 				line-height: 25px;
@@ -32,6 +30,7 @@
 			.options {
 				width: 100%;
 				height: 40px;
+				margin-top: 10px;
 			}
 		}
 	}
@@ -56,7 +55,7 @@
 	}
 	#header {
 		background: $brand-primary;
-		border-bottom: 1px solid #337ab7;
+		border-bottom: 1px solid #0c4ca3;
 		padding: 0px 15px;
 		height: 70px;
 		.edit-profile, .logout {
@@ -75,14 +74,8 @@
 	#footer {
 		background: $brand-primary;
 	}
-	#word {
-		.col-xs-12 {
-			margin: 0px;
-			padding: 0px;
-		}
-	}
 }
-
+/* Login Page */
 #isNotAuth {
 	/*background: #f5f5f5;*/
 	background: #0c4ca3;    
@@ -98,41 +91,34 @@
 	    float: none;
 	}
 	h1 {
-		/*font-family: roboto-slab;*/
+		/*font-family: roboto-slab;*//*color: #3572b0;*/ 
 		font-weight: 700;
-		/*color: #3572b0;*/    
 	}
 	h3 {
-		/*font-family: roboto-slab;*/
-		/*color: #3572b0;*/    
+		/*font-family: roboto-slab;*//*color: #3572b0;*/    
 		font-weight:300;
 	}
 	button {
 		font-size: 16px;    
 		font-weight: 700;
-		    background: rgb(44, 145, 252);
-    		border-color:transparent;
+		background: rgb(44, 145, 252);
+    	border-color:transparent;
 	}
-	button:hover{
-		    background: rgba(58,147,243,0.9);
-	}
-	input{
-			height: 35px;    font-size: 14px
-	}
+	button:hover{background: rgba(58,147,243,0.9);}
+	input{height: 35px;    font-size: 14px}
 	.alert.alert-danger{
 			background: transparent;
     		border: transparent;
     		color: #fff;
 	}
 }
-
+/* Loading Page */
 body #loading {
 	.display-cell{background:  #0c4ca3;}
 	h1{font-size: 35px;}
 	h1,h3{font-family: Arial, Helvetica, sans-serif; color: #fff;}
 
 }
-
 
 #disconnect {
 	position: fixed;
@@ -155,9 +141,7 @@ body #loading {
 
 
 .allLoaded {
-	div{
-		margin: 0 auto;
-	}
+	div{margin: 0 auto;}
 }
 
 
@@ -165,7 +149,12 @@ body #loading {
 $full-width: 100%;
 $size-ten: 10px;
 
-
+.flex-wrap-space-between{
+	display: -webkit-flex;		-webkit-justify-content: space-between;		-webkit-align-items: center;
+	display: -moz-flex;			-moz-justify-content: space-between;		-moz-align-items: center;
+	display: -ms-flex;			-ms-justify-content: space-between;			-ms-align-items: center;
+	display: flex;				justify-content: space-between;				align-items: center;
+}
 .flex-wrap-end{
 	display: -webkit-flex;		-webkit-justify-content: flex-end;		-webkit-align-items: center;
 	display: -moz-flex;			-moz-justify-content: flex-end;			-moz-align-items: center;
@@ -195,16 +184,19 @@ header button.edit-profile{margin-right: 10px !important;}
 
 /* sidebar */
 #sidebar h1{@extend .text-title-new;}
+#sidebar h1{ @extend .flex-wrap-space-between; } 
+#app #sidebar ul .title h1,#isAuth #content {border-top: none !important;}
+#app #chatLinks li:last-child,#app #excelLinks li:last-child{border-bottom: 1px solid #ccc;}
 #sidebar ul:first-child{border-top:none; }
 #sidebar .link:hover,
 #sidebar .badge{background-color: #0c4ca3;}
 #sidebar .link:hover a{color: #fff;}
 #sidebar ul .title h1 {
 	text-transform: uppercase; 
-	font-size: 20px !important;
-	height: 39px;
+	font-size: 18px !important;
+	height: 41px;
     padding: 0 10px !important;
-    line-height: 39px;
+    line-height: 41px;
 }
 #sidebar li:last-child{margin-bottom: 0 !important;}
 #sidebar ul {margin-top: 0 !important;}
@@ -219,7 +211,7 @@ header button.edit-profile{margin-right: 10px !important;}
 
 /* users */
 #users h3 {@extend .text-title-new;}
-#users h3 {font-size: 20px;}
+#users h3 {font-size: 18px; margin: 0;    line-height: 41px;}
 #users .user-offline .badge {
 	float: left !important;
     border-radius: 50%;
@@ -271,12 +263,27 @@ header button.edit-profile{margin-right: 10px !important;}
 }
 #app #chat li:nth-child(odd),#app .private-chat li:nth-child(odd) {background:#f5f5f5;}
 
-
+.chat-form{padding-bottom: 10px;    position: absolute;    bottom: 0;}
 #chat .chat-form .image-container{display: none;}
 .radio-inline:first-child{margin-right: 20px;}
 .radio-inline label {text-transform: uppercase;    font-size: 12px;   margin-bottom: 0;}
 .radio-inline input[type="radio"]{    margin-top: 2px;}
+#chat .chat-form .message-info input{width: 100%!important;}
+ 
 #app #chat .chat-form .form-group, #app .private-chat .chat-form .form-group {margin-bottom: 5px;}
+.chat-form form div:first-child div:nth-child(2){padding-right: 0;}
+
+
+
+.radios-meta div div.radio-inline:last-child{ 
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;   
+    margin-top: 5px;
+}
+.radios-meta  div div.radio-inline span.filestoupload{float: left;}
+
+
 /* chat-messages --> right bottom */
 .private-chat.chat.room .pc-header{    background: #0C4CAF;   color: #fff;}
 .private-chat.chat.room .chat-messages ul .message-time{
@@ -287,7 +294,46 @@ header button.edit-profile{margin-right: 10px !important;}
     padding-right: 20px;
 }
 
+
+
 footer h6.text-center {color: #fff;}
+
+
+
+
+/* MATT you might wanna move/restructure these */
+.messageCount {	background: $brand-primary;}
+.hide-links, .show-links {	color: #aaa;	cursor: pointer;   line-height: 39px; top: 0;}
+.show-links {	display: none;}
+@media (max-width: 767px) {
+	#backtotop {color: #fff;
+		cursor: pointer;
+		position: fixed;
+		/*bottom: 10px;
+		right: 10px;*/
+		/*background: $brand-primary;*/
+		bottom: 5px;
+    	right: 5px;
+    	background: rgba(12, 76, 163, 0.22);
+		@include circlestatus(30px);
+		span {
+			position: relative;
+			font-size: 20px;
+			left: 5px;
+			top: 4px;
+		}
+	}
+	.show-links {	display: block;}
+	.hide-links {	display: none;}
+	#links {
+		.link {	display: none;}
+	}
+	#sidebar {	height: auto !important;}
+	.radios-meta {	display: none;}
+	#users {	height: auto !important;}
+}
+
+
 
 @media (max-width: 1050px)  {
 	#sidebar ul .title h1,#users h3 {font-size: 16px !important;}
@@ -300,17 +346,15 @@ footer h6.text-center {color: #fff;}
 @media (max-width: 900px)  {
 	/* header */
 	#isAuth #header {height: 95px;}
-	#header .row {display: block; position: relative; height: 100%;}
+	#header .row {display: block; position: relative; height: $full-width;}
 	#header .status {margin: 12px 0; width: 100%;}
-	#header .time-wrap {width: 100%;}
+	#header .time-wrap {width: $full-width;}
 	#header .timezones {text-align: left;}
-	#isAuth #header .timezones p {width: 10%; font-size: 11px;}
+	#isAuth #header .timezones p {width: 10%;}
 	#header .profile {    position: absolute;   right:0 ;}
 	
 	#sidebar{width: 15%;}
 	#sidebar ul .title h1,#users h3{font-size: 15px !important;}
-	#users h3{    margin: 0;    line-height: 39px;}
-
 	#sidebar .link a{padding-bottom: 3px; padding-top: 3px;}
 
 	#users {    width: 15%; float: right;     padding: 0 5px;}
@@ -320,10 +364,10 @@ footer h6.text-center {color: #fff;}
 
 	#content {width: 70%;}
 	#content  .chat-messages ul li {    display: block;    position: relative;}
-	#content  .chat-messages ul li .message-name{    width: 100%;    text-align: left;    padding-left: 10px;} 
-	#content  .chat-messages ul li .message-body{    width: 100%;    padding: 0 10px;     padding-right: 90px;}
+	#content  .chat-messages ul li .message-name{    width: $full-width;   text-align: left;    padding-left: 10px;} 
+	#content  .chat-messages ul li .message-body{    width: $full-width;    padding: 0 10px;     padding-right: 90px;}
 	#content  .chat-messages ul li .message-time{    
-		width: 100%;
+		width: $full-width;
     	text-align: right;
     	position: absolute;
     	top: 0;
@@ -338,76 +382,99 @@ footer h6.text-center {color: #fff;}
     	padding-top: 0;
     	padding-bottom: 0;}
     .chat-form form .btn-primary{font-size: 10px;}
-
- 
 }
 
 @media (max-width: 767px){
 #header .btn-warning{margin-left: 0 !important;}
 #isAuth #header .timezones p{width: 12%;}
 #sidebar ul .title h1, #users h3,#users .user, #sidebar .link a, #content .chat-messages ul li .message-name, #content .chat-messages ul li .message-body{font-size: 12px !important;}
+#app{    background: #f5f5f5;}
+#sidebar ,#users {border: none !important;}
+#content {border: 1px solid #d3d3d3 !important; background:#fff; }
+.radios-meta {display: block!important;}
 }
 
 
 
-@media (max-width: 600px){
-#sidebar ,#content ,#users{width: 100%;}
-#sidebar ul#excelLinks .title {height: auto;}
-#sidebar ul#excelLinks .title h1 {line-height: 39px;width: 100%;}
+@media (max-width: 650px){
+/* temporary */	#users{display: none;}
+#sidebar ,#content ,#users{width: $full-width;    height: $full-width !important;}
+
+.chat-form form .btn-primary {font-size: 12px;}
+
+.chat-form form  .form-group ,.chat-form form .message-info,.chat-form form .btn-primary{width:$full-width;}
+.chat-form form div:first-child div:last-child{float: right;}
+.chat-form  .radios-meta div.col-xs-12{padding: 0;} 
+.size-center-login {width: $full-width;}
+.chat-form{position: relative;}
+/*header*/
+#isAuth #header{
+	height: 100px;    
+	position: fixed;
+    top: 0;
+    z-index: 99;
+    width: 100%;
+}
+#app {padding-top: 100px;}
+#header .timezones {font-size: 12px; 
+	display: -webkit-flex;		-webkit-justify-content: space-between;		
+	display: -moz-flex;			-moz-justify-content: space-between;		
+	display: -ms-flex;			-ms-justify-content: space-between;			
+	display: flex;				justify-content: space-between;} 
+#isAuth #header .timezones p{width: auto;}
+#header .status{    margin: 18px 0 5px; line-height: 33px;}
+#header .time-wrap{    position: absolute;    bottom:5px;     padding: 0 4px;}
+#isAuth #header .edit-profile, #isAuth #header .logout{margin-bottom: 5px !important;}
+#sidebar ul .title h1 {padding: 0 20px !important;}
+.hide-links, .show-links{line-height: 100%; padding: 10px;}
+#sidebar .link a{padding: 5px 20px;}
+#isAuth #content{border: none !important;}
+#app #chat li .message-name{padding-left: 20px;}
+#app #chat li .message-time{padding-right: 20px;}
+#content .chat-messages ul li .message-body{padding-left: 20px; padding-right: 20px;}
+#sidebar ul .title h1, #users h3, #users .user, #sidebar .link a, #content .chat-messages ul li .message-name, #content .chat-messages ul li .message-body{font-size: 14px !important;}
 }
 
 
-@media (max-width: 500px) {
-  .size-center-login {width: $full-width;}
-  header .flex-button-h-end{ display: block; }
-  header button.edit-profile{margin-right: 0 !important;margin-bottom: -5px !important;}
+@media (max-width: 450px) {
+ .chat-form form .col-xs-1{width: 10%;}
+  .radios-meta  div.col-xs-12{
+ -webkit-flex-direction:column;
+ -ms-flex-direction:column;
+ flex-direction:column;
+display: -webkit-flex;
+display: -moz-flex;
+display: -ms-flex;
+display: flex;
+ }
+.radios-meta  div div.radio-inline{margin-left: 0;}
+.radios-meta  div div:nth-child(2).radio-inline{margin-left: 20px;}
+
+#header .status{height: 33px;    margin-top: 10px;}
+#header .status span.onlinestatus{
+	color: transparent;
+    position: absolute;
+    top: 10px;
+    width: 20px;
+    height: 15px;
 }
 
+#header .status span:before{width: 20px; height: 20px;    font-size: 10px;
+    font-family: 'Glyphicons Halflings';color: #fff;
+    display: -webkit-flex;		-webkit-justify-content: center;		-webkit-align-items: center;
+	display: -moz-flex;			-moz-justify-content: center;			-moz-align-items: center;
+	display: -ms-flex;			-ms-justify-content:center;			    -ms-align-items: center;
+	display: flex;				justify-content: center;				align-items: center;
+}
+#header .status span.online:before{content: '\e013'; }
+#header .status span.online{left: 0;}
+#header .status span.away:before{  content:"\e023";font-size: 15px;}
+#header .status span.away{left:30px;}
+#header .status span.busy:before{content:"\2212";}
+#header .status span.busy{left: 60px;}
+}
 
-/* MATT you might wanna move/restructure these */
-.messageCount {
-	background: $brand-primary;
-}
-.hide-links, .show-links {
-	color: #000;
-	margin-top: 5px;
-	cursor: pointer;
-}
-.show-links {
-	display: none;
-}
-@media (max-width: 767px) {
-	#backtotop {
-		position: fixed;
-		bottom: 10px;
-		right: 10px;
-		background: $brand-primary;
-		@include circlestatus(30px);
-		span {
-			position: relative;
-			font-size: 20px;
-			left: 5px;
-			top: 4px;
-		}
-	}
-	.show-links {
-		display: block;
-	}
-	.hide-links {
-		display: none;
-	}
-	#links {
-		.link {
-			display: none;
-		}
-	}
-	#sidebar {
-		height: auto !important;
-	}
-	.radios-meta {
-		display: none;
-	}
-	#users {
-		height: auto !important;
-	}
+@media (max-width: 400px) {
+#header .timezones{font-size: 10px;}
+#header .time-wrap{bottom: 10px;}
 }
