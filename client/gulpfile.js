@@ -1,6 +1,7 @@
 var gulp = require('gulp'),
   imagemin = require('gulp-imagemin'),
 	concat = require('gulp-concat'),
+  uglify = require('gulp-uglify'),
 	sass = require('gulp-sass');
 
 gulp.task('build-sass', function() {
@@ -16,9 +17,15 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', function() {
-  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js');
+  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js', 'build-tincyme-themes');
 });
-
+gulp.task('build-tincyme-themes', function () {
+  return gulp.src([
+    'resources/javascripts/vendor/modern.js'
+    ])
+    // .pipe('modern.js')
+    .pipe(gulp.dest('public/js/themes'));
+});
 gulp.task('build-js', function() {
   return gulp.src([
       'resources/javascripts/libs/jquery.1.11.3.js',
@@ -35,6 +42,7 @@ gulp.task('build-js', function() {
       'resources/javascripts/connect.js',
     ])
     .pipe(concat('bundle.js'))
+    //.pipe(uglify())
     .pipe(gulp.dest('public/js'));
 });
 

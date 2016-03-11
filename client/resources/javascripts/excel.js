@@ -64,11 +64,20 @@
 
 	    //var cell = instance.getCellMeta(row, col);
 	  	if (cellProperties['status'] === 'pnc') {
-	  		$(td).css('background-color', 'red');
+	  		$(td).css({
+	  			'background-color': 'red',
+	  			'color': 'white'
+	  		});
 	  	} else if (cellProperties['status'] === 'fxd') {
-	  		$(td).css('background-color', 'green');
+	  		$(td).css({
+	  			'background-color': 'green',
+	  			'color': 'white'
+	  		});
 	  	} else if (cellProperties['status'] === 'subs') {
-			$(td).css('background-color', 'blue');
+	  		$(td).css({
+	  			'background-color': 'blue',
+	  			'color': 'white'
+	  		});
 	  	} else if (cellProperties['status'] === 'remove') {
 	  		$(td).css('background-color', 'none');
 	  	}

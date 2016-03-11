@@ -312,6 +312,9 @@
 					max-height: 300px;
 				}
 			}
+			span {
+				word-wrap: break-word;
+			}
 		}
 		.message-time {
 			color: #848484;
