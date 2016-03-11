@@ -26,6 +26,19 @@ gulp.task('build-tincyme-themes', function () {
     // .pipe('modern.js')
     .pipe(gulp.dest('public/js/themes'));
 });
+gulp.task('move-fonts', function () {
+  return gulp.src([
+      'resources/tinymce.tff',
+      'resources/tinymce.woff',
+    ])
+    .pipe(gulp.dest('public/css/'));
+});
+gulp.task('move-vendor-css', function () {
+  return gulp.src([
+    'resources/vendorcss/skin.min.css'
+    ])
+    .pipe(gulp.dest('public/css/'));
+});
 gulp.task('build-js', function() {
   return gulp.src([
       'resources/javascripts/libs/jquery.1.11.3.js',
