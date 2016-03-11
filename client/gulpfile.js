@@ -35,6 +35,7 @@ gulp.task('move-fonts', function () {
 });
 gulp.task('move-vendor-css', function () {
   return gulp.src([
+    'resources/vendorcss/content.min.css',
     'resources/vendorcss/skin.min.css'
     ])
     .pipe(gulp.dest('public/css/'));
