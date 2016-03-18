@@ -1,4 +1,4 @@
-(function ($) {}
+(function ($) {
 	$('#header').on('click', '.edit-profile', function() {
 		var container = $('.my-profile-content');
 

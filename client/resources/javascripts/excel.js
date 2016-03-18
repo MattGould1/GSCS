@@ -1,4 +1,4 @@
-(function ($) { }
+(function ($) {
 
 	//launch excel module
 	this.eExcel = function (name, id, data) {

@@ -22,7 +22,7 @@ gulp.task('default', function() {
 gulp.task('build-tincyme-themes', function () {
   return gulp.src([
     'resources/javascripts/vendor/modern.js'
-    ]) 
+    ])
     // .pipe('modern.js')
     .pipe(gulp.dest('public/js/themes'));
 });

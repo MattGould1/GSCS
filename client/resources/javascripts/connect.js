@@ -123,8 +123,7 @@ function init(token) {
 		$('.link').remove();
 		$('.word').remove();
 		$('.private-chat').remove();
-		//clear word instances
-		tinymce.editors = [];
+
 		$time = 0;
 
 		var disconnect = $('#disconnect');

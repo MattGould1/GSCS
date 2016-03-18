@@ -75,8 +75,6 @@
 					$(compartment).css('height', contentHeight);
 				});
 			});
-
-  		$('[data-toggle="tooltip"]').tooltip()
 	}
 
 	ui.prototype.resize = function () {
@@ -311,7 +309,7 @@
 												'<div class="col-xs-9 message-info" style="padding: 0px;">' +
 													'<div class="form-group">' +
 														'<input type="text" class="message form-control"/>' +
-														'<div class="image-container" data-toggle="tooltip" data-placement="top" title="remove"><div class="image-preview">' +
+														'<div class="image-container"><div class="image-preview">' +
 															'<img src="#" style="display: none;" class="preview"/>' +
 														'</div></div>' +
 														'<input style="display: none;"" type="file" class="file form-control"/>' +
