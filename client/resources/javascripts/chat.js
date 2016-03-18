@@ -38,7 +38,8 @@
 
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
-
+			console.log(input);
+			console.log(container);
 			reader.onload = function (e) {
 				var preview = container.find('.preview');
 				preview.attr('src', e.target.result);
@@ -54,6 +55,19 @@
 	* use socketio to emit chat-message to server
 	*/
 	function send(form) {
+		$('#chat').on('click', '.image-container', function () {
+			var $this = $(this);
+			var input = $(this).siblings('.file').val('');
+
+			var container = $this.parent();
+
+			container.find('.message').css({
+				'width': '100%'
+			});
+			container.find('.image-container').css({
+				'display': 'none'
+			});
+		});
 
 		$('#chat').on('click', '.image-upload', function (e) {
 			e.preventDefault();
@@ -70,15 +84,21 @@
 			if (file.type === 'image/png' || file.type === 'image/jpeg') {
 				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
 				var container = $this.parent().parent();
-				var messageBox = container.find('.message');
-				var width = messageBox.width() - 40;
-				var cssWidth = width + 'px';
-				container.find('.message').css({
-					'width': cssWidth,
-					'display': 'inline',
-					'float': 'left'
-				});
-				container.find('.preview').show();
+					
+				if (!container.find('.image-container').is(':visible')) {
+					var messageBox = container.find('.message');
+					var width = messageBox.width() - 36;
+					var cssWidth = width + 'px';
+					console.log(cssWidth);
+					container.find('.message').css({
+						'width': cssWidth,
+						'display': 'inline',
+						'float': 'left'
+					});
+					container.find('.image-container').css({
+						'display': 'block'
+					});
+				}
 				readURL.call(this, this, container);
 			} else {
 				alert('This file type is not allowed!');
@@ -129,7 +149,7 @@
 		      		size: ufile.size,
 		      		data: reader.result
 		      	};
-
+		      	//
 		      	//resize the image, this is done async so the callback has to be put inside
 		      	ImageTools.resize(ufile, {
 			        width: 160, // maximum width
@@ -229,6 +249,12 @@
 		chatroom.find('button').prop('disabled', true);
 		chatroom.find('.message').val('');
 		chatroom.find('.file').val('');
+		chatroom.find('.message').css({
+			'width': '100%'
+		});
+		chatroom.find('.image-container').css({
+			'display':'none'
+		});
 		chatroom.find('.filestoupload').text('');
 		chatroom.find('.reset-radio').prop('checked', true);
 		setTimeout(function() {
