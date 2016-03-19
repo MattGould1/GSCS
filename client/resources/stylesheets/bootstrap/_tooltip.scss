@@ -14,7 +14,7 @@
   font-size: $font-size-small;
 
   @include opacity(0);
-
+  padding-right: 4px;
   &.in     { @include opacity($tooltip-opacity); }
   &.top    { margin-top:  -3px; padding: $tooltip-arrow-width 0; }
   &.right  { margin-left:  3px; padding: 0 $tooltip-arrow-width; }

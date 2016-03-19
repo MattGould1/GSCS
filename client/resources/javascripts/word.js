@@ -5,12 +5,13 @@
 
 	//public methods
 	word.prototype.init = function (word) {
-				var headerHeight = $('#header').outerHeight();
+		var headerHeight = $('#header').outerHeight();
 		var footerHeight = $('#footer').outerHeight();
 		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
 		//grab the container and attach tinymce to it, set the required tinymce theme urls
 		var container = $('[data-filter="' + word.name + '-word"]');
 		tinymce.baseURL = window.location + 'js/themes/modern.js';
+		logger('word documents init');
 		tinymce.init({
 			theme_url: window.location + 'js/themes/modern.js',
 			skin_url: window.location + 'css/',
