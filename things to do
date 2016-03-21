@@ -1,0 +1,9 @@
+* bugs
+stop more than one login (implement server side and check to see if the socket has already received data)
+force chat to scroll to bottom
+make it easier to view 
+
+* features
+make images popup in lightbox, rather than new window
+some info if no messages exist in the private chat (same for chatrooms? probs not)
+add more tinymce plugins

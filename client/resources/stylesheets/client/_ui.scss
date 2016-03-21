@@ -30,7 +30,6 @@
 			.options {
 				width: 100%;
 				height: 40px;
-				margin-top: 10px;
 			}
 		}
 	}
@@ -268,7 +267,7 @@ header button.edit-profile{margin-right: 10px !important;}
 .radio-inline:first-child{margin-right: 20px;}
 .radio-inline label {text-transform: uppercase;    font-size: 12px;   margin-bottom: 0;}
 .radio-inline input[type="radio"]{    margin-top: 2px;}
-#chat .chat-form .message-info input{width: 100%!important;}
+
  
 #app #chat .chat-form .form-group, #app .private-chat .chat-form .form-group {margin-bottom: 5px;}
 .chat-form form div:first-child div:nth-child(2){padding-right: 0;}
@@ -303,6 +302,13 @@ footer h6.text-center {color: #fff;}
 
 
 /* MATT you might wanna move/restructure these */
+.image-container {
+	&:hover {
+		opacity: 0.5;
+		cursor: pointer;
+	}
+}
+
 .messageCount {	background: $brand-primary;}
 .hide-links, .show-links {	color: #aaa;	cursor: pointer;   line-height: 39px; top: 0;}
 .show-links {	display: none;}
