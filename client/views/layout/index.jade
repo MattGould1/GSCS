@@ -23,9 +23,12 @@ html(lang='en')
 				s.parentNode.insertBefore(o, s);
 			}
 			async('js/bundle.js', function() {
-				jQuery('#loading').hide();
-				jQuery('#isAuth').removeClass('load');
-				jQuery('#isNotAuth').removeClass('load');
+
+				if (!$.cookie('token')) {
+					jQuery('#loading').hide();
+					jQuery('#isAuth').removeClass('load');
+					jQuery('#isNotAuth').removeClass('load');
+				}
 			});
 	body
 		div#loading
@@ -53,5 +56,7 @@ html(lang='en')
 					include ../_partials/isauth/users
 			include ../_partials/isauth/modals/my-profile
 			include ../_partials/isauth/modals/viewedits
+			div#alerts
+				include ../_partials/isauth/alerts/waiting
 			div.userinfo
 			include footer

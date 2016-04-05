@@ -40,4 +40,21 @@ router.post('/register', function (req, res, next) {
 	});
 });
 
+router.get('/make-admin', function (req, res) {
+	var user = new User({
+		username: 'admin',
+		password: 'admin',
+		firstName: 'admin',
+		lastName: 'admin',
+		email: 'admin',
+		picture: 'admin',
+		status: 'admin',
+		admin: true,
+	});
+	user.save(function (err, saved) {
+		console.log(err);
+		res.send('helloworld');
+	});
+});
+
 module.exports = router;

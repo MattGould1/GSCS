@@ -118,7 +118,10 @@ sio.on('connection', function (socket) {
 
             //join my own room
             socket.join(cUser._id);
+
+            //load the initial data for app
             startup.init(cUser, ChatRoom, Excel, ChatMessage, User, Word, socket);
+
             //broadcast usernames
             chat.userList(sio, socket, users);
         } else {
@@ -162,7 +165,7 @@ sio.on('connection', function (socket) {
             return;
         }
 
-        //cleanup excels
+        //cleanup this users excels set active to false
         Excel.find({}).select('active user').where('active', true).where('user', cUser._id).exec(function (err, excelsheets) {
             if (err) { console.log('socketio error finding excelsheets' + err); socket.emit('data', false); return false; }
             excelsheets.forEach( function (excelsheet, i) {
@@ -173,6 +176,8 @@ sio.on('connection', function (socket) {
                 });
             });
         });
+
+        //cleanup this users word docs, set active to false
         Word.find({}).select('active user').where('active', true).where('user', cUser._id).exec(function (err, words) {
             if (err) { console.log('socketio error setting active to false on word documents' + err); return false}
             words.forEach( function (word, i) {
@@ -183,12 +188,15 @@ sio.on('connection', function (socket) {
                 });
             });
         });
+
         //broadcast the person who left
         sio.sockets.emit('leave', users[socket.decoded_token._id]);
+
         //delete user from global
         users[socket.decoded_token._id] = null;
         delete users[socket.decoded_token._id];
-        //broadcast new usernames
+
+        //broadcast update userlist
         chat.userList(sio, socket, users);
 
 

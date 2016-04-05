@@ -232,4 +232,5 @@ router.post('/word/create', function (req, res) {
 		res.json(success);
 	});
 });
+
 module.exports = router;

@@ -1,3 +1,19 @@
+#alerts {
+	display: none;
+	#response {
+		position: fixed;
+		z-index: 1000;
+		float: none;
+		top: 20%;
+		left: 25%;
+		width: 50%;
+		background: lighten($brand-primary, 50%);
+		.message {
+
+		}
+	}
+}
+
 .soft-hide {
 	display: none;
 }

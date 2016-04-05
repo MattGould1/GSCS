@@ -116,8 +116,7 @@
 			//add active to new current
 			$(this).addClass('active');
 
-			$(this).find('.badge').html('');
-			
+			$(this).find('.messageCount').html('');
 			//get the data-filter attribute, used to search for corresponding container with same data-filter
 			var show = $(this).attr('data-filter');
 
@@ -134,6 +133,7 @@
 					$(this).hide();
 				}
 			});
+			logger('switching view and removing messagecount');
 		});
 	}
 

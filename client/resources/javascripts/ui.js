@@ -211,7 +211,8 @@
 			} else {
 				Class = 'not-my-message';
 			}
-			if (file != undefined && file.length != 0) {
+			if (file != undefined && file != false) {
+				console.log('what the actual goodness gracious');
 				var link = '<div class="message-file img-responsive img-rounded">' +
 								'<a href="' + url + file + '" target="_blank">' +
 									'<img class="message-image" src="' + url + thumbnail + '"/>' +
@@ -469,12 +470,71 @@
 
 	}
 
+	ui.prototype.alertsOpen = function (message = 'Please wait...') {
+		$('#alerts').show();
+		$('#alerts').find('.message').html(message);
+	}
+
+	ui.prototype.alertsClose = function () {
+		$('#alerts').hide();
+	}
+
+	ui.prototype.myEdit = function (element, message = 'You are currently editting!') {
+		element.append('<div class="edits">' + message + '</div>');
+	}
+
+	ui.prototype.notMyEdit = function (element, message = 'You are not editting!') {
+		element.append('<div class="edits">' + message + '</div>');
+	}
+
+	ui.prototype.removeEdits = function (element) {
+		element.find('.edits').remove();
+	}
+
+	ui.prototype.messageCount = function (container, element, activity = 'Recent activity!') {
+		if (!container.is(':visible')) {
+			logger('adding badge to ' + element.attr('data-filter'));
+			var badge = element.find('.messageCount');
+			var count = +badge.html();
+			badge.html(count + 1);
+		}
+		if (!window_focus) {
+			logger('window is out of focus');
+			var content = 'GSCS - ' + activity;
+			keepFlashing = true;
+			flashTitle(content, element);
+		}
+	}
+
+	ui.prototype.findUser = function (id) {
+		return users[id];
+	}
+
 	function isUser(username) {
 		if (username == user.username) {
 			return true;
 		}
 		return false;
 	}
+
+	function flashTitle(content, element) {
+		var flash = setInterval(function () {
+			var title = $('title');
+			//set the titles
+			if (title.html() == 'GSCS') {
+				title.html(content);
+			} else {
+				title.html('GSCS');
+			}
+			//clear interval if message count or window focus changes
+			if (element.find('.messageCount').html() == '' || window_focus == true) {
+				logger('clear title flash interval');
+				title.html('GSCS');
+				window.clearInterval(flash);
+			}
+		}, 3000);
+	}
+
 	//private
 	function extendDefaults(source, properties) {
 		var property;

@@ -54,10 +54,23 @@
 	* use socketio to emit chat-message to server
 	*/
 	function send(form) {
+		$('#chat').on('click', '.image-container', function () {
+			var $this = $(this);
+			var input = $(this).siblings('.file').val('');
 
+			var container = $this.parent();
+
+			container.find('.message').css({
+				'width': '100%'
+			});
+			container.find('.image-container').css({
+				'display': 'none'
+			});
+		});
+		//get the image ready for uploading
 		$('#chat').on('click', '.image-upload', function (e) {
 			e.preventDefault();
-			logger('uploading a file');
+			logger('finding a file');
 			var $this = $(this);
 			var file = $this.parent().parent().siblings('.message-info').find('.file').click();
 		});
@@ -70,15 +83,20 @@
 			if (file.type === 'image/png' || file.type === 'image/jpeg') {
 				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
 				var container = $this.parent().parent();
-				var messageBox = container.find('.message');
-				var width = messageBox.width() - 40;
-				var cssWidth = width + 'px';
-				container.find('.message').css({
-					'width': cssWidth,
-					'display': 'inline',
-					'float': 'left'
-				});
-				container.find('.preview').show();
+				if (!container.find('.image-container').is(':visible')) {
+					var messageBox = container.find('.message');
+					var width = messageBox.width() - 36;
+					var cssWidth = width + 'px';
+					console.log(cssWidth);
+					container.find('.message').css({
+						'width': cssWidth,
+						'display': 'inline',
+						'float': 'left'
+					});
+					container.find('.image-container').css({
+						'display': 'block'
+					});
+				}
 				readURL.call(this, this, container);
 			} else {
 				alert('This file type is not allowed!');
@@ -164,6 +182,7 @@
 		var me = false;
 		var unique = false;
 		var chatroom = $this;
+
 		if (chatroom.find('.message').val() == '' && file == undefined) {
 			alert('Please enter a value or upload a file!');
 			return false;
@@ -218,19 +237,25 @@
 			privatechatroom.find('.chat-messages ul').append(message);
 			privatechatroom.find('.message').val('');
 			privatechatroom.find('.reset-radio').prop('checked', true);
-			// chatToBottom.call(this, data.find('.chat-messages'));
+			chatToBottom.call(this, data.find('.chat-messages'));
 		}
-
 		//send to server, emits to all if public if private chat only emits to partner
 		logger('sending message');
 		socket.emit('chat-message', msg);
 
-		//regardless of success disable message for half a second
+		//regardless of success disable message for half a second and reset to defaults
 		chatroom.find('button').prop('disabled', true);
 		chatroom.find('.message').val('');
+		chatroom.find('.message').css({
+			'width': '100%'
+		});
+		chatroom.find('.image-container').css({
+			'display':'none'
+		});
 		chatroom.find('.file').val('');
 		chatroom.find('.filestoupload').text('');
 		chatroom.find('.reset-radio').prop('checked', true);
+
 		setTimeout(function() {
 			chatroom.find('button').prop('disabled', false);
 		}, 1000);
@@ -359,11 +384,12 @@
 			}
 
 			$('.private-chat').hide();
-			
+			var partnerRoom = $('[data-to="' + partner._id + '"]');
 			//chat is already open so no need to open a new one
-			if ( $('[data-to="' + partner._id + '"]').length == 1 ) {
+			if ( partnerRoom.length == 1 ) {
 				$('.private-chat').hide();
-				$('[data-to="' + partner._id + '"]').show();
+				partnerRoom.show();
+				chatToBottom.call(this, partnerRoom.find('.chat-messages'));
 				return false;
 			}
 
@@ -390,6 +416,7 @@
 			room.show();
 
 			chatToBottom.call(this, room.find('.chat-messages'));
+
 			//create a private room on server and invite your partner
 			socket.emit('privatechat', connect);
 			logger('complete');

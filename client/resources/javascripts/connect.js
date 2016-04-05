@@ -9,7 +9,7 @@ jQuery(window).bind('beforeunload', function(){
 * @var Array excelsheets: array of all excelsheets
 * @var Array users: array of all users
 */
-var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [], appInit, changes = {}, localWord = {};
+var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [], appInit, changes = {}, localWord = {}, keepFlashing = false, window_focus = true;
 var wordObj = new word();
 var userObj = new usersO();
 var uiObj = new ui();
@@ -18,7 +18,13 @@ Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
 
 //check for token, once document has loaded
-jQuery(document).ready(function() {
+$(document).ready(function() {
+	//get window status
+	$(window).focus(function() {
+	    window_focus = true;
+	}).blur(function() {
+	    window_focus = false;
+	});
 	if ($.cookie('token')) {
 		//use token to connect and initialise app
 		token = $.cookie('token');
@@ -126,6 +132,9 @@ function init(token) {
 
 		$time = 0;
 
+		//clear tinymce
+		tinyMCE.editors=[];
+
 		var disconnect = $('#disconnect');
 		var dc = function () {
 			if (chatrooms === null ) {
@@ -159,6 +168,13 @@ function socketIOInit() {
 	* @param Object data.user: current user
 	*/
 	socket.on('data', function (data) {
+		//clear containers, we don't want duplicates!
+		$('.chat').remove();
+		$('.excel').remove();
+		$('.link').remove();
+		$('.word').remove();
+		$('.private-chat').remove();
+		tinyMCE.editors=[];
 		//set current user global var
 		user = data.user;
 		users = data.users;
@@ -214,14 +230,17 @@ function socketIOInit() {
 		$('.messageCount').html('');
 		//append a badge and number for each unreadmessage
 		data.unread.forEach ( function (message, i) {
-
 			var partner = $('[data-_id="' + message._user + '"]');
-
 			var badge = partner.find('.messageCount');
 			var count = +badge.html();
 			badge.html(count +1);
 			logger(message);
 		});
+
+		//show app
+		$('#loading').hide();
+		$('#isAuth').removeClass('load');
+		$('#isNotAuth').removeClass('load');
 	});
 	userObj.load();
 	userObj.lastActive();

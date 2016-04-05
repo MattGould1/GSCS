@@ -5,13 +5,15 @@
 
 	//public methods
 	word.prototype.init = function (word) {
+		//get dimensions to fit onto page
 		var headerHeight = $('#header').outerHeight();
 		var footerHeight = $('#footer').outerHeight();
 		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
+
 		//grab the container and attach tinymce to it, set the required tinymce theme urls
 		var container = $('[data-filter="' + word.name + '-word"]');
 		tinymce.baseURL = window.location + 'js/themes/modern.js';
-		logger('word documents init');
+		logger('creating tinymce for ' + word.name);
 		tinymce.init({
 			theme_url: window.location + 'js/themes/modern.js',
 			skin_url: window.location + 'css/',
@@ -35,6 +37,7 @@
 		isActive.call(this);
 		cancel.call(this);
 		update.call(this);
+		//wtf is this?
 		$(document).on('click', '.locked', function () {
 			e.preventDefault();
 			return false;
@@ -47,6 +50,7 @@
 	function menu (Word, active, word, cancel, init, cuser) {
 
 		var options = word.find('.word-options');
+
 		if (init) {
 			if (active === true) {
 				if (Word.user._id === cuser._id) {
@@ -115,16 +119,18 @@
 	}
 
 	//check to see if this word is active, and therefor whether or not it can be editted
+	//add events
 	function isActive() {
 		//is this active and can we edit? 
 		$(document).on('click', '.word-edit', function () {
 			logger('Can I edit?');
 			var id = $(this).data('link_id');
 			socket.emit('editword', id);
+
+			uiObj.alertsOpen();
 		});
 		//response to can we edit if true, enable tinymce if false, tell client who's editting
 		socket.on('editword', function (data) {
-
 			if (data.edit === true) {
 				var word = $('[data-_id-word="' + data.word._id +'"]');
 				menu.call(this, data.word, data.edit, word, false);
@@ -132,10 +138,16 @@
 				var editor = tinymce.get(data.word._id);
 				editor.getBody().setAttribute('contenteditable', true);
 				editor.getBody().style.backgroundColor = "rgba(255,255,255,0)";
+
+
+				uiObj.myEdit(word.find('.word-options'));
+				uiObj.alertsClose();
 			} else {
 				var word = $('[data-_id-word="' + data.id + '"]');
 				menu.call(this, data.user, data.edit, word, false);
+				uiObj.notMyEdit(word.find('.word-options'), uiObj.findUser(data.user).username + ' is currently editting!');
 			}
+			$('.word-options').append();
 		});
 	}
 
@@ -145,6 +157,8 @@
 		$(document).on('click', '.word-cancel', function () {
 			var id = $(this).data('link_id');
 			socket.emit('cancelword', id);
+
+			uiObj.alertsOpen();
 		});
 
 		//response to cancelling the edit
@@ -159,6 +173,8 @@
 			} else {
 				editor.setContent(word.data);
 			}
+			uiObj.removeEdits(wordC);
+			uiObj.alertsClose();
 		});
 	}
 
@@ -174,22 +190,33 @@
 			};
 
 			socket.emit('updateword', data);
+			uiObj.alertsOpen();
 		});
 
 		socket.on('updateword', function (data) {
-			console.log(data);
+			logger(data.name + ' word document has been updated');
+
 			var id = data._id;
 			var editor = tinymce.get(id);
 			var word = $('[data-_id-word="' + data._id +'"]');
+			var wordLink = $('[data-filter="' + data.name + '-word"]');
 			menu.call(this, '', data.active, word, true);
 
 			editor.getBody().setAttribute('contenteditable',false);
 			editor.getBody().style.backgroundColor = "rgba(0,0,0,0.5)";
+
 			if (data.data === undefined) {
 				editor.setContent('');
 			} else {
 				editor.setContent(data.data);
 			}
+
+			//update message count
+			uiObj.messageCount(word, wordLink);
+
+			//remove alerts and edits
+			uiObj.removeEdits(word);
+			uiObj.alertsClose();
 		});
 	}
 })(jQuery);

@@ -52,18 +52,25 @@
 
 		//compare name with user list
 		excels.forEach( function (entry) {
-			console.log(entry);
 			if (entry.name == name) {
 				//id
 				excel_form.find('#edit-excel-id').val(entry._id);
+				excel_form.find('#edit-excel-name').val(entry.name);
 				excel_form.find('#edit-excel-departments').html('');
 				excel_form.find('#edit-excel-locations').html('');
 				locations.forEach(function (location, i) {
-					
-					excel_form.find('#edit-excel-locations').append('<input type="checkbox" class="excel-locations" value="' + location._id + '"/>' + location.locations);
+					if ($.inArray(location._id, entry.location) > -1) {
+						excel_form.find('#edit-excel-locations').append('<input type="checkbox" checked="checked" class="excel-locations" value="' + location._id + '"/>' + location.locations);
+					} else {
+						excel_form.find('#edit-excel-locations').append('<input type="checkbox" class="excel-locations" value="' + location._id + '"/>' + location.locations);
+					}
 				});
 				departments.forEach( function (department, i) {
-					excel_form.find('#edit-excel-departments').append('<input type="checkbox" class="excel-departments" value="' + department._id + '"/>' + department.departments);
+					if ($.inArray(department._id, entry.department) > -1) {
+						excel_form.find('#edit-excel-departments').append('<input type="checkbox" checked="checked" class="excel-departments" value="' + department._id + '"/>' + department.departments);
+					} else {
+						excel_form.find('#edit-excel-departments').append('<input type="checkbox" class="excel-departments" value="' + department._id + '"/>' + department.departments);
+					}
 				});
 				//firstname
 				excel_form.find('#edit-excel-department').val(entry.department);
@@ -158,7 +165,11 @@
 
 				createList(list, excels, tableStructure);
 
-				$('#editexcel').find('p').html('Successfully excelsaved!');
+				$('#editexcel').find('p').html('Successfully updated excelsheet!').removeClass('hide');
+
+				setTimeout(function () {
+					$('#editexcel').find('p').addClass('hide');
+				}, 3000);
 			},
 			error: function (xhr, status, error) {
 				console.log(error)

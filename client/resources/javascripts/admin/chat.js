@@ -20,7 +20,7 @@
 				department.push( ' ' + dep.departments );
 			}
 		});
-		html = '<tr>';
+		html = '<tr class="' + single.name + '">';
 		html +=		'<td>' + single.name + '</td>';
 		html +=		'<td>' + department + '</td>';
 		html += 	'<td>' + location + '</td>';
@@ -43,7 +43,7 @@
 		//hide, and reset text
 		chatsave.find('p').html('Saving...');
 		chatsave.addClass('hide');
-
+		console.log($this);
 		//hide other divs, sihow edit div
 		resetState(container, $this);
 
@@ -53,17 +53,26 @@
 		//compare name with user list
 		chatrooms.forEach( function (entry) {
 			console.log(entry);
+			console.log(name);
 			if (entry.name == name) {
+				console.log('chat found');
 				//name
 				chat_form.find('#edit-chat-name').val(entry.name);
 				chat_form.find('#edit-chat-departments').html('');
 				chat_form.find('#edit-chat-locations').html('');
 				locations.forEach(function (location, i) {
-					
-					chat_form.find('#edit-chat-locations').append('<input type="checkbox" class="chat-locations" value="' + location._id + '"/>' + location.locations);
+					if ($.inArray(location._id, entry.location) > -1) {
+						chat_form.find('#edit-chat-locations').append('<input type="checkbox" checked="checked" class="chat-locations" value="' + location._id + '"/>' + location.locations);
+					} else {
+						chat_form.find('#edit-chat-locations').append('<input type="checkbox" class="chat-locations" value="' + location._id + '"/>' + location.locations);
+					}
 				});
 				departments.forEach( function (department, i) {
-					chat_form.find('#edit-chat-departments').append('<input type="checkbox" class="chat-departments" value="' + department._id + '"/>' + department.departments);
+					if ($.inArray(department._id, entry.department) > -1) {
+						chat_form.find('#edit-chat-departments').append('<input type="checkbox" checked="checked" class="chat-departments" value="' + department._id + '"/>' + department.departments);
+					} else {
+						chat_form.find('#edit-chat-departments').append('<input type="checkbox" class="chat-departments" value="' + department._id + '"/>' + department.departments);
+					}
 				});
 				//id
 				chat_form.find('#edit-chat-id').val(entry._id);

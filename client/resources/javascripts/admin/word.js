@@ -52,21 +52,29 @@
 
 		//compare name with user list
 		words.forEach( function (entry) {
-			console.log(entry);
 			if (entry.name == name) {
+				console.log(entry);
 				//id
+				word_form.find('#edit-word-name').val(entry.name);
 				word_form.find('#edit-word-id').val(entry._id);
 				word_form.find('#edit-word-departments').html('');
 				word_form.find('#edit-word-locations').html('');
+
 				locations.forEach(function (location, i) {
-					
-					word_form.find('#edit-word-locations').append('<input type="checkbox" class="word-locations" value="' + location._id + '"/>' + location.locations);
+					if ($.inArray(location._id, entry.location) > -1) {
+						word_form.find('#edit-word-locations').append('<input type="checkbox" checked="checked" class="word-locations" value="' + location._id + '"/>' + location.locations);
+					} else {
+						word_form.find('#edit-word-locations').append('<input type="checkbox" class="word-locations" value="' + location._id + '"/>' + location.locations);
+					}
 				});
+
 				departments.forEach( function (department, i) {
-					word_form.find('#edit-word-departments').append('<input type="checkbox" class="word-departments" value="' + department._id + '"/>' + department.departments);
+					if ($.inArray(department._id, entry.department) > -1) {
+						word_form.find('#edit-word-departments').append('<input type="checkbox" checked="checked" class="word-departments" value="' + department._id + '"/>' + department.departments);
+					} else {
+						word_form.find('#edit-word-departments').append('<input type="checkbox" class="word-departments" value="' + department._id + '"/>' + department.departments);
+					}
 				});
-				//firstname
-				word_form.find('#edit-word-department').val(entry.department);
 
 				//show form, hide others
 				editword.show();
@@ -157,12 +165,16 @@
 				words[index].department = department;
 
 				createList(list, words, tableStructure);
+				console.log('successfully saved!');
+				$('#editword').append('<p class="success-remove col-xs-12">Successfully saved!</p>');
 
-				$('#editword').find('p').html('Successfully wordsaved!');
+				setTimeout(function () {
+					$('.success-remove').remove();
+				}, 3000);
 			},
 			error: function (xhr, status, error) {
 				console.log(error)
-				wordsave.find('p').html('Error saving user, please contact support!');
+				$('#editword').append('Error saving user, please contact support!');
 			}
 		});
 	});
