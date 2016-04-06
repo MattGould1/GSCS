@@ -6,7 +6,7 @@
 	//public
 	ui.prototype.init = function () {
 			// 		var offset = 1;
-			// setInterval(function () {
+			// setInterval(function () {aler
 			// 	var load = {
 			// 		offset: offset,
 			// 		id: '566f3a10e75906be36d74ebd',
@@ -17,7 +17,7 @@
 			// }, 3000);
 			//get heights
 			var headerHeight = $('#header').outerHeight();
-			var footerHeight = $('#footer').height();
+			var footerHeight = $('#footer').height() + 33;
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
 			//set app height based on header height and window height, use overflow hidden on rest
 		
@@ -510,6 +510,15 @@
 		return users[id];
 	}
 
+
+	ui.prototype.isCurrentUser = function (username) {
+		if (username == user.username) {
+			return true;
+		}
+
+		return false;
+	}
+	
 	function isUser(username) {
 		if (username == user.username) {
 			return true;

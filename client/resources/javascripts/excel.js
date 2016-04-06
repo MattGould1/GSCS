@@ -152,10 +152,7 @@
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
 				var options = hot.siblings('.excel-options');
 				options.find('.excel-edit').hide();
-				options.find('.message').show();
-				console.log('checking for users var');
-				console.log(excelsheet.user.username);
-				options.find('.message').html(excelStrings.edittedBy + excelsheet.user.username);
+				uiObj.notMyEdit(options, 'Market sheet editted by: ' + excelsheet.user.username);
 		}
 	}
 
@@ -168,6 +165,139 @@
 			var id = hot.attr('class').split(" ")[1];
 
 			socket.emit('edit-excel', id);
+
+			uiObj.alertsOpen('Loading please wait...');
+		});
+		/*
+		* @param Object data contains
+		*		excel: Object
+		*		edit: boolean
+		*	@TODO improve performanc by not sending excelsheet back if edit false
+		*/
+		socket.on('edit-excel', function (data) {
+			console.log(data);
+			//get jQuery object for excelsheet
+			if (data.edit === true) {
+				//get hot instance
+				var hot = $('.' + data.excel._id);
+				var hotInstance = hot.handsontable('getInstance');
+				hotInstance.updateSettings({
+					//allow edits
+					readOnly: false,
+					//allow insert rows etc
+					contextMenu:  {
+						callback: function (key, options) {
+							var selected = getSelectedCells.call(this, hotInstance);
+							if (key === 'status:pnc') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'pnc');
+							} else if (key === 'status:fxd') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'fxd');
+							} else if (key === 'status:subs') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'subs');	
+							} else if (key === 'status:remove') {
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'remove');	
+							}
+							hotInstance.render();
+						},
+						items: {
+							"row_above": {},
+							"row_below": {},
+							"hsep1": "---------",
+							"col_left": {},
+							"col_right": {},
+							"hsep2": "---------",
+							"remove_row": {},
+							"remove_col": {},
+							"hsep3": "---------",
+							"status": {
+								name: 'Status',
+								submenu: {
+									items: [{
+										key: 'status:pnc',
+										name: function() {
+											var label = 'Private and Confidential';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'pnc');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:fxd',
+										name: function() {
+											var label = 'Fixed';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'fxd');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:subs',
+										name: function() {
+											var label = 'Subs';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'subs');
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+											return label;
+										}
+									},
+									{
+										key: 'status:remove',
+										name: 'Remove Status'
+									}]
+								}
+							},
+							"alignment": {},
+							"hsep4": "---------",
+							"undo": {},
+							"redo": {},
+							"commentsAddEdit": {},
+							"commentsRemove": {}
+						}
+					},
+					comments: true,
+					//reset cellsMeta, silly handsontable requires it
+					cell: cellsMeta.call(this, data.excel),
+					//allow column/row resizing
+					manualColumnResize: true,
+					manualRowResize: true,
+		            cells: function (row, col, prop) {
+		                var cellProperties = {};
+		                cellProperties.renderer = statusRenderer;
+
+		                return cellProperties;
+		            }
+				});
+				//@TODO improve this mess
+				var options = hot.siblings('.excel-options');
+				options.find('.excel-edit').hide();
+				options.find('.edit-options').show();
+
+				uiObj.myEdit(options);
+				uiObj.alertsClose();
+			} else {
+				var hot = $('.' + data.id);
+				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
+				for (var key in users) {
+					if(users.hasOwnProperty(key)) {
+						var user = users[key];
+						if (user._id === data.user) {
+							name = user.username;
+						}
+					}
+				}
+				var options = hot.siblings('.excel-options');
+				options.find('.excel-edit').hide();
+
+				uiObj.notMyEdit(options, uiObj.findUser(data.excel.user).username + ' is currently editting!');
+			}
 		});
 	}
 	/*
@@ -208,6 +338,20 @@
 			});
 
 			socket.emit('cancel-excel', id);
+
+			uiObj.alertsOpen();
+		});
+
+		//reset ui back to edit
+		socket.on('cancel-excel', function (excel) {
+			logger('cancelling excelsheet');
+			var hot = $('.' + excel._id);
+			var options = hot.siblings('.excel-options');
+			options.find('.edit-options').hide();
+			options.find('.excel-edit').show();
+
+			uiObj.alertsClose();
+			uiObj.removeEdits(options);
 		});
 	}
 	/*
@@ -446,135 +590,7 @@
 
 	//socketio methods
 	function socketExcel() {
-		/*
-		* @param Object data contains
-		*		excel: Object
-		*		edit: boolean
-		*	@TODO improve performanc by not sending excelsheet back if edit false
-		*/
-		socket.on('edit-excel', function (data) {
-			//get jQuery object for excelsheet
-			if (data.edit === true) {
-				//get hot instance
-				var hot = $('.' + data.excel._id);
-				var hotInstance = hot.handsontable('getInstance');
-				hotInstance.updateSettings({
-					//allow edits
-					readOnly: false,
-					//allow insert rows etc
-					contextMenu:  {
-						callback: function (key, options) {
-							var selected = getSelectedCells.call(this, hotInstance);
-							if (key === 'status:pnc') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'pnc');
-							} else if (key === 'status:fxd') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'fxd');
-							} else if (key === 'status:subs') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'subs');	
-							} else if (key === 'status:remove') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'remove');	
-							}
-							hotInstance.render();
-						},
-						items: {
-							"row_above": {},
-							"row_below": {},
-							"hsep1": "---------",
-							"col_left": {},
-							"col_right": {},
-							"hsep2": "---------",
-							"remove_row": {},
-							"remove_col": {},
-							"hsep3": "---------",
-							"status": {
-								name: 'Status',
-								submenu: {
-									items: [{
-										key: 'status:pnc',
-										name: function() {
-											var label = 'Private and Confidential';
-											var selected = getSelectedCells.call(this, hotInstance);
-											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'pnc');
-											if (has) {
-												label = markLabelAsSelected(label);
-											}
-											return label;
-										}
-									},
-									{
-										key: 'status:fxd',
-										name: function() {
-											var label = 'Fixed';
-											var selected = getSelectedCells.call(this, hotInstance);
-											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'fxd');
-											if (has) {
-												label = markLabelAsSelected(label);
-											}
-											return label;
-										}
-									},
-									{
-										key: 'status:subs',
-										name: function() {
-											var label = 'Subs';
-											var selected = getSelectedCells.call(this, hotInstance);
-											var has = checkSelectedCellsMeta.call(this, selected, 'status', 'subs');
-											if (has) {
-												label = markLabelAsSelected(label);
-											}
-											return label;
-										}
-									},
-									{
-										key: 'status:remove',
-										name: 'Remove Status'
-									}]
-								}
-							},
-							"alignment": {},
-							"hsep4": "---------",
-							"undo": {},
-							"redo": {},
-							"commentsAddEdit": {},
-							"commentsRemove": {}
-						}
-					},
-					comments: true,
-					//reset cellsMeta, silly handsontable requires it
-					cell: cellsMeta.call(this, data.excel),
-					//allow column/row resizing
-					manualColumnResize: true,
-					manualRowResize: true,
-		            cells: function (row, col, prop) {
-		                var cellProperties = {};
-		                cellProperties.renderer = statusRenderer;
 
-		                return cellProperties;
-		            }
-				});
-				//@TODO improve this mess
-				var options = hot.siblings('.excel-options');
-				options.find('.excel-edit').hide();
-				options.find('.edit-options').show();
-				options.find('.message').show();
-				options.find('.message').html(excelStrings.currentEdit);
-			} else {
-				var hot = $('.' + data.id);
-				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
-				for (var key in users) {
-					if(users.hasOwnProperty(key)) {
-						var user = users[key];
-						if (user._id === data.user) {
-							name = user.username;
-						}
-					}
-				}
-				var options = hot.siblings('.excel-options');
-				options.find('.message').show();
-				options.find('.excel-edit').hide();
-				options.find('.message').html(excelStrings.edittedBy + name)
-			}
-		});
 		/*
 		* @param Object data: @server Model excel
 		*/
@@ -618,16 +634,6 @@
 			options.find('.message').html('');
 			options.find('.message').hide();
 			options.find('.edit-options').hide();
-		});
-		//reset ui back to edit
-		socket.on('cancel-excel', function (excel) {
-			logger('cancelling excelsheet');
-			logger(excel);
-			var hot = $('.' + excel._id);
-			var options = hot.siblings('.excel-options');
-			options.find('.message').hide();
-			options.find('.edit-options').hide();
-			options.find('.excel-edit').show();
 		});
 	}
 

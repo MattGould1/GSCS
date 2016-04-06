@@ -56,23 +56,10 @@
 				if (Word.user._id === cuser._id) {
 					options.find('.word-edit').hide();
 					options.find('.edit-options').show();
-					options.find('.message').show();
-					options.find('.message').html('You are currently editting this word document');
 					word.find('.mce-toolbar-grp').show();
 					word.find('.mce-toolbar').show();
 				} else {
-					//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
-					for (var key in users) {
-						if(users.hasOwnProperty(key)) {
-							var user = users[key];
-							if (user._id === Word) {
-								name = user.username;
-							}
-						}
-					}
-					options.find('.message').show();
 					options.find('.word-edit').hide();
-					options.find('.message').html('This word document is being editted by: ' + name);
 					word.find('.mce-toolbar-grp').hide();
 					word.find('.mce-toolbar').hide();
 				}
@@ -85,7 +72,6 @@
 		}
 
 		if (cancel) {
-			options.find('.message').hide();
 			options.find('.edit-options').hide();
 			options.find('.word-edit').show();
 			word.find('.mce-toolbar-grp').hide();
@@ -94,24 +80,10 @@
 			if (active === true) {
 				options.find('.word-edit').hide();
 				options.find('.edit-options').show();
-				options.find('.message').show();
-				options.find('.message').html('You are currently editting this word document');
 				word.find('.mce-toolbar-grp').show();
 				word.find('.mce-toolbar').show();
 			} else {
-				console.log('hmmmmm');
-				//@TODO get user object from data.excel.user, no point using .populate as global users holds information we require
-				for (var key in users) {
-					if(users.hasOwnProperty(key)) {
-						var user = users[key];
-						if (user._id === Word) {
-							name = user.username;
-						}
-					}
-				}
-				options.find('.message').show();
 				options.find('.word-edit').hide();
-				options.find('.message').html('This word document is being editted by: ' + name);
 				word.find('.mce-toolbar-grp').hide();
 				word.find('.mce-toolbar').hide();
 			}

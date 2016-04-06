@@ -116,7 +116,7 @@ function init(token) {
 
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
-		console.log('disconnect');
+		logger('disconnect');
 		//cleanup
 		//reset global data vars
 		users = null;
