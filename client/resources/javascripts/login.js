@@ -19,6 +19,7 @@ $('.row').on('submit', '#login', function (e) {
 		}),
 		success: function (user, status, xhr) {
 			if (user.token) {
+				button.attr('disabled', false);
 				//set token as cookie to be sent with requests
 				if ($this.find('#checkbox').is(':checked') === true) {
 					$.cookie('token', user.token, { expires: 7, path: '/' });

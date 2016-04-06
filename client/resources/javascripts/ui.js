@@ -17,7 +17,7 @@
 			// }, 3000);
 			//get heights
 			var headerHeight = $('#header').outerHeight();
-			var footerHeight = $('#footer').height() + 33;
+			var footerHeight = $('#footer').height();
 			var contentHeight = $(window).height() - headerHeight - footerHeight;
 			//set app height based on header height and window height, use overflow hidden on rest
 		
@@ -35,8 +35,8 @@
 				if (compartment === '#content') {
 					//chatroom heights
 					var cform = $('.chat-form');
-					cform.siblings('.chat-messages').css('height', contentHeight - 80);
-
+					var chatHeight = contentHeight - 80;
+					cform.siblings('.chat-messages').css('height', chatHeight + 'px');
 					//excel
 					Compartment.find('#excel .excel-options').css('height', '60px');
 				}
@@ -170,27 +170,35 @@
 		$el.scrollTop($el[0].scrollHeight);
 		var wait = 0;
 		$($el).scroll(function () {
-			
 			if (wait == 0) {
 				position = $el.scrollTop();
-
 				if (position < 100) {
 					wait = 1;
 					//make a call to server to load more posts append them at top disable scrolling while this occurs
-					//TODO
-					var container = $(this).parent().parent();
+					$this = $(this);
+					var container = $this.parent().parent();
+					var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
 					var current = parseInt(container.attr('loaded'));
-					var load = {
-						offset: current,
-						id: container.attr('data-_id-chat')
-					};
-
-					socket.emit('moremessages', load);
-					current++;
-					container.attr('loaded', current);
+					if (current > 0) {
+						container.prepend(html);
+					}
 					setTimeout(function () {
-						wait = 0;
-					}, 1000);
+						//get current offset
+						var current = parseInt(container.attr('loaded'));
+						if (current > 0) {
+							//send offset with chatroom id
+							var load = {
+								offset: current,
+								id: container.attr('data-_id-chat')
+							};
+							socket.emit('moremessages', load);
+							//update the offset
+							current++;
+							container.attr('loaded', current);
+							//make sure we don't spam the server constantly
+							wait = 0;
+						} 
+					}, 2000);
 				}
 			}
 		});
@@ -356,6 +364,16 @@
 														'</label>' +
 													'</div>' +
 													'<div class="radio-inline">' +
+														'<span class="message-filter">' +
+															'<select class="filter">' +
+																'<option value="normal">Normal</option>' +
+																'<option value="pnc">Private and Confidential</option>' +
+																'<option value="fxd">Fixed</option>' +
+																'<option value="subs">Subs</option>' +
+															'</select>' +
+														'</span>' +
+													'</div>' +
+													'<div class="radio-inline">' +
 														'<span class="filestoupload"></span>' +
 													'</div>' +
 												'</div>' +
@@ -475,7 +493,7 @@
 		$('#alerts').find('.message').html(message);
 	}
 
-	ui.prototype.alertsClose = function () {
+	ui.prototype.alertsClose = function (me = false) {
 		$('#alerts').hide();
 	}
 
@@ -507,7 +525,11 @@
 	}
 
 	ui.prototype.findUser = function (id) {
-		return users[id];
+		if (id) {
+			return users[id];
+		}
+
+		return false;
 	}
 
 

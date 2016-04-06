@@ -9,7 +9,20 @@ jQuery(window).bind('beforeunload', function(){
 * @var Array excelsheets: array of all excelsheets
 * @var Array users: array of all users
 */
-var token, socket, chatrooms = [], user, excelsheets = [], users = [], words = [], appInit, changes = {}, localWord = {}, keepFlashing = false, window_focus = true;
+var token, 
+	socket, 
+	chatrooms = [], 
+	user, 
+	excelsheets = [], 
+	users = [], 
+	words = [], 
+	appInit, 
+	changes = {}, 
+	localWord = {}, 
+	keepFlashing = false, 
+	window_focus = true,
+	loadMoreMessages = 1;
+
 var wordObj = new word();
 var userObj = new usersO();
 var uiObj = new ui();
@@ -34,9 +47,9 @@ $(document).ready(function() {
 		notAuth.show();
 		//hide app
 		Auth.addClass('trick-hide');
-		$('.link').remove();
-		$('.chat').remove();
-		$('.excel').remove();
+		// $('.link').remove();
+		// $('.chat').remove();
+		// $('.excel').remove();
 	}
 
 	$('#header').on('click', '.logout', function (e) {
@@ -116,6 +129,8 @@ function init(token) {
 
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
+		$.removeCookie('token');
+		
 		logger('disconnect');
 		//cleanup
 		//reset global data vars
@@ -204,8 +219,6 @@ function socketIOInit() {
 			uiObj.containers(word, wordContainer, link, '-word', '#word', '#wordLinks');
 		});
 
-		//init main UI
-		uiObj.init();
 		//begin hideNshow, see hideNshow.js for usage explaination
 		new hideNshow({
 			body: jQuery('#isAuth'),
@@ -241,7 +254,11 @@ function socketIOInit() {
 		$('#loading').hide();
 		$('#isAuth').removeClass('load');
 		$('#isNotAuth').removeClass('load');
+
+		//init main UI
+		uiObj.init();
 	});
 	userObj.load();
 	userObj.lastActive();
+
 }

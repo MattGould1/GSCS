@@ -301,7 +301,7 @@
 		});
 	}
 	/*
-	*	@param Object excel @model
+	*	@param Objet excel @model
 	*/
 	function cancelEdit() {
 
@@ -349,7 +349,6 @@
 			var options = hot.siblings('.excel-options');
 			options.find('.edit-options').hide();
 			options.find('.excel-edit').show();
-
 			uiObj.alertsClose();
 			uiObj.removeEdits(options);
 		});

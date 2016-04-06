@@ -199,7 +199,6 @@ module.exports = {
 		//data Object with chatroom id and current offset
 		socket.on('moremessages', function (data) {
 			var skip = data.offset * 20; //load 20 each time
-			console.log(skip);
 			ChatMessage.find({_room: data.id}).skip(skip).limit(20).sort('-created').exec(function (err, messages) {
 				if (err) { console.log('Error finding new messages' + err); return false; }
 				var sendback = {

@@ -19,7 +19,9 @@
 		receive.call(this);
 		initPrivateChat.call(this);
 		loadMoreMessages.call(this);
+		filter.call(this);
 	}
+
 
 	//private methods
 	function extendDefaults(source, properties) {
@@ -31,6 +33,7 @@
 		}
 		return source;
 	}
+
 	/*
 	* read an input and add a preview image
 	*/
@@ -492,24 +495,71 @@
 		* data.allLoaded = boolean depending on whether there are more messages to load
 		*/
 		socket.on('moremessages', function (data) {
+			//get the chatroom
 			var chatroom = $('[data-_id-chat="' + data.room + '"]');
 			var container = chatroom.find('.chat-messages');
+
+			//remove the waiting message
+			chatroom.find('.chat-waiting').remove();
+
+			//check if there are messages in the data
 			if (data.allLoaded == true) {
 				if (chatroom.find('.allLoaded').length == 0) {
 					var html = '<li class="allLoaded"><div>All of the chat messages have been loaded!</div></li>';
 					container.prepend(html);
+					chatroom.attr('loaded', 'Null');
 				}
 				return false;
 			}
-			var oldHeight = container[0].scrollHeight;
-			logger(oldHeight);
 
-			var messages = appendMessages.call(this, data.messages);
-			chatroom.find('.chat-messages ul').prepend(messages);
-			container.scrollTop(oldHeight);
-			console.log(container[0].scrollHeight);
+			//get the old height
+			var oldHeight = container[0].scrollHeight;
+
+			//prepend messages
+			chatroom.find('.chat-messages ul').prepend(appendMessages.call(this, data.messages));
+
+			//get the current type of filter
+			var value = chatroom.find('.filter').val();
+
+			setMessageTypes.call(this, value, chatroom);
+
+			//get the new height
+			newHeight = container[0].scrollHeight;
+
+			//set the scroll height
+			container.scrollTop(newHeight - oldHeight);
 		});
 	}
+
+	function setMessageTypes(value, chatroom) {
+
+		if (value == 'normal') {
+			chatroom.find('li').show();
+		} else {
+			chatroom.find('li').each(function () {
+				var $this = $(this);
+				var type = $this.find('.message-body').find('span').attr('class');
+
+				if (type == value) {
+					$this.show();
+				} else {
+					$this.hide();
+				}
+			});
+		}
+
+	}
+	function filter() {
+		$('#chat').on('change', '.filter', function () {
+			$this = $(this);
+			//get the chatroom
+			var chatroom = $this.parent().parent().parent().parent().parent().parent().siblings('.chat-messages');
+			var value = $this.val();
+
+			setMessageTypes.call(this, value, chatroom);
+		});
+	}
+
 	function getRoom() {
 
 	}
