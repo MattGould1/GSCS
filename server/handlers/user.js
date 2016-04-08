@@ -4,7 +4,11 @@ module.exports = {
 	*/
 	update: function(sio, socket, User) {
 		/*
-		* @param Object profile: profile.username, firstname and lastname
+		* @param Object profile
+		* profile.firstname
+		* profile.lastname
+		* profile.status
+		* profile.sounds
 		*/
 		socket.on('update-profile', function (profile) {
 			User.findOne({ _id: socket.decoded_token._id}, function (err, user) {
@@ -19,6 +23,7 @@ module.exports = {
 				user.firstName = profile.firstName;
 				user.lastName = profile.lastName;
 				user.status = profile.status;
+				user.sounds = profile.sounds;
 				user.save(function (err, saved) {
 					if (err) { console.log(err); }
 					console.log('twice?');

@@ -264,7 +264,7 @@
 		}, 1000);
 	}
 
-	//beep the user @mention
+	//beep the user
 	function beep() {
 		logger('beep');
 		var audio = new Audio('sounds/notification.mp3');
@@ -291,20 +291,14 @@
 			//private chat?
 			if ( message.pc === true ) {
 				var chatroom = $('#' + message.me._id);
-
+				var container = chatroom.find('.chat-messages');
 				//make room if it doesn't exist
 				if (chatroom.length == 0) {
-					logger('room doesn\'t exist');
-					
-					//is chatroom visible?
-					if ( chatroom.is(':visible') ) {
-						logger('private chat is not visible atm');
-					}
-
+					logger('creating new privatechat room');
 					var app = $('#app');
 
 					//html
-					var chatroom = $($.parseHTML(uiOBj.privateChatRoom()));
+					var chatroom = $($.parseHTML(uiObj.privateChatRoom()));
 					
 					//give some information for socketio
 					chatroom.addClass('.' + user._id);
@@ -312,50 +306,42 @@
 					chatroom.attr('id', message.me._id);	
 					chatroom.attr('data-to', message.me._id);
 					app.append(chatroom);
+
 					room = {
 						partner: message.me._id
 					}
+					
 					socket.emit('getprivatemessages', room);
 
 					socket.on('receiveprivatemessages', function (messages) {
 						var messages = appendMessages.call(this, messages);
 						chatroom.find('.chat-messages ul').append(messages);
-
-						var container = chatroom.find('.chat-messages');
-
 						container.scrollTop(container[0].scrollHeight);
 					});
 				} else {
 					//add the message
 					chatroom.find('.chat-messages ul').append(msg);
-					var container = chatroom.find('.chat-messages');
-
 					container.scrollTop(container[0].scrollHeight);
 				}
-				uiObj.activityCount(chatroom, chatPartner);
-				// if ( !chatroom.is(':visible')) {
-				// 	var chatPartner = $('[data-_id="' + message.me._id + '"]');
-				// 	var badge = chatPartner.find('.messageCount');
-				// 	var count = +badge.html();
-				// 	badge.html(count + 1);
-				// }
-
+				uiObj.activityCount(chatroom, message.me._id, true);
+				beep();
 			} else {
-
+				logger('normal chat');
 				var chatroom = $('[data-filter="' + message.room + '-chat"]');
 				chatroom.find('.chat-messages ul').append(msg);
 				var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
 
+				//@TODO @mentions
 				//if (message.message.indexOf('@' + user.username) != -1) {
-					beep();
 				//}
+				logger(message);
+				if (user.username != message.username) {
+					beep();
+				}
+
 				//add message count to chatroom if not visible (not looking @ it)
 				uiObj.activityCount(container, chatroom);
-				// if (!container.is(':visible')) {
-				// 	var badge = chatroom.find('.messageCount');
-				// 	var count = +badge.html();
-				// 	badge.html(count + 1);				
-				// }
+
 				if (message.file) {
 					setTimeout(function () {
 						container.scrollTop(container[0].scrollHeight);

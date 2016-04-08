@@ -16,7 +16,10 @@ var userSchema = new mongoose.Schema({
 	created: { type: Date, default: Date.now() },
 	location: { type: mongoose.Schema.Types.ObjectId, ref: 'Locations' },
 	department: { type: mongoose.Schema.Types.ObjectId, ref: 'Departments'},
-	_messages:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }]
+	_messages:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }],
+	options: { 
+		sounds: Boolean
+	}
 
 });
 

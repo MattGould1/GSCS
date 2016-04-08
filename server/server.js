@@ -98,6 +98,7 @@ var chat = require('./handlers/chat');
 var excel = require('./handlers/excel');
 var user = require('./handlers/user');
 var word = require('./handlers/word');
+
 //connect to default namespace
 sio.on('connection', function (socket) {
     //disconnect socket if no username, wtf?
@@ -142,7 +143,7 @@ sio.on('connection', function (socket) {
     user.lastactive(sio, socket);
     user.nowactive(sio, socket);
     user.onlinestatus(sio, socket, User);
-
+    
     //handle edit request
     excel.edit(sio, socket, Excel);
     excel.update(sio, socket, Excel, Revision);

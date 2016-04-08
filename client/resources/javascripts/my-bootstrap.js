@@ -11,13 +11,16 @@
 	$('#my-profile').on('click', '.save-profile', function() {
 		console.log('hmm');
 		var content = $('.my-profile-content');
-
+		var sounds = content.find('.my-profile-sounds').is(':checked');
 		profile = {
 			username: content.find('.my-profile-username').val(),
 			firstName: content.find('.my-profile-firstname').val(),
 			lastName: content.find('.my-profile-lastname').val(),
 			status: content.find('.my-profile-status').val(),
+			sounds: sounds
 		};
+
+		console.log(profile);
 
 		socket.emit('update-profile', profile);
 

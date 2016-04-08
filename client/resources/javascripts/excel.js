@@ -300,8 +300,8 @@
 				}
 				var options = hot.siblings('.excel-options');
 				options.find('.excel-edit').hide();
-
-				uiObj.notMyEdit(options, uiObj.findUser(data.excel.user).username + ' is currently editting!');
+				console.log('user id from excel' + data.user);
+				uiObj.notMyEdit(options, uiObj.findUser(data.user).username + ' is currently editting!');
 			}
 		});
 	}

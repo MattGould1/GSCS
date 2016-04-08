@@ -214,7 +214,7 @@
 	ui.prototype.message = function (private, message, file, thumbnail, username, created) {
 		var Class = '';
 		if (!private) {
-			if (isUser.call(this, username)) {
+			if (isCurrentUser.call(this, username)) {
 				Class = 'my-message';
 			} else {
 				Class = 'not-my-message';
@@ -508,14 +508,29 @@
 	ui.prototype.removeEdits = function (element) {
 		element.find('.edits').remove();
 	}
-
-	ui.prototype.activityCount = function (container, element, activity = 'Recent activity!') {
-		if (!container.is(':visible')) {
-			logger('adding badge to ' + element.attr('data-filter'));
-			var badge = element.find('.messageCount');
-			var count = +badge.html();
-			badge.html(count + 1);
+	//handles activity notifications, as well as flashing titles
+	//@TODO implement beep into this rather than at chat.js
+	// privatechat boolean
+	ui.prototype.activityCount = function (container, element, privatechat, activity = 'Recent activity!') {
+		logger('activitycount');
+		if (privatechat) {
+			var chatPartner = $('[data-_id="' + element + '"]');
+			if (!container.is(':visible')) {
+				var badge = chatPartner.find('.messageCount');
+				var count = +badge.html();
+				badge.html(count + 1);
+			}
+			//reassign element var
+			element = chatPartner;
+		} else {
+			if (!container.is(':visible')) {
+				var badge = element.find('.messageCount');
+				var count = +badge.html();
+				badge.html(count + 1);
+			}
 		}
+
+		//is the window in focus? lets make it flash!
 		if (!window_focus) {
 			logger('window is out of focus');
 			var content = 'GSCS - ' + activity;
@@ -526,9 +541,9 @@
 
 	ui.prototype.findUser = function (id) {
 		if (id) {
+			console.log(users[id]);
 			return users[id];
 		}
-
 		return false;
 	}
 
@@ -537,11 +552,10 @@
 		if (username == user.username) {
 			return true;
 		}
-
 		return false;
 	}
 	
-	function isUser(username) {
+	function isCurrentUser(username) {
 		if (username == user.username) {
 			return true;
 		}
@@ -559,7 +573,6 @@
 			}
 			//clear interval if message count or window focus changes
 			if (element.find('.messageCount').html() == '' || window_focus == true) {
-				logger('clear title flash interval');
 				title.html('GSCS');
 				window.clearInterval(flash);
 			}

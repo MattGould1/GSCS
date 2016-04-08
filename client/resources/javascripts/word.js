@@ -184,7 +184,7 @@
 			}
 
 			//update message count
-			uiObj.messageCount(word, wordLink);
+			uiObj.activityCount(word, wordLink);
 
 			//remove alerts and edits
 			uiObj.removeEdits(word);

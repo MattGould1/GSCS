@@ -255,6 +255,7 @@ function socketIOInit() {
 
 		//init main UI
 		uiObj.init();
+
 	});
 	userObj.load();
 	userObj.lastActive();

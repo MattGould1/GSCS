@@ -31,14 +31,18 @@ module.exports = {
 					if (msg.file) {
 						if (msg.file.type === 'image/png' || msg.file.type === 'image/jpeg') {
 							var buffer = saveImage(msg.file.data);
-							var tbuffer = saveImage(msg.file.thumbnail);
-
 							var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + msg.file.name);
 							var filepath = '/public/' + Math.floor(new Date() / 1000) + msg.file.name;
 
+							//for concurrency, save the thumbnail regardless of image size
+							if (msg.file.thumbnail) {
+								var tbuffer = saveImage(msg.file.thumbnail);
+							} else {
+								var tbuffer = saveImage(msg.file.data);
+							}
+
 							var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name);
 							var thumbpath = '/public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name;
-
 							fs.writeFile(filename, buffer.data, function (err) {
 								console.log(err);
 								console.log('success');
