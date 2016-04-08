@@ -509,7 +509,7 @@
 		element.find('.edits').remove();
 	}
 
-	ui.prototype.messageCount = function (container, element, activity = 'Recent activity!') {
+	ui.prototype.activityCount = function (container, element, activity = 'Recent activity!') {
 		if (!container.is(':visible')) {
 			logger('adding badge to ' + element.attr('data-filter'));
 			var badge = element.find('.messageCount');
@@ -519,8 +519,8 @@
 		if (!window_focus) {
 			logger('window is out of focus');
 			var content = 'GSCS - ' + activity;
-			keepFlashing = true;
-			flashTitle(content, element);
+			keepFlashimesng = true;
+			flashTitle.call(this, content, element);
 		}
 	}
 
@@ -563,7 +563,7 @@
 				title.html('GSCS');
 				window.clearInterval(flash);
 			}
-		}, 3000);
+		}, 1000);
 	}
 
 	//private

@@ -53,8 +53,13 @@
 
 	function saveToExcel() {
 		$('.save-to-excel').click(function(e) {
-			window.open('data:application/vnd.ms-excel,' + encodeURIComponent($(this).parent('.excel-options').siblings('.hot').find('.ht_master').html()));
-			e.preventDefault();
+			var hot = $(this).parent().parent('.excel-options').siblings('.hot').find('.ht_master').html();
+			var link = document.createElement('a');
+			document.body.appendChild(link); // Firefox requires the link to be in the body
+			link.download = 'marketsheet.ms-excel';
+			link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(hot);
+			link.click();
+			document.body.removeChild(link); // remove the link when done
 		});
 	}
 
@@ -424,7 +429,54 @@
 
 			//emit all data
 			socket.emit('update-excel', data);
+			uiObj.alertsOpen();
+		});
 
+		/*
+		* @param Object data: @server Model excel
+		*/
+		socket.on('update-excel', function (data) {
+			//reset ui for all users, edits complete
+			var hot = $('.' + data._id);
+
+			//get handsontable instance and update settings
+			hot.handsontable('getInstance').updateSettings({
+				//update data
+				data: data.data,
+				//make handsontable uneditable
+				readOnly: true,
+				minRows: 30,
+				minCols: 30,
+				//update table size
+				colWidths: data.metaData.colWidths,
+				rowHeights: data.metaData.rowHeights,
+				//update cellMeta
+				cell: cellsMeta.call(this, data),
+				//disable menu
+				contextMenu: false,
+				//disable table resizing
+				manualColumnResize: false,
+				manualRowResize: false,
+			});
+
+			//update changes array
+			changes[data._id] = data.changes;
+			var options = hot.siblings('.excel-options');
+
+			linkC = $('[data-filter="' + data.name + '-excel"');
+			if (!hot.is(':visible')) {
+				var badge = linkC.find('.messageCount');
+				var count = +badge.html();
+				badge.html(count + 1);				
+			}
+
+			//reset ui options @TODO improve mess
+			options.find('.excel-edit').show();
+			options.find('.message').html('');
+			options.find('.message').hide();
+			options.find('.edit-options').hide();
+			uiObj.alertsClose();
+			uiObj.removeEdits(options);
 		});
 	}
 
@@ -590,50 +642,7 @@
 	//socketio methods
 	function socketExcel() {
 
-		/*
-		* @param Object data: @server Model excel
-		*/
-		socket.on('update-excel', function (data) {
-			//reset ui for all users, edits complete
-			var hot = $('.' + data._id);
 
-			//get handsontable instance and update settings
-			hot.handsontable('getInstance').updateSettings({
-				//update data
-				data: data.data,
-				//make handsontable uneditable
-				readOnly: true,
-				minRows: 30,
-				minCols: 30,
-				//update table size
-				colWidths: data.metaData.colWidths,
-				rowHeights: data.metaData.rowHeights,
-				//update cellMeta
-				cell: cellsMeta.call(this, data),
-				//disable menu
-				contextMenu: false,
-				//disable table resizing
-				manualColumnResize: false,
-				manualRowResize: false,
-			});
-
-			//update changes array
-			changes[data._id] = data.changes;
-			var options = hot.siblings('.excel-options');
-
-			linkC = $('[data-filter="' + data.name + '-excel"');
-			if (!hot.is(':visible')) {
-				var badge = linkC.find('.messageCount');
-				var count = +badge.html();
-				badge.html(count + 1);				
-			}
-
-			//reset ui options @TODO improve mess
-			options.find('.excel-edit').show();
-			options.find('.message').html('');
-			options.find('.message').hide();
-			options.find('.edit-options').hide();
-		});
 	}
 
 	function extendDefaults(source, properties) {

@@ -267,6 +267,8 @@
 	//beep the user @mention
 	function beep() {
 		logger('beep');
+		var audio = new Audio('sounds/notification.mp3');
+		audio.play();
 	}
 
 	//change smileys into real ones
@@ -330,13 +332,13 @@
 
 					container.scrollTop(container[0].scrollHeight);
 				}
-
-				if ( !chatroom.is(':visible')) {
-					var chatPartner = $('[data-_id="' + message.me._id + '"]');
-					var badge = chatPartner.find('.messageCount');
-					var count = +badge.html();
-					badge.html(count + 1);
-				}
+				uiObj.activityCount(chatroom, chatPartner);
+				// if ( !chatroom.is(':visible')) {
+				// 	var chatPartner = $('[data-_id="' + message.me._id + '"]');
+				// 	var badge = chatPartner.find('.messageCount');
+				// 	var count = +badge.html();
+				// 	badge.html(count + 1);
+				// }
 
 			} else {
 
@@ -344,15 +346,16 @@
 				chatroom.find('.chat-messages ul').append(msg);
 				var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
 
-				if (message.message.indexOf('@' + user.username) != -1) {
+				//if (message.message.indexOf('@' + user.username) != -1) {
 					beep();
-				}
+				//}
 				//add message count to chatroom if not visible (not looking @ it)
-				if (!container.is(':visible')) {
-					var badge = chatroom.find('.messageCount');
-					var count = +badge.html();
-					badge.html(count + 1);				
-				}
+				uiObj.activityCount(container, chatroom);
+				// if (!container.is(':visible')) {
+				// 	var badge = chatroom.find('.messageCount');
+				// 	var count = +badge.html();
+				// 	badge.html(count + 1);				
+				// }
 				if (message.file) {
 					setTimeout(function () {
 						container.scrollTop(container[0].scrollHeight);

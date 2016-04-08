@@ -32,7 +32,6 @@ notAuth = jQuery('#isNotAuth');
 
 //check for token, once document has loaded
 $(document).ready(function() {
-	$.removeCookie('token');
 	//get window status
 	$(window).focus(function() {
 	    window_focus = true;
@@ -130,8 +129,6 @@ function init(token) {
 
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
-		$.removeCookie('token');
-
 		logger('disconnect');
 		//cleanup
 		//reset global data vars

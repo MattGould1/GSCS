@@ -17,7 +17,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', function() {
-  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js', 'build-tincyme-themes');
+  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js', 'build-tincyme-themes', 'sounds');
 });
 gulp.task('build-tincyme-themes', function () {
   return gulp.src([
@@ -76,6 +76,12 @@ gulp.task('build-css', function() {
   .pipe(gulp.dest('public/css'));
 });
 
+
+gulp.task('sounds', function () {
+  return gulp.src([
+    'resources/sounds/*.mp3',
+  ]).pipe(gulp.dest('public/sounds/'));
+});
 gulp.task('build-admin-js', function () {
   return gulp.src([
       'resources/javascripts/libs/jquery.1.11.3.js',
