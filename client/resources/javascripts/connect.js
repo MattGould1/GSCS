@@ -39,9 +39,16 @@ $(document).ready(function() {
 	    window_focus = false;
 	});
 	if ($.cookie('token')) {
+		$.removeCookie('token');
+		//set State
+		notAuth.show();
+		//hide app
+		Auth.addClass('trick-hide');
+		// $('.link').remove();
 		//use token to connect and initialise app
-		token = $.cookie('token');
-		init(token);
+		// token = $.cookie('token');
+		// init(token);
+
 	} else {
 		//set State
 		notAuth.show();
