@@ -96,6 +96,7 @@
 										'data-online="' + user.online + '"' +
 										'data-status="' + user.status + '"' +
 										'data-username="' + user.username + '"' +
+										'data-sounds="' + user.sounds + '"' +
 										'data-lastactive="Now!"' +
 										'>' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);

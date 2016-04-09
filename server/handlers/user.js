@@ -8,7 +8,7 @@ module.exports = {
 		* profile.firstname
 		* profile.lastname
 		* profile.status
-		* profile.sounds
+		* profile.sounds bool
 		*/
 		socket.on('update-profile', function (profile) {
 			User.findOne({ _id: socket.decoded_token._id}, function (err, user) {

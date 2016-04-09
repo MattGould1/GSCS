@@ -24,11 +24,6 @@ html(lang='en')
 			}
 			async('js/bundle.js', function() {
 
-				if (!$.cookie('token')) {
-					jQuery('#loading').hide();
-					jQuery('#isAuth').removeClass('load');
-					jQuery('#isNotAuth').removeClass('load');
-				}
 			});
 	body
 		div#loading

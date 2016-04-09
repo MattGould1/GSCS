@@ -29,6 +29,7 @@
 			var user = profile;
 			console.log(profile);
 			$('[data-_id="' + profile._id + '"]').data('status', profile.status);
+			$('[data-_id="' + profile._id + '"]').data('sounds', profile.sounds);
 		});
 	});
 

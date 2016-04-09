@@ -199,8 +199,6 @@ sio.on('connection', function (socket) {
 
         //broadcast update userlist
         chat.userList(sio, socket, users);
-
-
     });
 });
 

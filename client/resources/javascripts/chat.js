@@ -272,12 +272,15 @@
 		//regardless of success disable message for half a second and reset to defaults
 		chatroom.find('button').prop('disabled', true);
 		chatroom.find('.message').val('');
+
 		chatroom.find('.message').css({
 			'width': '100%'
 		});
+
 		chatroom.find('.image-container').css({
 			'display':'none'
 		});
+
 		chatroom.find('.file').val('');
 		chatroom.find('.filestoupload').text('');
 		chatroom.find('.reset-radio').prop('checked', true);
@@ -289,14 +292,18 @@
 
 	//beep the user
 	function beep() {
-		logger('beep');
-		var audio = new Audio('sounds/notification.mp3');
-		audio.play();
+		//only play a sound if users okay with it!
+		logger('trying to beep, check if user has sounds enabled!');
+		if (user.sounds) {
+			logger('beep');
+			var audio = new Audio('sounds/notification.mp3');
+			audio.play();
+		}
 	}
 
-	//change smileys into real ones
+	//change smileys into real ones @TODO wtf is this for? 
 	function emoticons() {
-		logger('emoticon');
+		logger('emoticons');
 	}
 	
 	/*

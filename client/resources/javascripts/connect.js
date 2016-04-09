@@ -38,6 +38,10 @@ $(document).ready(function() {
 	}).blur(function() {
 	    window_focus = false;
 	});
+	$.cookie('token', 'hello');
+	jQuery('#loading').hide();
+	jQuery('#isAuth').removeClass('load');
+	jQuery('#isNotAuth').removeClass('load');
 	if ($.cookie('token')) {
 
 		//use token to connect and initialise app
@@ -129,6 +133,9 @@ function init(token) {
 		Auth.removeClass('trick-hide');
 	});
 
+	socket.on('unauthorized', function (err) {
+		console.log(err);
+	});
 	//disconnect, stop the app
 	socket.on('disconnect', function (data) {
 		logger('disconnect');
@@ -228,19 +235,23 @@ function socketIOInit() {
 		}).init();
 
 		$('.user-offline').remove();
+
 		data.users.forEach ( function (name, i) {
 			var offline = $('.people-offline');
 			var html = '<div class="user user-offline"' +
 							'data-_id="' + name._id + '"' +
 							'data-email="' + name.email + '"' +
 							'data-status="' + name.status + '"' +
+							'data-sounds="' + name.sounds + '"' +
 							'data-lastactive="' + moment(name.lastlogin).format('lll') + '"' +
 							'data-username=" ' + name.username + '">' +
 								name.username + 
 							'<span class="badge messageCount" style="float:right;"></span></div>';
 			offline.after(html);
 		});
+
 		$('.messageCount').html('');
+
 		//append a badge and number for each unreadmessage
 		data.unread.forEach ( function (message, i) {
 			var partner = $('[data-_id="' + message._user + '"]');
@@ -259,6 +270,7 @@ function socketIOInit() {
 		uiObj.init();
 
 	});
+
 	userObj.load();
 	userObj.lastActive();
 
