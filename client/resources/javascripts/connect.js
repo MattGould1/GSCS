@@ -38,7 +38,7 @@ $(document).ready(function() {
 	}).blur(function() {
 	    window_focus = false;
 	});
-	$.cookie('token', 'hello');
+
 	jQuery('#loading').hide();
 	jQuery('#isAuth').removeClass('load');
 	jQuery('#isNotAuth').removeClass('load');
