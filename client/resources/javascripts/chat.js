@@ -22,7 +22,30 @@
 		filter.call(this);
 	}
 
-
+	ewbChat.prototype.load = function(chatroom) {
+		var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
+		var current = parseInt(chatroom.attr('loaded'));
+		if (current > 0) {
+			chatroom.prepend(html);
+		}
+		setTimeout(function () {
+			//get current offset
+			var current = parseInt(chatroom.attr('loaded'));
+			if (current > 0) {
+				//send offset with chatroom id
+				var load = {
+					offset: current,
+					id: chatroom.attr('data-_id-chat')
+				};
+				socket.emit('moremessages', load);
+				//update the offset
+				current++;
+				chatroom.attr('loaded', current);
+				//make sure we don't spam the server constantly
+				wait = 0;
+			} 
+		}, 2000);
+	}
 	//private methods
 	function extendDefaults(source, properties) {
 		var property;
@@ -310,7 +333,7 @@
 					room = {
 						partner: message.me._id
 					}
-					
+
 					socket.emit('getprivatemessages', room);
 
 					socket.on('receiveprivatemessages', function (messages) {
@@ -328,9 +351,10 @@
 			} else {
 				logger('normal chat');
 				var chatroom = $('[data-filter="' + message.room + '-chat"]');
+				var msg = $($.parseHTML(msg));
 				chatroom.find('.chat-messages ul').append(msg);
 				var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');
-
+				setMessageType.call(this, message.type, chatroom, msg);
 				//@TODO @mentions
 				//if (message.message.indexOf('@' + user.username) != -1) {
 				//}
@@ -474,6 +498,8 @@
 	function chatToBottom(container) {
 		logger('setting chatroom to bottom');
 		container.scrollTop(container[0].scrollHeight);
+		//reset loadmore
+		loadMoreMessages = 1;
 	}
 
 	function loadMoreMessages() {
@@ -503,24 +529,40 @@
 
 			//get the old height
 			var oldHeight = container[0].scrollHeight;
-
+ 
 			//prepend messages
 			chatroom.find('.chat-messages ul').prepend(appendMessages.call(this, data.messages));
 
 			//get the current type of filter
 			var value = chatroom.find('.filter').val();
 
-			setMessageTypes.call(this, value, chatroom);
+			setMessagesTypes.call(this, value, chatroom);
 
 			//get the new height
 			newHeight = container[0].scrollHeight;
 
 			//set the scroll height
 			container.scrollTop(newHeight - oldHeight);
+
+			//enable loadmoremessages button
+			chatroom.find('.loadmoremessages').removeAttr('disabled');
+		});
+
+		$('#chat').on('click', '.loadmoremessages', function () {
+			$this = $(this);
+			console.log($this.data('options-_id'));
+			chatroom = $('[data-_id-chat="' + $this.data('options-_id') + '"]');
+			if (chatroom.attr('loaded') != 'Null') {
+				self.chat.load(chatroom);
+				$this.attr('disabled', 'disabled');
+			} else {
+				alert('All messages have been loaded!');
+				$this.hide();
+			}
 		});
 	}
 
-	function setMessageTypes(value, chatroom) {
+	function setMessagesTypes(value, chatroom) {
 
 		if (value == 'normal') {
 			chatroom.find('li').show();
@@ -538,14 +580,42 @@
 		}
 
 	}
+	/*
+	*	show/hide single message depending on the type
+	*/
+	function setMessageType(value, chatroom, message) {
+
+		var typeValue = chatroom.find('.filter').val();
+		if (typeValue == 'normal') {
+			message.show();
+		} else {
+			if (typeValue == value) {
+				message.show();
+			} else {
+				message.hide();
+			}
+		}
+	}
+
 	function filter() {
 		$('#chat').on('change', '.filter', function () {
+			logger('filter changing');
 			$this = $(this);
-			//get the chatroom
-			var chatroom = $this.parent().parent().parent().parent().parent().parent().siblings('.chat-messages');
+			//get the chatroom @TODO wtf is this? fix it later
+			var chatroom = $this.parent().parent().parent().parent().parent().parent().parent().siblings('.chat-messages');
 			var value = $this.val();
+			loadMoreMessages = 0;
+			
+			if (value != 'normal') {
+				if (chatroom.attr('loaded') != 'Null') {
+					chatroom.siblings('.chat-form').find('.message-loadmoremessages').show();
+				}
+			} else {
+				chatroom.siblings('.chat-form').find('.message-loadmoremessages').hide();
+			}
 
-			setMessageTypes.call(this, value, chatroom);
+			setMessagesTypes.call(this, value, chatroom);
+			chatToBottom.call(this, chatroom);
 		});
 	}
 

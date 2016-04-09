@@ -170,35 +170,43 @@
 		$el.scrollTop($el[0].scrollHeight);
 		var wait = 0;
 		$($el).scroll(function () {
-			if (wait == 0) {
-				position = $el.scrollTop();
-				if (position < 100) {
-					wait = 1;
-					//make a call to server to load more posts append them at top disable scrolling while this occurs
-					$this = $(this);
-					var container = $this.parent().parent();
-					var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
-					var current = parseInt(container.attr('loaded'));
-					if (current > 0) {
-						container.prepend(html);
+			if (loadMoreMessages == 1) {
+				if (wait == 0) {
+					position = $el.scrollTop();
+					if (position < 50) {
+						wait = 1;
+						//make a call to server to load more posts append them at top disable scrolling while this occurs
+						$this = $(this);
+						var container = $this.parent().parent();
+						if (container.find('.filter').val() == 'normal') {
+							var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
+							var current = parseInt(container.attr('loaded'));
+							if (current > 0) {
+								container.prepend(html);
+							}
+							setTimeout(function () {
+								//get current offset
+								var current = parseInt(container.attr('loaded'));
+								if (current > 0) {
+									//send offset with chatroom id
+									var load = {
+										offset: current,
+										id: container.attr('data-_id-chat')
+									};
+									socket.emit('moremessages', load);
+									//update the offset
+									current++;
+									container.attr('loaded', current);
+									//make sure we don't spam the server constantly
+									wait = 0;
+								} 
+							}, 2000);
+						} else {
+							setTimeout(function () {
+								wait = 0;
+							}, 2000);
+						}
 					}
-					setTimeout(function () {
-						//get current offset
-						var current = parseInt(container.attr('loaded'));
-						if (current > 0) {
-							//send offset with chatroom id
-							var load = {
-								offset: current,
-								id: container.attr('data-_id-chat')
-							};
-							socket.emit('moremessages', load);
-							//update the offset
-							current++;
-							container.attr('loaded', current);
-							//make sure we don't spam the server constantly
-							wait = 0;
-						} 
-					}, 2000);
 				}
 			}
 		});
@@ -219,8 +227,7 @@
 			} else {
 				Class = 'not-my-message';
 			}
-			if (file != undefined && file != false) {
-				console.log('what the actual goodness gracious');
+			if (file != undefined && file != false) {	
 				var link = '<div class="message-file img-responsive img-rounded">' +
 								'<a href="' + url + file + '" target="_blank">' +
 									'<img class="message-image" src="' + url + thumbnail + '"/>' +
@@ -363,14 +370,21 @@
 															'Subs' +
 														'</label>' +
 													'</div>' +
-													'<div class="radio-inline">' +
+													'<div class="radio-inline" style="float: right;">' +
+														'<span class="message-loadmoremessages" style="display: none;">' +
+																'<button class="button loadmoremessages">Load More</button>' +
+														'</span>' +
+													'</div>' +
+													'<div class="radio-inline" style="float: right;">' +
 														'<span class="message-filter">' +
-															'<select class="filter">' +
-																'<option value="normal">Normal</option>' +
-																'<option value="pnc">Private and Confidential</option>' +
-																'<option value="fxd">Fixed</option>' +
-																'<option value="subs">Subs</option>' +
-															'</select>' +
+															'<label for="filter">Filter messages: ' +
+																'<select name="filter" class="filter">' +
+																	'<option value="normal">Normal</option>' +
+																	'<option value="pnc">Private and Confidential</option>' +
+																	'<option value="fxd">Fixed</option>' +
+																	'<option value="subs">Subs</option>' +
+																'</select>' +
+															'</label>' +
 														'</span>' +
 													'</div>' +
 													'<div class="radio-inline">' +
@@ -433,6 +447,7 @@
 		
 		if (type === '-chat') {
 			newContainer = $chat;
+			newContainer.find('.loadmoremessages').attr('data-options-_id', room._id);
 		} else if (type === '-excel') {
 			newContainer = $excel;
 		} else if (type === '-word') {
