@@ -108,7 +108,9 @@
 
 			if (file.type === 'image/png' || file.type === 'image/jpeg') {
 				$this.parent().parent().parent('.row').siblings('.radios-meta').find('.filestoupload').text('uploading: ' + file.name);
+
 				var container = $this.parent().parent();
+
 				if (!container.find('.image-container').is(':visible')) {
 					var messageBox = container.find('.message');
 					var width = messageBox.width() - 36;
@@ -123,6 +125,7 @@
 						'display': 'block'
 					});
 				}
+
 				readURL.call(this, this, container);
 			} else {
 				alert('This file type is not allowed!');
@@ -269,8 +272,14 @@
 		logger('sending message');
 		socket.emit('chat-message', msg);
 
+		if (file != undefined) {
+			//display loader
+			chatroom.find('button').prop('disabled', true);
+			chatroom.find('button').text('Uploading...');
+		} else {
+
+		}
 		//regardless of success disable message for half a second and reset to defaults
-		chatroom.find('button').prop('disabled', true);
 		chatroom.find('.message').val('');
 
 		chatroom.find('.message').css({
@@ -283,7 +292,7 @@
 
 		chatroom.find('.file').val('');
 		chatroom.find('.filestoupload').text('');
-		chatroom.find('.reset-radio').prop('checked', true);
+		//chatroom.find('.reset-radio').prop('checked', true);
 
 		setTimeout(function() {
 			chatroom.find('button').prop('disabled', false);
@@ -610,15 +619,18 @@
 			$this = $(this);
 			//get the chatroom @TODO wtf is this? fix it later
 			var chatroom = $this.parent().parent().parent().parent().parent().parent().parent().siblings('.chat-messages');
+			var chatmeta = chatroom.siblings('.chat-form');
 			var value = $this.val();
 			loadMoreMessages = 0;
 			
+			chatmeta.find('[value="' + value + '"]').prop('checked', true);
+
 			if (value != 'normal') {
 				if (chatroom.attr('loaded') != 'Null') {
-					chatroom.siblings('.chat-form').find('.message-loadmoremessages').show();
+					chatmeta.find('.message-loadmoremessages').show();
 				}
 			} else {
-				chatroom.siblings('.chat-form').find('.message-loadmoremessages').hide();
+				chatmeta.find('.message-loadmoremessages').hide();
 			}
 
 			setMessagesTypes.call(this, value, chatroom);

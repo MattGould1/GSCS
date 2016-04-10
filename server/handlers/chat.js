@@ -43,6 +43,7 @@ module.exports = {
 
 							var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name);
 							var thumbpath = '/public/' + Math.floor(new Date() / 1000) + '-thumbnail-' + msg.file.name;
+
 							fs.writeFile(filename, buffer.data, function (err) {
 								console.log(err);
 								console.log('success');
@@ -52,6 +53,7 @@ module.exports = {
 								console.log(err);
 								console.log('success');
 							});
+
 							var newMsg = new ChatMessage({
 								_room: msg._id,
 								_user: socket.decoded_token._id,
@@ -60,6 +62,7 @@ module.exports = {
 								file: filepath,
 								thumbnail: thumbpath
 							});
+							
 						} else {
 							return false;
 						}

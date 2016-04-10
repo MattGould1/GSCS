@@ -17,8 +17,9 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', function() {
-  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js', 'build-tincyme-themes', 'sounds');
+  gulp.run('build-js', 'build-sass', 'build-css', 'build-admin-js', 'build-tincyme-themes', 'sounds', 'mce-plugins');
 });
+
 gulp.task('build-tincyme-themes', function () {
   return gulp.src([
     'resources/javascripts/vendor/modern.js'
@@ -26,6 +27,14 @@ gulp.task('build-tincyme-themes', function () {
     // .pipe('modern.js')
     .pipe(gulp.dest('public/js/themes'));
 });
+
+gulp.task('mce-plugins', function () {
+  return gulp.src([
+      'resources/javascripts/vendor/mce-plugins/**/*.js'
+    ])
+    .pipe(gulp.dest('public/js/themes/plugins'));
+});
+
 gulp.task('move-fonts', function () {
   return gulp.src([
       'resources/tinymce.tff',
@@ -35,8 +44,8 @@ gulp.task('move-fonts', function () {
 });
 gulp.task('move-vendor-css', function () {
   return gulp.src([
-    'resources/vendorcss/content.min.css',
-    'resources/vendorcss/skin.min.css'
+      'resources/vendorcss/content.min.css',
+      'resources/vendorcss/skin.min.css'
     ])
     .pipe(gulp.dest('public/css/'));
 });

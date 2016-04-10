@@ -12,7 +12,7 @@
 
 		//grab the container and attach tinymce to it, set the required tinymce theme urls
 		var container = $('[data-filter="' + word.name + '-word"]');
-		tinymce.baseURL = window.location + 'js/themes/modern.js';
+		tinymce.baseURL = window.location + 'js/themes';
 		logger('creating tinymce for ' + word.name);
 		tinymce.init({
 			theme_url: window.location + 'js/themes/modern.js',
@@ -20,6 +20,8 @@
 			selector: '#' + word._id,
 			height: contentHeight - 100,
 			theme: 'modern',
+			// plugins: 'textcolor	',
+			// toolbar: 'forecolor backcolor',
 			init_instance_callback: function(editor) {
 				editor.getBody().setAttribute('contenteditable',false);
 				editor.getBody().style.backgroundColor = "rgba(0,0,0,0.5)";
