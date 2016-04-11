@@ -6,6 +6,9 @@
 		container.find('.my-profile-firstname').val(user.firstName);
 		container.find('.my-profile-lastname').val(user.lastName);
 		container.find('.my-profile-status').val(user.status);
+		if (user.options.sounds) {
+			container.find('.my-profile-sounds').prop('checked', true);
+		}
 	});
 
 	$('#my-profile').on('click', '.save-profile', function() {

@@ -1,5 +1,12 @@
 #alerts {
-	display: none;
+	position: fixed;
+	top: 0px;
+	background: rgba(0,0,0,0.7);
+	height: 100vh;
+    display: none;
+    table-layout: fixed;
+    width: 100%;
+    z-index: 9999999999999;
 	#response {
 		position: fixed;
 		z-index: 1000;
@@ -12,7 +19,9 @@
 		.message {
 			font-size: 20px;
 			padding: 10px;
-			background: lighten($brand-primary, 50%);			
+			background: rgba(0,0,0,0.5);
+			border-radius: 10px;
+			color: #fff;			
 		}
 	}
 }

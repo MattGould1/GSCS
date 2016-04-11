@@ -18,7 +18,7 @@ var userSchema = new mongoose.Schema({
 	department: { type: mongoose.Schema.Types.ObjectId, ref: 'Departments'},
 	_messages:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChatMessage' }],
 	options: { 
-		sounds: Boolean
+		sounds: { type: Boolean, default: true }
 	}
 
 });

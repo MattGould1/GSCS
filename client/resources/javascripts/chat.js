@@ -303,7 +303,8 @@
 	function beep() {
 		//only play a sound if users okay with it!
 		logger('trying to beep, check if user has sounds enabled!');
-		if (user.sounds) {
+		console.log(user);
+		if (user.options.sounds) {
 			logger('beep');
 			var audio = new Audio('sounds/notification.mp3');
 			audio.play();

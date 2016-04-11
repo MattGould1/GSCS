@@ -18,12 +18,13 @@ module.exports = {
 					console.log(user);
 					console.log(profile);
 					socket.emit('update-profile', false);
+					return;
 				}
-
+				console.log(profile);
 				user.firstName = profile.firstName;
 				user.lastName = profile.lastName;
 				user.status = profile.status;
-				user.sounds = profile.sounds;
+				user.options.sounds = profile.sounds;
 				user.save(function (err, saved) {
 					if (err) { console.log(err); }
 					console.log('twice?');

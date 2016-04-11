@@ -6,6 +6,10 @@ div#my-profile.modal.fade(tabindex="-1" role="dialog")
 			div.modal-body.my-profile-content
 				form.form-horizontal
 					div.form-group(style="display: none;")
+						label.col-xs-3.control-label(for="username") Username
+						div.col-xs-9
+							input.form-control.my-profile-username(type="text")
+					div.form-group(style="display: none;")
 						label.col-xs-3.control-label(for="First Name") First Name
 						div.col-xs-9
 							input.form-control.my-profile-firstname(type="text")
