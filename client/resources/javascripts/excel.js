@@ -95,7 +95,7 @@
 		var _window = $(window).outerHeight();
 
 		//61 is the height of the bar above the excel
-		return _window - footer - header - 61;
+		return _window - footer - header - 66;
 	}
 
 	function excelWidth() {

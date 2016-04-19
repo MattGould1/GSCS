@@ -2,14 +2,25 @@
 	this.word = function () {
 
 	}
+	function dimensions() {
 
+		var width = $('#word').outerWidth();
+		var headerHeight = $('#header').outerHeight();
+		var footerHeight = $('#footer').outerHeight();
+		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
+
+		return {
+			width: width,
+			height: contentHeight,
+		}
+	}
 	//public methods
 	word.prototype.init = function (word) {
 		//get dimensions to fit onto page
 		var headerHeight = $('#header').outerHeight();
 		var footerHeight = $('#footer').outerHeight();
 		var contentHeight = $(window).outerHeight() - footerHeight - headerHeight;
-
+		console.log(contentHeight);
 		//grab the container and attach tinymce to it, set the required tinymce theme urls
 		var container = $('[data-filter="' + word.name + '-word"]');
 		tinymce.baseURL = window.location + 'js/themes';
@@ -30,6 +41,9 @@
 				} else {
 					editor.setContent('');
 				}
+
+				//editor.theme.resizeTo(100, 100);
+       			
 				menu.call(this, word, word.active, container, false, true, user);
 			}
 		});
@@ -112,7 +126,8 @@
 				var editor = tinymce.get(data.word._id);
 				editor.getBody().setAttribute('contenteditable', true);
 				editor.getBody().style.backgroundColor = "rgba(255,255,255,0)";
-
+				var width = $('#word').width() - 30;
+				editor.theme.resizeTo()
 
 				uiObj.myEdit(word.find('.word-options'));
 				uiObj.alertsClose();
