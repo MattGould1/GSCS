@@ -31,26 +31,26 @@ module.exports = {
                             .select('username status email online lastlogin')
                             .exec( function (err, names) {
                                 WordQuery.exec( function (err, words) {
-                                        //emit data
-                                        var data = {
-                                            chatrooms: chatrooms,
-                                            excelsheets: excelsheets,
-                                            words: words,
-                                            user: cUser,
-                                            users: names,
-                                            unread: unreadMessages
-                                        };
-                                        chatrooms.forEach(function (chatroom) {
-                                            socket.join(chatroom._id);
-                                        });
-                                        excelsheets.forEach(function (excelsheet) {
-                                            socket.join(excelsheet._id);
-                                        });
-                                        words.forEach(function (word) {
-                                            socket.join(word._id);
-                                        });
-                                        socket.emit('data', data);
+                                    //emit data
+                                    var data = {
+                                        chatrooms: chatrooms,
+                                        excelsheets: excelsheets,
+                                        words: words,
+                                        user: cUser,
+                                        users: names,
+                                        unread: unreadMessages
+                                    };
+                                    chatrooms.forEach(function (chatroom) {
+                                        socket.join(chatroom._id);
                                     });
+                                    excelsheets.forEach(function (excelsheet) {
+                                        socket.join(excelsheet._id);
+                                    });
+                                    words.forEach(function (word) {
+                                        socket.join(word._id);
+                                    });
+                                    socket.emit('data', data);
+                                });
                         });
                 });
             });
