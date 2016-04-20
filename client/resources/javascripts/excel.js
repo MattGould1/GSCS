@@ -479,7 +479,9 @@
 			uiObj.removeEdits(options);
 
 			//cheater @TODO REMOVE LATER
-			new Audio('sounds/notification.mp3').play();
+			if (uiObj.findUser(data.user).username != user.username) {
+				new Audio('sounds/notification.mp3').play();
+			}
 		});
 	}
 
