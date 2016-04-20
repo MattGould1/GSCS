@@ -64,12 +64,13 @@ $(document).ready(function() {
 });
 
 function times() {
-	var ny = $('.newyork'),
-		london = $('.london'),
-		athens = $('.athens'),
-		mumbai = $('.mumbai'),
-		singapore = $('.singapore'),
-		sydney = $('.sydney');
+	var timezones = $('.timezones');
+	var ny = timezones.find('.newyork'),
+		london = timezones.find('.london'),
+		athens = timezones.find('.athens'),
+		mumbai = timezones.find('.mumbai'),
+		singapore = timezones.find('.singapore'),
+		sydney = timezones.find('.sydney');
 
 		ny.html('<span class="hidden-xs hidden-sm">New York</span><span class="visible-xs visible-sm">NY</span> <span>' + moment().tz('America/New_York').format('LT') + '</span>');
 		london.html('<span class="hidden-xs hidden-sm">London</span><span class="visible-xs visible-sm">LDN</span><span>' + moment().tz('Europe/London').format('LT') + '</span>');
