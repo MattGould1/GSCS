@@ -206,6 +206,8 @@
 			//remove alerts and edits
 			uiObj.removeEdits(word);
 			uiObj.alertsClose();
+			//cheater @TODO REMOVE LATER
+			new Audo('sounds/notification.mp3').play();
 		});
 	}
 })(jQuery);

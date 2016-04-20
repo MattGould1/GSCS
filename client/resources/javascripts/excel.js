@@ -477,6 +477,9 @@
 			options.find('.edit-options').hide();
 			uiObj.alertsClose();
 			uiObj.removeEdits(options);
+
+			//cheater @TODO REMOVE LATER
+			new Audo('sounds/notification.mp3').play();
 		});
 	}
 
