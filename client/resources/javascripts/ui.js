@@ -289,7 +289,7 @@
 												'<div class="radio-inline" style="display: none">' +
 													'<label>' +
 														'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
-														'Normal' +
+														'All' +
 													'</label>' +
 												'</div>' +
 											'</div>' +
