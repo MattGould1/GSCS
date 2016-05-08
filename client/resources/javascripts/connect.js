@@ -232,7 +232,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 1
+			defaultActive: 0
 		}).init();
 
 		$('.user-offline').remove();

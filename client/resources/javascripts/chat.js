@@ -624,7 +624,8 @@
 			var value = $this.val();
 			loadMoreMessages = 0;
 			
-			chatmeta.find('[value="' + value + '"]').prop('checked', true);
+			//removed for robin
+			//chatmeta.find('[value="' + value + '"]').prop('checked', true);
 
 			if (value != 'normal') {
 				if (chatroom.attr('loaded') != 'Null') {

@@ -224,7 +224,9 @@
 		if (!private) {
 			if (isCurrentUser.call(this, username)) {
 				Class = 'my-message';
+				Edit = '<span class="edit-my-message">Edit?</span>';
 			} else {
+				Edit = '';
 				Class = 'not-my-message';
 			}
 			if (file != undefined && file != false) {	
@@ -238,7 +240,7 @@
 			}
 
 			messageOutput = '<li class="' + Class + '">' +
-								'<div class="message-name">' + username + '</div>' +
+								'<div class="message-name">' + username + Edit + '</div>' +
 								'<div class="message-body">' +
 									link + message +
 								'</div>' +
@@ -349,7 +351,7 @@
 													'<div class="radio-inline">' +
 														'<label for="msgType">' +
 															'<input type="radio" name="msgType" value="normal" class="reset-radio" checked>' +
-															'Normal' +
+															'All' +
 														'</label>' +
 													'</div>' +
 													'<div class="radio-inline">' +
@@ -372,14 +374,14 @@
 													'</div>' +
 													'<div class="radio-inline" style="float: right;">' +
 														'<span class="message-loadmoremessages" style="display: none;">' +
-																'<button class="button loadmoremessages">Load More</button>' +
+																'<button class="button loadmoremessages">Load More Messages</button>' +
 														'</span>' +
 													'</div>' +
 													'<div class="radio-inline" style="float: right;">' +
 														'<span class="message-filter">' +
 															'<label for="filter">Filter messages: ' +
 																'<select name="filter" class="filter">' +
-																	'<option value="normal">Normal</option>' +
+																	'<option value="normal">All</option>' +
 																	'<option value="pnc">Private and Confidential</option>' +
 																	'<option value="fxd">Fixed</option>' +
 																	'<option value="subs">Subs</option>' +
