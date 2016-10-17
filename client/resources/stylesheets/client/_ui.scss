@@ -375,7 +375,7 @@ header {
 
 #login div a{margin-left: $size-ten;}
 .row.display-cell{width: $full-width;}
-.form-horizontal#login{ @extend .size-center-login; } 
+
 #login div input#checkbox {
 	float: left; 
 	font-size: 18px; /* 18px; */
@@ -385,10 +385,6 @@ header {
 	padding-right: $size-ten;
 	padding-left: $size-ten;
 }
-.form-horizontal#login div:nth-child(4).form-group {float: left;}
-.form-horizontal#login div:nth-child(5).form-group { @extend .flex-wrap-end; }
-.form-horizontal#login div:nth-child(5).form-group{    height: 36px;   padding-left: 20px;}
-.form-horizontal#login div:nth-child(5).form-group p {margin-bottom: 0;}
 
 #chat .chat-form .image-container{display: none;}
 .radio-inline:first-child{margin-right: 20px;}
