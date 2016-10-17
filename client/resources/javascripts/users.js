@@ -84,7 +84,7 @@
 						var offline = $('[data-_id="' + user._id + '"]');
 						var offlineMsgs = offline.find('.messageCount').html();
 						offline.remove();
-
+						console.log(user);
 						var html = '<div class="user ' + user.online + '"' +
 										'data-admin="' + user.admin + '"' +
 										'data-_id="' + user._id + '"' +
@@ -98,7 +98,7 @@
 										'data-username="' + user.username + '"' +
 										'data-sounds="' + user.sounds + '"' +
 										'data-lastactive="Now!"' +
-										'>' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
+										'><img class="userimage" src="http://localhost:8080' + user.picture + '">' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);
 						$('.private-chat').each( function () {
 							if ($(this).attr('id').indexOf(user._id) !== -1) {
@@ -166,6 +166,15 @@
 	}
 
 	function status() {
+		$('#my-profile').on('click', '.onlinestatus', function() {
+			var status = $(this).data('online');
+			console.log($(this));
+			var info = {
+				_id: user._id,
+				status: status
+			};
+			socket.emit('onlinestatus', info);
+		});
 		$('#header').on('click', '.onlinestatus', function() {
 			var status = $(this).html();
 			var info = {
@@ -176,7 +185,11 @@
 		});
 
 		socket.on('updatestatus', function (status) {
-			$('[data-_id="' + status.user._id + '"]').removeClass(status.old).addClass(status.user.online);
+			console.log(status);
+
+			var user = $('[data-_id="' + status.user._id + '"]');
+
+			user.removeClass(status.old).addClass(status.user.online);
 		});
 	}
 })(jQuery);

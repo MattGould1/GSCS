@@ -2,7 +2,7 @@ module.exports = {
 	/*
 	* @param Model User
 	*/
-	update: function(sio, socket, User) {
+	update: function(sio, socket, User, saveImage, fs, path) {
 		/*
 		* @param Object profile
 		* profile.firstname
@@ -20,14 +20,42 @@ module.exports = {
 					socket.emit('update-profile', false);
 					return;
 				}
-				console.log(profile);
 				user.firstName = profile.firstName;
 				user.lastName = profile.lastName;
 				user.status = profile.status;
 				user.options.sounds = profile.sounds;
+				if (profile.avatar.type === 'image/png' || profile.avatar.type === 'image/jpeg') {
+					var buffer = saveImage(profile.avatar.data);
+					var filename = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + profile.avatar.name);
+					var filepath = '/public/' + Math.floor(new Date() / 1000) + profile.avatar.name;
+
+					//for concurrency, save the thumbnail regardless of image size
+					if (profile.avatar.thumbnail) {
+						var tbuffer = saveImage(profile.avatar.thumbnail);
+					} else {
+						var tbuffer = saveImage(profile.avatar.data);
+					}
+
+					var thumbnail = path.join(__dirname, '../public/' + Math.floor(new Date() / 1000) + profile.avatar.name + '-thumbnail');
+					var thumbpath = '/public/' + Math.floor(new Date() / 1000) + profile.avatar.name + '-thumbnail';
+
+					fs.writeFile(filename, buffer.data, function (err) {
+						console.log(err);
+						console.log('success');
+					});
+
+					fs.writeFile(thumbnail, tbuffer.data, function (err) {
+						console.log(err);
+						console.log('success');
+					});
+
+					user.picture = thumbpath;
+					
+				} else {
+					return false;
+				}
 				user.save(function (err, saved) {
 					if (err) { console.log(err); }
-					console.log('twice?');
 					sio.sockets.emit('update-profile', saved);
 				});
 			});
@@ -35,6 +63,8 @@ module.exports = {
 	},
 	onlinestatus: function (sio, socket, User) {
 		socket.on('onlinestatus', function (status) {
+
+			console.log(status);
 			User.findOne({ _id: status._id }, function (err, user) {
 				if (err) { console.log(err); return false; }
 				oldstatus = user.online;

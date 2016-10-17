@@ -1,10 +1,18 @@
 header#header.container-fluid
 	div.row
-		div.status.col-sm-3.col-md-3.col-lg-3.pull-left
-			span.onlinestatus.online online
-			span.onlinestatus.away away
-			span.onlinestatus.busy busy
-		div.text-center.col-sm-6.col-md-6.col-lg-6.pull-left.time-wrap
+		div.logo
+			img(src="img/logo.png")
+		div.status.col-sm-12.col-md-12.text-right
+			span.onlinestatus.online(data-online="online")
+			span.onlinestatus.away(data-online="away")
+			span.onlinestatus.busy(data-online="busy")
+			div.welcome-you
+		div.profile.col-sm-12.col-md-12.flex-button-h-end.pull-right
+			button.btn.btn-info.edit-profile.pull-right(data-toggle="modal" data-target="#my-profile") Profile
+			button.btn.btn-info.change-rooms.pull-right(data-toggle="modal" data-target="#rooms") Change
+			a(href="/").btn.btn-warning.logout.pull-right Logout
+	div.row.time-list
+		div.text-center.col-md-offset-3.col-sm-6.col-md-6.pull-left.time-wrap
 			div.timezones.text-center
 				p.newyork New York
 				p.london London
@@ -12,6 +20,3 @@ header#header.container-fluid
 				p.mumbai Mumbai
 				p.singapore Singapore
 				p.sydney Syndey
-		div.profile.col-md-3.col-lg-3.flex-button-h-end.pull-left
-			button.btn.btn-info.edit-profile.pull-right(data-toggle="modal" data-target="#my-profile") Update Status
-			a(href="/").btn.btn-warning.logout.pull-right Logout

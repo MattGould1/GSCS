@@ -134,7 +134,7 @@ sio.on('connection', function (socket) {
     chat.loadmoremessages(sio, socket, ChatRoom, ChatMessage);
     
     //user handler
-    user.update(sio, socket, User);
+    user.update(sio, socket, User, imageupload.saveImage, fs, path);
     user.lastactive(sio, socket);
     user.nowactive(sio, socket);
     user.onlinestatus(sio, socket, User);

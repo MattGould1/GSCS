@@ -28,7 +28,7 @@ module.exports = {
                     .exec(function (err, unreadMessages) {
                         if (err) { console.log('socketio error finding unread chat messages' + err); socket.emit('data', false); return false; }
                         User.find()
-                            .select('username status email online lastlogin')
+                            .select('username status email online lastlogin picture')
                             .exec( function (err, names) {
                                 WordQuery.exec( function (err, words) {
                                     //emit data

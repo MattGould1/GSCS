@@ -18,23 +18,26 @@
 	}
 	.pc-header {
 		height: 30px;
-		background: #eeeeee;
+		background: $brand-info;
+		color: white;
 		border-bottom: 1px solid #ccc;
 	}
 	.private-chat-body {
 		height: 100%;
+	}
+	.chat-form {
+		padding-top: 5px;
 	}
 	.chat-messages {
 		max-height: 400px;
 		overflow-y: scroll;
 		overflow-x: hidden;
 		display: flex;
-		min-height: 30px;
-		margin-bottom: 60px;
+		min-height: 300px;
 		ul {
 			width: 100%;
 			&:nth-child(odd) {
-				background: lighten($brand-primary, 50%);
+				background: white;
 			}
 			&:nth-child(even) {
 				background: lighten($brand-info, 50%);
@@ -52,7 +55,7 @@
 				max-width: 100px;
 				overflow: hidden;
 			    text-align: center;
-    			font-size: 14px;
+    			font-size: 10px;
 			}
 		}
 	}

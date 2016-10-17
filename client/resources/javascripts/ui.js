@@ -16,65 +16,110 @@
 			// 	offset++;
 			// }, 3000);
 			//get heights
-			var headerHeight = $('#header').outerHeight();
-			var footerHeight = $('#footer').height();
-			var contentHeight = $(window).height() - headerHeight - footerHeight;
-			//set app height based on header height and window height, use overflow hidden on rest
-		
-			/*
-			*	Three more compartments to handle, #sidebar #content and #users
-			*/
-			var compartments = ['#sidebar', '#content', '#users'];
-			compartments.forEach( function (compartment) {
-				var Compartment = $(compartment);
+			//
+			console.log('my user: ' + user);
+			console.log(user);
+			var welcome = '<img class="welcome-image" src="http://localhost:8080' + user.picture + '"><div class="welcome-message">Welcome, ' + user.firstName + '</div>'; 
 
-				if (compartment === '#sidebar') {
-					Compartment.find('#links').css('overflow', 'auto');
-				}
+			$('.welcome-you').html(welcome);
 
-				if (compartment === '#content') {
-					//chatroom heights
-					var cform = $('.chat-form');
-					var chatHeight = contentHeight - 80;
-					cform.siblings('.chat-messages').css('height', chatHeight + 'px');
-					//excel
-					Compartment.find('#excel .excel-options').css('height', '60px');
-				}
+			var mobile = Mobile();
+			resizeCompartments(mobile);
 
-				$(compartment).css('height', contentHeight);
-			});
 			//@todo implement resize in a more friendly manner
 			jQuery(window).resize(function () {
-				//get heights
-				var headerHeight = $('#header').outerHeight();
-				var footerHeight = $('#footer').height();
-				var contentHeight = $(window).height() - headerHeight - footerHeight;
+				Mobile();
+				resizeCompartments();
 
-				//set app height based on header height and window height, use overflow hidden on rest
-			
-				/*
-				*	Three more compartments to handle, #sidebar #content and #users
-				*/
-				var compartments = ['#sidebar', '#content', '#users'];
-				compartments.forEach( function (compartment) {
-					var Compartment = $(compartment);
-
-					if (compartment === '#sidebar') {
-						Compartment.find('#links').css('overflow', 'auto');
-					}
-
-					if (compartment === '#content') {
-						//chatroom heights
-						var cform = $('.chat-form');
-						cform.siblings('.chat-messages').css('height', contentHeight - 80);
-
-						//excel
-						Compartment.find('#excel .excel-options').css('height', '60px');
-					}
-
-					$(compartment).css('height', contentHeight);
-				});
+				
 			});
+	}
+
+	function Mobile() {
+		var width = $(window).outerWidth();
+
+		var elementsToManipulate = [
+			'#sidebar',
+			'#footer',
+			'.radios-meta',
+			'#users',
+			'.logout'
+		];
+		console.log('is this mobile ight now?' + isMobile);
+
+
+		//handle the mobile layout, hide market sheets and word documents (for now) + isMobile for phonegap
+		if (width < 767 || isMobile == true) {
+
+			elementsToManipulate.forEach(function (element) {
+				var Element = $(element);
+
+				if (element == '#sidebar') {
+					Element.appendTo('.swap-room');
+				} else {
+					Element.hide();
+				}
+			});
+
+			return true;
+		} else { //do a clean up
+			return false;
+		}
+	}
+
+	function resizeCompartments(mobile) {
+		//get heights
+		var headerHeight = $('#header').outerHeight();
+		var footerHeight = $('#footer').outerHeight();
+
+		if (mobile === true) {
+			var contentHeight = $(window).height() - headerHeight;
+		} else {
+			var contentHeight = $(window).height() - headerHeight - footerHeight;
+		}
+
+		var calcHeight = headerHeight + contentHeight;
+
+		console.log('window height : ' + $(window).height());
+		console.log('header height : ' + headerHeight);
+		console.log('footer height : ' + footerHeight);
+		console.log('content height : ' + contentHeight);
+		console.log('calculated height : ' + calcHeight);
+
+		//set app height based on header height and window height, use overflow hidden on rest
+	
+
+		if (mobile === true) {
+			$('#rooms').css('height', contentHeight);
+			$('#my-profile').css('height', contentHeight);
+			$('#my-profile').removeClass('fade');
+		}
+
+		/*
+		*	Three more compartments to handle, #sidebar #content and #users
+		*/
+		var compartments = ['#sidebar', '#content', '#users'];
+		compartments.forEach( function (compartment) {
+			var Compartment = $(compartment);
+
+			var chatformHeight = $('.chat-form').outerHeight();
+			if (compartment === '#sidebar') {
+				Compartment.find('#links').css('overflow', 'auto');
+			}
+
+			if (compartment === '#content') {
+				//chatroom heights
+				var cform = $('.chat-form');
+				cform.siblings('.chat-messages').css('height', contentHeight - chatformHeight);
+			}
+
+			if (mobile == true && compartment == '#sidebar') {
+
+			} else {
+				$(compartment).css('height', contentHeight);
+			}
+			
+		});
 	}
 
 	ui.prototype.resize = function () {
@@ -179,7 +224,7 @@
 						$this = $(this);
 						var container = $this.parent().parent();
 						if (container.find('.filter').val() == 'normal') {
-							var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
+							var html = '<li class="chat-waiting" style="position: absolute; z-index: 1000; width: 100%"><div class="waiting-for-messages">Loading please wait...</div></li>';
 							var current = parseInt(container.attr('loaded'));
 							if (current > 0) {
 								container.prepend(html);
@@ -224,7 +269,8 @@
 		if (!private) {
 			if (isCurrentUser.call(this, username)) {
 				Class = 'my-message';
-				Edit = '<span class="edit-my-message">Edit?</span>';
+				//Edit = '<span class="edit-my-message">Edit?</span>';
+				Edit = '';
 			} else {
 				Edit = '';
 				Class = 'not-my-message';
@@ -238,9 +284,17 @@
 			} else {
 				var link = '';
 			}
+			var something = findUserByName.call(this, username);
+
+			if (something != undefined ) {
+				var avatar = '<div class="user-avatar"><img style="width: 30px; height: 30px; border-radius: 50%;" src="http://localhost:8080' + something.picture +'"></div>';
+			} else {
+				var avatar = '';
+			}
 
 			messageOutput = '<li class="' + Class + '">' +
-								'<div class="message-name">' + username + Edit + '</div>' +
+								'' +
+								'<div class="message-name">' + avatar + '<span class="username-chat">' + username + Edit + '</span></div>' +
 								'<div class="message-body">' +
 									link + message +
 								'</div>' +
@@ -282,7 +336,7 @@
 												'<div class="form-group">' +
 													'<input type="hidden" class="name">' +
 													'<input type="hidden" class="private" value="private">' +
-													'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
+													'<button class="btn btn-info form-control" type="submit">SEND</button>' +
 												'</div>' +
 											'</div>' +
 										'</div>' +
@@ -324,7 +378,7 @@
 									'<div class="col-xs-12 chat-form">' +
 										'<form>' +
 											'<div class="row">' +
-												'<div class="col-xs-9 message-info" style="padding: 0px;">' +
+												'<div class="col-xs-12 col-md-9 message-info" style="padding: 0px;">' +
 													'<div class="form-group">' +
 														'<input type="text" class="message form-control"/>' +
 														'<div class="image-container"><div class="image-preview">' +
@@ -333,16 +387,16 @@
 														'<input style="display: none;"" type="file" class="file form-control"/>' +
 													'</div>' +
 												'</div>' +
-												'<div class="col-xs-1">' +
+												'<div class="col-xs-offset-3 col-xs-3 col-md-offset-0 col-md-1 chat-message-upload">' +
 													'<div class="form-group">' +
 														'<input type="hidden" class="name">' +
-														'<button class="image-upload btn btn-primary form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
+														'<button class="image-upload btn btn-info form-control" type="button"><span class="glyphicon glyphicon-paperclip"></span></button>' +
 													'</div>' +
 												'</div>' +
-												'<div class="col-xs-2">' +
+												'<div class="col-xs-6 col-md-2 chat-message-send">' +
 													'<div class="form-group">' +
 														'<input type="hidden" class="name">' +
-														'<button class="btn btn-primary form-control" type="submit">SEND</button>' +
+														'<button class="btn btn-info form-control" type="submit">SEND</button>' +
 													'</div>' +
 												'</div>' +
 											'</div>' +
@@ -402,12 +456,12 @@
 							'<div class="row">' +
 								'<div class="col-xs-12">' +
 									'<div class="excel-options">' +
-										'<div class="btn-group options">' +
-											'<a class="btn btn-primary save-to-excel pull-left">Download</a>' +
-											'<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
-											'<a class="btn btn-info excel-edit pull-left">Edit</a>' +
-											'<div class="btn-group edit-options soft-hide">' +
-												'<a class="btn btn-primary excel-update">Update</a>' +
+										'<div class= options">' +
+											'<a class="btn btn-info save-to-excel pull-right">Download</a>' +
+											'<a class="btn btn-info view-edits pull-right" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
+											'<a class="btn btn-info excel-edit pull-right">Edit</a>' +
+											'<div class="edit-options soft-hide pull-right">' +
+												'<a class="btn btn-info excel-update">Update</a>' +
 												'<a class="btn btn-warning excel-cancel">Cancel</a>' +
 											'</div>' +
 										'</div>' +
@@ -421,19 +475,19 @@
 							'<div class="row">' +
 								'<div class="col-xs-12">' +
 									'<div class="word-options">' +
-										'<div class="btn-group options">' +
+										'<div class="options">' +
 											// '<a class="btn btn-primary save-to-word pull-left">Download</a>' +
 											// '<a class="btn btn-info view-edits" data-toggle="modal" data-target="#viewedits">View Edits</a>' +
 											'<a class="btn btn-info word-edit pull-left">Edit</a>' +
-											'<div class="btn-group edit-options soft-hide">' +
-												'<a class="btn btn-primary word-update">Update</a>' +
+											'<div class="edit-options soft-hide">' +
+												'<a class="btn btn-info word-update">Update</a>' +
 												'<a class="btn btn-warning word-cancel">Cancel</a>' +
 											'</div>' +
 										'</div>' +
 									'</div>' +
 									'<div class="message soft-hide"></div>' +
 								'</div>' +
-								'<div class="col-xs-12">' +
+								'<div class="col-xs-12" style="padding: 0px; margin: 0px;">' +
 									'<textarea></textarea>' +
 								'</div>' +
 							'</div>' +
@@ -564,6 +618,28 @@
 		return false;
 	}
 
+	function findUser(id) {
+		if (id) {
+			console.log(users[id]);
+			return users[id];
+		}
+		return false;
+	}
+
+	ui.prototype.findUserByName = function (username) {
+		findUserByName.call(this, username);
+	}
+
+	function findUserByName(username) {
+		if (username) {
+			for (i = 0; i < users.length; i++) {
+				if (users[i].username == 'admin') {
+					return users[i];
+				}
+			}
+		}
+		//return false;
+	}
 
 	ui.prototype.isCurrentUser = function (username) {
 		if (username == user.username) {

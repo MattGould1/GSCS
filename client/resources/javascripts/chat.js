@@ -23,7 +23,7 @@
 	}
 
 	ewbChat.prototype.load = function(chatroom) {
-		var html = '<li class="chat-waiting"><div class="waiting-for-messages">Loading please wait...</div></li>';
+		var html = '<li class="chat-waiting" style="position: absolute; z-index: 1000;"><div class="waiting-for-messages">Loading please wait...</div></li>';
 		var current = parseInt(chatroom.attr('loaded'));
 		if (current > 0) {
 			chatroom.prepend(html);
@@ -119,7 +119,6 @@
 					container.find('.message').css({
 						'width': cssWidth,
 						'display': 'inline',
-						'float': 'left'
 					});
 					container.find('.image-container').css({
 						'display': 'block'
@@ -272,13 +271,13 @@
 		logger('sending message');
 		socket.emit('chat-message', msg);
 
-		if (file != undefined) {
-			//display loader
-			chatroom.find('button').prop('disabled', true);
-			chatroom.find('button').text('Uploading...');
-		} else {
+		// if (file != undefined) {
+		// 	//display loader
+		// 	chatroom.find('button').prop('disabled', true);
+		// 	chatroom.find('button').text('Uploading...');
+		// } else {
 
-		}
+		// }
 		//regardless of success disable message for half a second and reset to defaults
 		chatroom.find('.message').val('');
 
@@ -368,6 +367,7 @@
 			} else {
 				logger('normal chat');
 				var chatroom = $('[data-filter="' + message.room + '-chat"]');
+
 				var msg = $($.parseHTML(msg));
 				chatroom.find('.chat-messages ul').append(msg);
 				var container = $('[data-filter="' + message.room + '-chat"').find('.chat-messages');

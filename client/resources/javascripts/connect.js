@@ -23,6 +23,14 @@ var token,
 	window_focus = true,
 	loadMoreMessages = 1;
 
+
+//used for phonegap
+var isMobile = false;
+
+
+//used for electonjs
+var isDesktop = true;
+
 var wordObj = new word();
 var userObj = new usersO();
 var uiObj = new ui();
@@ -118,7 +126,7 @@ function init(token) {
 			times();
 			//configure the timezones
 			setInterval(function () {
-				times();
+			//	times();
 			}, 5000);
 		}
 		//make socketio calls
@@ -270,6 +278,14 @@ function socketIOInit() {
 		//init main UI
 		uiObj.init();
 
+	});
+
+	socket.on('update-profile', function (profile) {
+		users[profile._id] = profile;
+		var user = profile;
+		console.log(profile);
+		$('[data-_id="' + profile._id + '"]').data('status', profile.status);
+		$('[data-_id="' + profile._id + '"]').data('sounds', profile.sounds);
 	});
 
 	userObj.load();

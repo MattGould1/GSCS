@@ -2,7 +2,7 @@ div#my-profile.modal.fade(tabindex="-1" role="dialog")
 	div.modal-dialog(role="document")
 		div.modal-content
 			div.modal-header
-				h4.modal-title Update your status!
+				h2.modal-title Update Your Profile
 			div.modal-body.my-profile-content
 				form.form-horizontal
 					div.form-group(style="display: none;")
@@ -18,13 +18,20 @@ div#my-profile.modal.fade(tabindex="-1" role="dialog")
 						div.col-xs-9
 							input.form-control.my-profile-lastname(type="text")
 					div.form-group
-						label.col-xs-3.control-label(for="sounds") Sounds?
-						div.col-xs-9
-							input(type="checkbox").my-profile-sounds
+						h3 Settings
+						label.control-label(for="sounds") Sounds
+							input(name="sounds" style="margin-left: 5px;" type="checkbox").my-profile-sounds
 					div.form-group
-						label.col-xs-3.control-label(for="moodmessage") Let people know what's up!
-						div.col-xs-9
+						h3 Add a biography
 							textarea.form-control.my-profile-status
+					div.form-group
+						h3 Set your status
+						span.onlinestatus.online(data-online="online")
+						span.onlinestatus.away(data-online="away")
+						span.onlinestatus.busy(data-online="busy")
+					div.form-group
+						h3 Pick your Avatar
+						input(type="file" class="upload-user-avatar" name="avatar")
 			div.modal-footer
 				button.btn.btn-primary(data-dismiss="modal") Close
-				button.btn.btn-primary.save-profile(data-dismiss="modal") Save
+				button.btn.btn-info.save-profile(data-dismiss="modal") Save
