@@ -1,0 +1,14 @@
+div#edit-my-message.modal.fade(tabindex="-1" role="dialog")
+	div.modal-dialog(role="document")
+		div.modal-content
+			div.modal-header
+				h4.modal-title Update your status!
+			div.modal-body.edit-my-message-content
+				form.form-horizontal
+					div.form-group
+						label.col-xs-3.control-label(for="edit-my-message") Message
+						div.col-xs-9
+							input.form-control.edit-my-message(type="textarea")
+			div.modal-footer
+				button.btn.btn-primary(data-dismiss="modal") Close
+				button.btn.btn-primary.edit-message(data-dismiss="modal") Save

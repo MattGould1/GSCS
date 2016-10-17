@@ -1,0 +1,19 @@
+div#search-messages.modal.fade(tabindex="-1" role="dialog")
+	div.modal-dialog(role="document")
+		div.modal-content
+			div.modal-header
+				h4.modal-title Update your status!
+			div.modal-body.edit-my-message-content
+				form.form-horizontal
+					div.form-group
+						label.col-xs-3.control-label(for="search-by-name") Username
+						div.col-xs-9
+							input.form-control.search-by-name(type="text")
+					div.form-group
+						label.col-xs-3.control-label(for="search") Search
+						div.col-xs-9
+							input.form-control.search-messages(type="textarea")
+				div.display-messages
+			div.modal-footer
+				button.btn.btn-primary(data-dismiss="modal") Close
+				button.btn.btn-primary.search Search
