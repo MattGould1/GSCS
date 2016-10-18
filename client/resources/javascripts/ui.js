@@ -5,6 +5,12 @@
 
 	//public
 	ui.prototype.init = function () {
+
+
+			if (dev != true) {
+				$('.message-filter').hide();
+			}
+
 			// 		var offset = 1;
 			// setInterval(function () {aler
 			// 	var load = {
@@ -19,7 +25,7 @@
 			//
 			console.log('my user: ' + user);
 			console.log(user);
-			var welcome = '<img class="welcome-image" src="http://localhost:8080' + user.picture + '"><div class="welcome-message">Welcome, ' + user.firstName + '</div>'; 
+			var welcome = '<img class="welcome-image" src="' + url + user.picture + '"><div class="welcome-message">Welcome, ' + user.firstName + '</div>'; 
 
 			$('.welcome-you').html(welcome);
 
@@ -287,7 +293,7 @@
 			var something = findUserByName.call(this, username);
 
 			if (something != undefined ) {
-				var avatar = '<div class="user-avatar"><img style="width: 30px; height: 30px; border-radius: 50%;" src="http://localhost:8080' + something.picture +'"></div>';
+				var avatar = '<div class="user-avatar"><img style="width: 30px; height: 30px; border-radius: 50%;" src="' + url + something.picture +'"></div>';
 			} else {
 				var avatar = '';
 			}
@@ -426,7 +432,7 @@
 															'Subs' +
 														'</label>' +
 													'</div>' +
-													'<div class="radio-inline" style="float: right;">' +
+													'<div class="radio-inline" style="float: right; ">' +
 														'<span class="message-loadmoremessages" style="display: none;">' +
 																'<button class="button loadmoremessages">Load More Messages</button>' +
 														'</span>' +

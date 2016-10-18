@@ -57,3 +57,31 @@ forever start server/server.js
 ```
 
 The app will now run forever and run on startup
+
+
+
+create mean 14.04 ubuntu droplet
+
+git clone https://mattg12323@bitbucket.org/mattg12323/ewb.git
+
+cd client
+
+npm install
+
+visit your ip/url (you should see some of the app)
+
+gulp
+
+install pm2
+
+cd /client/ && pm2 start client.js
+
+cd /server/ && pm2 start server.js
+
+go to server-url/make-admin
+
+log into app using admin admin
+
+go to client-url/admin
+
+create rooms and setup application as desired

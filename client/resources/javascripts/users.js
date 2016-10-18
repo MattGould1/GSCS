@@ -98,7 +98,7 @@
 										'data-username="' + user.username + '"' +
 										'data-sounds="' + user.sounds + '"' +
 										'data-lastactive="Now!"' +
-										'><img class="userimage" src="http://localhost:8080' + user.picture + '">' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
+										'><img class="userimage" src="' + url + user.picture + '">' + user.username + '<span class="badge messageCount" style="float:right;">' + offlineMsgs + '</span></div>';
 						$('.people-online').after(html);
 						$('.private-chat').each( function () {
 							if ($(this).attr('id').indexOf(user._id) !== -1) {
