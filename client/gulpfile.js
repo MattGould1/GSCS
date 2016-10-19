@@ -45,14 +45,19 @@ gulp.task('move-fonts', function () {
 gulp.task('move-vendor-css', function () {
   return gulp.src([
       'resources/vendorcss/content.min.css',
-      'resources/vendorcss/skin.min.css'
+      'resources/vendorcss/skin.min.css',
+      'resources/vendorcss/calendar.css'
     ])
     .pipe(gulp.dest('public/css/'));
 });
 gulp.task('build-js', function() {
   return gulp.src([
+
       'resources/javascripts/libs/jquery.1.11.3.js',
-      'resources/javascripts/libs/!(jquery.1.11.3)*.js',
+
+      'resources/javascripts/libs/moment.js',
+      'resources/javascripts/libs/handsontable.full.min.js',
+      'resources/javascripts/libs/!(jquery.1.11.3, handsontable.full.min, moment)*.js',
       'resources/javascripts/env.js',
       'resources/javascripts/helpers.js',
       'resources/javascripts/bootstrap.js',
@@ -60,9 +65,10 @@ gulp.task('build-js', function() {
       'resources/javascripts/ui.js',
       'resources/javascripts/word.js',
       'resources/javascripts/users.js',
-      'resources/javascripts/!(bootstrap, connect, strings, helpers, env, word, users)*.js',
-      'resources/javascripts/ui.js',
+      'resources/javascripts/!(bootstrap, connect, strings, helpers, env, word, users, calendar)*.js',
+      'resources/javascripts/calendar.js',
       'resources/javascripts/connect.js',
+      
     ])
     .pipe(concat('bundle.js'))
     //.pipe(uglify())

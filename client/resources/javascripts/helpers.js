@@ -5,3 +5,9 @@ function logger(log) {
 		console.log(log);
 	}
 }
+
+function superLogger(log) {
+	if (superdev === true) {
+		console.log(log);
+	}
+}

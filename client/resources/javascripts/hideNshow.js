@@ -119,7 +119,7 @@
 			$(this).find('.messageCount').html('');
 			//get the data-filter attribute, used to search for corresponding container with same data-filter
 			var show = $(this).attr('data-filter');
-
+			logger(show);
 			//jQuery .each container
 			options.Container.each( function (i) {
 				//show the container if data-filter === link data-filter else hide

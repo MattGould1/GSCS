@@ -21,6 +21,7 @@ var token,
 	localWord = {}, 
 	keepFlashing = false, 
 	window_focus = true,
+	events = {},
 	loadMoreMessages = 1;
 
 
@@ -34,6 +35,7 @@ var isDesktop = true;
 var wordObj = new word();
 var userObj = new usersO();
 var uiObj = new ui();
+var calendarObj = new calendar();
 //two states, Auth displays app, notAuth displays login
 Auth = jQuery('#isAuth');
 notAuth = jQuery('#isNotAuth');
@@ -192,6 +194,8 @@ function socketIOInit() {
 	var wordContainer = $('.word');
 	var link = $('.link');
 
+	var calendarContainer = $('.calendar');
+
 	/*
 	* @param Object data contains
 	* @param Array data.chatrooms: Array of all chatrooms
@@ -204,11 +208,23 @@ function socketIOInit() {
 		$('.excel').remove();
 		$('.link').remove();
 		$('.word').remove();
+		$('.calendar').remove();
 		$('.private-chat').remove();
 		tinyMCE.editors=[];
 		//set current user global var
 		user = data.user;
 		users = data.users;
+
+		events = data.events;
+	//create fake set of data for the calendar container
+		calendar = {
+			_id: 'fake',
+			active: 1,
+			name: 'Calendar',
+			user: 'fake'
+		};
+		uiObj.containers(calendar, calendarContainer, link, '-calendar', '#calendar', '#customLinks');
+
 		//set chatrooms global var
 		chatrooms = data.chatrooms;
 
@@ -278,6 +294,7 @@ function socketIOInit() {
 		//init main UI
 		uiObj.init();
 
+		calendarObj.init(events);
 	});
 
 	socket.on('update-profile', function (profile) {

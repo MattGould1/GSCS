@@ -1,0 +1,26 @@
+div#edit-event.modal.fade(tabindex="-1" role="dialog")
+	div.modal-dialog(role="document")
+		div.modal-content
+			div.modal-header
+				h4.modal-title Edit Event
+			div.modal-body.edit-event-body
+				form.form-horizontal
+					div.form-group
+						h3 Event Title
+							input.col-xs-12.event-title(type="text")
+					div.form-group
+						h3 Event Description
+						textarea.col-xs-12.event-description(style="min-height: 150px;")
+					div.form-group
+						h3 Event Info
+						h4 Start Date
+							div.start-date
+						h4 End Date
+							div.end-date 
+						h4 Created by 
+							div.created-by
+						h4 Last edit by
+							div.edit-by
+			div.modal-footer
+				button.btn.btn-info.save-event(data-dismiss="modal") Save
+				button.btn.btn-primary(data-dismiss="modal") Close

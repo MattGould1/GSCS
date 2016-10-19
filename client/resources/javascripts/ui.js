@@ -501,11 +501,14 @@
 
 		var linkHTML = '<li class="link"><a><span class="badge messageCount" style="float:right;"></span></a></li>';
 
+		var calenderHTML = '<div class="calendar room" id="fullcalendar"></div>';
+
 		//turn html into jquery objects
 		$chat = $($.parseHTML(chatHTML));
 		$excel = $($.parseHTML(excelHTML));
 		$word = $($.parseHTML(wordHTML));
 		$link = $($.parseHTML(linkHTML));
+		$calendar = $($.parseHTML(calenderHTML));
 		
 		if (type === '-chat') {
 			newContainer = $chat;
@@ -515,6 +518,8 @@
 		} else if (type === '-word') {
 			newContainer = $word;
 			newContainer.find('textarea').attr('id', room._id);
+		} else if (type == '-calendar') {
+			newContainer = $calendar;
 		}
 
 		//add class to container
@@ -574,11 +579,11 @@
 		$('#alerts').hide();
 	}
 
-	ui.prototype.myEdit = function (element, message = 'You are currently editting!') {
+	ui.prototype.myEdit = function (element, message = 'You are currently editing!') {
 		element.append('<div class="edits">' + message + '</div>');
 	}
 
-	ui.prototype.notMyEdit = function (element, message = 'You are not editting!') {
+	ui.prototype.notMyEdit = function (element, message = 'You are not editing!') {
 		element.append('<div class="edits">' + message + '</div>');
 	}
 

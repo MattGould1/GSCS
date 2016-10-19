@@ -30,6 +30,8 @@
 			skin_url: window.location + 'css/',
 			selector: '#' + word._id,
 			height: contentHeight - 100,
+			plugins: "textcolor colorpicker pagebreak table image",
+			toolbar: "forecolor backcolor pagebreak table image imagetools",
 			theme: 'modern',
 			// plugins: 'textcolor	',
 			// toolbar: 'forecolor backcolor',

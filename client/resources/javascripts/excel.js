@@ -47,19 +47,18 @@
 			cellArray.push(meta);
 
 		});
-
 		return cellArray;
 	}
 
 	function saveToExcel() {
-		$('.save-to-excel').click(function(e) {
-			var hot = $(this).parent().parent('.excel-options').siblings('.hot').find('.ht_master').html();
-			var link = document.createElement('a');
-			document.body.appendChild(link); // Firefox requires the link to be in the body
-			link.download = 'marketsheet.ms-excel';
-			link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(hot);
-			link.click();
-			document.body.removeChild(link); // remove the link when done
+		$('.save-to-excel').unbind().click(function(e) {
+			e.preventDefault();
+			var hot = $(this).parent().parent('.excel-options').siblings('.hot').handsontable('getInstance');
+
+			var downloadPlugin = hot.getPlugin('exportFile');
+
+			downloadPlugin.downloadFile('csv', {filename: 'marketsheet'});
+
 		});
 	}
 
@@ -86,6 +85,31 @@
 	  	} else if (cellProperties['status'] === 'remove') {
 	  		$(td).css('background-color', 'none');
 	  	}
+	  	headingsRenderer.call(this, td, cellProperties, value);
+	  	inlineRenderer.call(this, td, cellProperties, value);
+
+	}
+
+	function headingsRenderer(td, cellProperties, value) {
+
+		if (cellProperties['headings']) {
+			var closingBracket = cellProperties['headings'].split('<');
+			var opened = '<' + cellProperties['headings'] + '>';
+			var closed = '</' + closingBracket[1] + '>';
+
+			$(td).html(opened + value + closed);
+		}
+
+	}
+
+	function inlineRenderer(td, cellProperties, value) {
+		if (cellProperties['inline']) {
+			if (cellProperties['inline'] == 'i') {
+				$(td).css('font-style', 'italic');
+			} else if (cellProperties['inline'] == 'b') {
+				$(td).css('font-weight', 'bold');
+			}
+		}
 	}
 
 	function excelHeight() {
@@ -108,6 +132,9 @@
 		}
 		//store container, container also holds .excel-optins (edit, save, cancel etc) and .message, used to display current status
 		var container = $('[data-filter="' + excelsheet.name + '-excel"]');
+
+		logger('creating marketsheet');
+		logger(excelsheet);
 
 		//add excelsheet _id to make each handsontable identifiable
 		var hot = container.find('.hot').addClass(excelsheet._id);
@@ -157,7 +184,7 @@
 			//@TODO this shouldn't occur but abstract other scenario into function and reuse code #savetheplanet
 				var options = hot.siblings('.excel-options');
 				options.find('.excel-edit').hide();
-				uiObj.notMyEdit(options, 'Market sheet editted by: ' + excelsheet.user.username);
+				uiObj.notMyEdit(options, excelsheet.user.username + ' is currently editing.');
 		}
 	}
 
@@ -193,15 +220,24 @@
 					contextMenu:  {
 						callback: function (key, options) {
 							var selected = getSelectedCells.call(this, hotInstance);
-							if (key === 'status:pnc') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'pnc');
-							} else if (key === 'status:fxd') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'fxd');
-							} else if (key === 'status:subs') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'subs');	
-							} else if (key === 'status:remove') {
-								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', 'remove');	
+
+
+
+							if (key.indexOf('status') == 0) {
+								var status = key.split(':');
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'status', status[1]);
 							}
+					
+							if (key.indexOf('headings') == 0) {
+								var headings = key.split(':');
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'headings', headings[1]);
+							}
+
+							if (key.indexOf('inline') == 0) {
+								var inline = key.split(':');
+								setSelectedCellsMeta.call(this, hotInstance, selected, 'inline', inline[1]);
+							}
+
 							hotInstance.render();
 						},
 						items: {
@@ -214,6 +250,127 @@
 							"remove_row": {},
 							"remove_col": {},
 							"hsep3": "---------",
+							"headings": {
+								name: 'Headings',
+								submenu: {
+									items: 
+									[{
+										key: 'headings:h1',
+										name: function() {
+											var label = 'H1';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h1');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:h2',
+										name: function() {
+											var label = 'H2';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h2');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:h3',
+										name: function() {
+											var label = 'H3';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h3');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:h4',
+										name: function() {
+											var label = 'H4';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h4');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:h5',
+										name: function() {
+											var label = 'H5';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h5');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:h6',
+										name: function() {
+											var label = 'H6';
+											var selected = getSelectedCells.call(this, hotInstance);
+											var has = checkSelectedCellsMeta.call(this, selected, 'headings', 'h6');
+
+											if (has) {
+												label = markLabelAsSelected(label);
+											}
+
+											return label;
+										}
+									}, {
+										key: 'headings:remove',
+										name: 'Remove Headings'
+									}]
+								}
+							},
+							"inline": {
+								name: 'Inline',
+								submenu: {
+									items: [
+										{
+											key: 'inline:b',
+											name: function () {
+												var label = 'Bold';
+												var selected = getSelectedCells.call(this, hotInstance);
+												var has = checkSelectedCellsMeta.call(this, selected, 'inline', 'b');
+												if (has) {
+													label = markLabelAsSelected(label);
+												}
+												return label;												
+											}
+										}, {
+											key: 'inline:i',
+											name: function () {
+												var label = 'Italic';
+												var selected = getSelectedCells.call(this, hotInstance);
+												var has = checkSelectedCellsMeta.call(this, selected, 'inline', 'i');
+												if (has) {
+													label = markLabelAsSelected(label);
+												}
+												return label;	
+											}
+										}, {
+											key: 'inline:remove',
+											name: 'Remove Inline Styles'
+										}
+									]
+								}
+							},
 							"status": {
 								name: 'Status',
 								submenu: {
@@ -301,7 +458,7 @@
 				var options = hot.siblings('.excel-options');
 				options.find('.excel-edit').hide();
 				console.log('user id from excel' + data.user);
-				uiObj.notMyEdit(options, uiObj.findUser(data.user).username + ' is currently editting!');
+				uiObj.notMyEdit(options, uiObj.findUser(data.user).username + ' is currently editing.');
 			}
 		});
 	}
@@ -404,6 +561,14 @@
 					}
 					if (cell.hasOwnProperty('status')) {
 						thisCell = [cell.row, cell.col, 'status', cell.status];
+						cellMeta.push(thisCell);
+					}
+					if (cell.hasOwnProperty('headings')) {
+						thisCell = [cell.row, cell.col, 'headings', cell.headings];
+						cellMeta.push(thisCell);
+					}
+					if (cell.hasOwnProperty('inline')) {
+						thisCell = [cell.row, cell.col, 'inline', cell.inline];
 						cellMeta.push(thisCell);
 					}
 				}
