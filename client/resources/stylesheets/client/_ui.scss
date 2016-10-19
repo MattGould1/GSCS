@@ -6,6 +6,9 @@ html {
 	margin: 0 auto;
 }
 #isAuth {
+	#calendar {
+		background: white;
+	}
 	#my-profile {
 		span.online{
 			right: 70px;
@@ -31,6 +34,9 @@ html {
 		.chat-messages {
 			overflow-y: scroll;
 			overflow-x: hidden;
+			li {
+				border-bottom: 1px solid #333940;
+			}
 			.my-message {
 				background-color: $brand-info;
 				color: white;
