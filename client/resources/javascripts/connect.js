@@ -256,7 +256,7 @@ function socketIOInit() {
 			body: jQuery('#isAuth'),
 			Container: jQuery('.room'),
 			Link: jQuery('.link'),
-			defaultActive: 10
+			defaultActive: 0
 		}).init();
 
 		$('.user-offline').remove();
