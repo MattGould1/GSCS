@@ -6,6 +6,9 @@ html {
 	margin: 0 auto;
 }
 #isAuth {
+	.user-avatar {
+		display: none;
+	}
 	#edit-event {
 		h4 {
 			div {
