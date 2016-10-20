@@ -96,8 +96,8 @@
 			logger('saving edit event');
 
 			if (edit_event.find('.event-title').val() != '') {
-				start = String(event_obj.start._id);
-				end = String(event_obj.end._d);
+				start = String(event_obj.start);
+				end = String(event_obj.end);
 
 				saveEvent.call(this, edit_event, start, end, calendar, event_obj, true, false);
 			}
@@ -131,10 +131,14 @@
 		logger('saving event');
 		logger('update: ' + update);
 		logger(event_o);
-
+		logger(start_g);
+		logger(end_g);
 		start_g = moment(start_g).format('YYYY-MM-DD');
 		end_g = moment(end_g).format('YYYY-MM-DD');
 
+
+		logger(start_g);
+		logger(end_g);
 		if (element) {
 			var title = element.find('.event-title').val();
 			var description = element.find('.event-description').val();
@@ -155,7 +159,8 @@
 				end: end_g,
 				//allDay: allDay_g,
 				username: user.username,
-				user_id: user._id
+				user_id: user._id,
+				edit_username: 'No one yet!'
 			};
 
 		} else {
@@ -172,9 +177,10 @@
 				description: description,
 				start: start_g,
 				end: end_g,
-				username: user.username,
-				user_id: user._id,
-				update: true
+				//username: user.username,
+				//user_id: user._id,
+				update: true,
+				edit_username: user.username,
 			};
 		}
 
@@ -207,9 +213,14 @@
 			logger(event);
 			if (event.update) {
 				logger('updating');
+
+				//the event object has to be an original, we need to get the current event object and update the dynamic variables
 				var event_obj1 = calendar.fullCalendar('clientEvents', [event._id]);
+				
 				event_obj1[0].start = event.start;
 				event_obj1[0].end = event.end;
+				event_obj1[0].edit_username = event.edit_username;
+
 				calendar.fullCalendar('updateEvent', event_obj1[0]);
 				calendar.fullCalendar('unselect');
 			} else {

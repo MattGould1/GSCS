@@ -7,7 +7,8 @@ var calendarSchema = new mongoose.Schema({
 	start: { type: String },
 	end: { type: String },
 	user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-	username: {type: String }
+	username: {type: String },
+	edit_username: {type: String},
 });
 
 var Calendar = mongoose.model('Calendar', calendarSchema);

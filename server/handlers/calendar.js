@@ -12,9 +12,8 @@ module.exports = {
 				description: event.description,
 				start: event.start,
 				end: event.end,
-				username: event.username,
-				user_id: event.user_id,
 				allDay: true,
+				edit_username: event.edit_username,
 			};
 
 			if (event.update) {
@@ -32,6 +31,8 @@ module.exports = {
 					sio.sockets.emit('renderEvent', update);
 				});
 			} else {
+				update.username = event.username;
+				update.user_id = event.user_id;
 
 				var newEvent = new Calendar(update);
 
