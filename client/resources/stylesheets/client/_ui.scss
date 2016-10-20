@@ -6,7 +6,7 @@ html {
 	margin: 0 auto;
 }
 #isAuth {
-	.user-avatar {
+	.user-avatar, .message-filter {
 		display: none;
 	}
 	#edit-event {
