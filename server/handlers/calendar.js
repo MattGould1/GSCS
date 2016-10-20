@@ -2,7 +2,7 @@ module.exports = {
 	saveEvent: function (sio, socket, Calendar) {
 		
 		//kill all events
-		Calendar.find({}).remove().exec();
+		//Calendar.find({}).remove().exec();
 		
 		socket.on('saveEvent', function (event) {
 			console.log(event);
