@@ -52,9 +52,7 @@ gulp.task('move-vendor-css', function () {
 });
 gulp.task('build-js', function() {
   return gulp.src([
-
       'resources/javascripts/libs/jquery.1.11.3.js',
-
       'resources/javascripts/libs/moment.js',
       'resources/javascripts/libs/handsontable.full.min.js',
       'resources/javascripts/libs/!(jquery.1.11.3, handsontable.full.min, moment)*.js',
@@ -100,6 +98,7 @@ gulp.task('sounds', function () {
 gulp.task('build-admin-js', function () {
   return gulp.src([
       'resources/javascripts/libs/jquery.1.11.3.js',
+      'resources/javascripts/libs/moment.js',
       'resources/javascripts/libs/!(jquery.1.11.3)*.js',
       'resources/javascripts/bootstrap.js',
       'resources/javascripts/admin/globals.js',

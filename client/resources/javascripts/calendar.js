@@ -68,12 +68,15 @@
 				edit_event.find('.end-date').html(String(event.end._d));
 				edit_event.find('.created-by').html(String(event.username));
 				edit_event.find('.edit-by').html(String(event.edit_username));
+				edit_event.find('.event_id').val(event._id);
 
 				//open the modal
 				$('#edit-event').modal();
 			},
 			eventAfterRender: function (event, a, b) {
 				logger('Events rendered');
+
+				event_obj = event;
 			},
 			eventResize: function(event, delta, revertFunc) {
 				logger('Event resized');
@@ -125,6 +128,9 @@
 			}, 100);
 		});
 		socketioCalendar(calendar);
+
+		//activate delete
+		deleteEvent(calendar);
 	}
 
 	function saveEvent(element, start_g, end_g, calendar, event_o, update, allDay) {
@@ -190,6 +196,25 @@
 		logger(eventInfo);
 
 		socket.emit('saveEvent', eventInfo);
+
+
+
+	}
+
+	function deleteEvent(calendar) {
+		$('#edit-event').on('click', '.delete-event', function (e) {
+			e.preventDefault();
+
+			var edit_event = $('#edit-event');
+
+			var id = edit_event.find('.event_id').val();
+
+			logger('Delete event');
+
+			calendar.fullCalendar('removeEvents', [id]);
+
+			socket.emit('deleteEvent', id);
+		});
 	}
 
 	function Height() {

@@ -381,3 +381,33 @@
 .chat-form {
 	background: $brand-primary;
 }
+
+
+#gscsapp {
+	div, nav {
+		background: $brand-primary;
+	}
+	.navbar-brand {
+		img {
+			height: 80px;
+			margin-left: 10px;
+		}
+	}
+	nav {
+		border-top: none;
+		border-right: none;
+		border-left: none;
+		border-bottom: 10px solid white;
+	}
+	nav, .navbar-header, #navbar {
+		height: 100px;
+		.container-fluid {
+			height: 100px;
+		}
+	}
+	.header img {
+		width: 150px;
+		margin-top: 20px;
+		margin-right: 20px;	
+	}
+}

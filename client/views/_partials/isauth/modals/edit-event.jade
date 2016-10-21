@@ -21,6 +21,8 @@ div#edit-event.modal.fade(tabindex="-1" role="dialog")
 							div.created-by
 						h4 Last edit by
 							div.edit-by
+					input.event_id(type="hidden")
 			div.modal-footer
 				button.btn.btn-info.save-event(data-dismiss="modal") Save
+				button.btn.btn-warning.delete-event(data-dismiss="modal") Delete
 				button.btn.btn-primary(data-dismiss="modal") Close

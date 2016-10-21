@@ -154,6 +154,7 @@ sio.on('connection', function (socket) {
 
 	//handle calendar
 	calendar.saveEvent(sio, socket, Calendar);
+	calendar.deleteEvent(sio, socket, Calendar);
 
 	//handle disconnect event
 	socket.on('disconnect', function (data) {

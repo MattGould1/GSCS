@@ -43,6 +43,13 @@ module.exports = {
 				});
 			}
 		});
+	},
+	deleteEvent: function (sio, socket, Calendar) {
+		socket.on('deleteEvent', function (id) {
+
+			Calendar.find({_id: id}).remove().exec();
+
+		});
 	}
 
 };
