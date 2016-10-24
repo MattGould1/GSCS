@@ -20,6 +20,12 @@ var locdep = require('./models/locdep');
 var word = require('./models/word');
 var calendar = require('./models/calendar'); 
 
+//setup smtp emails
+var nodemailer = require('nodemailer');
+
+// create reusable transporter object using the default SMTP transport
+var transporter = nodemailer.createTransport('smtps://matt%40saowapan.com:9VAV=SuD@smtp.gmail.com');
+
 //routes
 var index = require('./routes/index');
 var admin = require('./routes/admin');
@@ -144,7 +150,7 @@ sio.on('connection', function (socket) {
 	
 	//handle edit request
 	excel.edit(sio, socket, Excel);
-	excel.update(sio, socket, Excel, Revision);
+	excel.update(sio, socket, Excel, Revision, transporter, User, users);
 	excel.cancel(sio, socket, Excel);
 
 	//handle word
