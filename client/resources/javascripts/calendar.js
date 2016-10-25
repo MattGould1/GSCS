@@ -137,23 +137,24 @@
 		logger('saving event');
 		logger('update: ' + update);
 		logger(event_o);
-		logger(start_g);
-		logger(end_g);
+
 		start_g = moment(start_g).format('YYYY-MM-DD');
 		end_g = moment(end_g).format('YYYY-MM-DD');
 
-
-		logger(start_g);
-		logger(end_g);
 		if (element) {
 			var title = element.find('.event-title').val();
 			var description = element.find('.event-description').val();
 
+			var send_email = (element.find('.send-email-notification').val() == 'on') ? true : false; 
+
 			element.find('input').val('');
 			element.find('textarea').val('');
+			element.find('.send-email-notification').prop('checked', false);
 		} else {
 			var title = event_o.title;
 			var description = event_o.description;
+
+			var send_email = false;
 		}
 
 		if (update == false) {
@@ -166,7 +167,8 @@
 				//allDay: allDay_g,
 				username: user.username,
 				user_id: user._id,
-				edit_username: 'No one yet!'
+				edit_username: 'No one yet!',
+				send_email: send_email,
 			};
 
 		} else {
@@ -187,6 +189,7 @@
 				//user_id: user._id,
 				update: true,
 				edit_username: user.username,
+				send_email: send_email,
 			};
 		}
 
@@ -196,8 +199,6 @@
 		logger(eventInfo);
 
 		socket.emit('saveEvent', eventInfo);
-
-
 
 	}
 

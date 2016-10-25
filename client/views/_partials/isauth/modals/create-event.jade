@@ -11,6 +11,9 @@ div#create-event.modal.fade(tabindex="-1" role="dialog")
 					div.form-group
 						h3 Event Description
 						textarea.col-xs-12.event-description(style="min-height: 150px;")
+					div.form-group
+						label.form-control Do you wish to notify everyone by email?
+							input(type="checkbox").send-email-notification
 			div.modal-footer
 				button.btn.btn-info.save-event(data-dismiss="modal") Save
 				button.btn.btn-primary(data-dismiss="modal") Close

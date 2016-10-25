@@ -159,7 +159,7 @@ sio.on('connection', function (socket) {
 	word.cancel(sio, socket, Word);
 
 	//handle calendar
-	calendar.saveEvent(sio, socket, Calendar);
+	calendar.saveEvent(sio, socket, Calendar, User, transporter);
 	calendar.deleteEvent(sio, socket, Calendar);
 
 	//handle disconnect event
